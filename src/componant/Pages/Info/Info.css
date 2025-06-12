@@ -1,0 +1,248 @@
+.container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  direction: rtl;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.main-title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.sidebar {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0;
+  margin-bottom: 20px;
+  border: 1px solid #e3eaf3;
+  overflow: hidden;
+}
+
+.section-header {
+  background: #e9f0fa;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e3eaf3;
+}
+
+.section-header .icon {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.location,
+.section > p,
+.section .card-content,
+.section .layout-image,
+.sponsors-grid {
+  padding: 16px 18px;
+  background: #fff;
+  color: #444;
+  font-size: 16px;
+  margin: 0;
+}
+
+.attachment-btn {
+  width: 100%;
+  padding: 12px 18px;
+  background: #0b5edb;
+  border: none;
+  border-radius: 6px;
+  color: #1a1a1a;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s;
+  margin: 0;
+}
+
+.attachment-btn:hover {
+  background: #e9ecef;
+}
+
+.layout-image {
+  background: #fff;
+  padding: 0;
+}
+
+.field-layout {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  min-height: 200px;
+}
+
+.sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  background: #fff;
+  padding: 16px 18px;
+}
+
+.sponsor-logo {
+  background: #f8f9fa;
+  border-radius: 6px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  .sponsors-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.main-header {
+  margin-bottom: 24px;
+}
+
+.main-header h1 {
+  font-size: 24px;
+  color: #1a1a1a;
+  font-weight: 500;
+  margin: 0;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  background: #f8f9fa;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header-icon {
+  font-size: 20px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.card-content p {
+  margin: 0;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.download-btn {
+  width: 100%;
+  padding: 12px;
+  background: #f8f9fa;
+  border: none;
+  border-radius: 6px;
+  color: #1a1a1a;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+  background: #e9ecef;
+}
+
+.layout-content {
+  padding: 0;
+}
+
+.layout-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.sponsor-logo {
+  background: #f8f9fa;
+  border-radius: 6px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .info-container {
+    padding: 16px;
+  }
+  
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
+} 
