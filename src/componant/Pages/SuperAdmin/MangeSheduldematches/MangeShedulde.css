@@ -1,0 +1,134 @@
+/* الصفحة الرئيسية */
+.schedule-page {
+  background: #f6f7fa;
+  min-height: 100vh;
+  padding: 32px 0 0 0;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* الهيدر */
+.schedule-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding: 0 40px;
+}
+.schedule-title {
+  color: #2563eb;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+.schedule-desc {
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+.schedule-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.refresh-btn {
+  background: #fff;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  padding: 8px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.refresh-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.filter-select {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  color: #333;
+  min-width: 120px;
+}
+
+/* قائمة المباريات */
+.matches-list {
+  padding: 0 40px;
+}
+.match-card {
+  background: #f0f4ff;
+  border: 1px solid #d6e4ff;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.match-card--active {
+  border-top: 4px solid #2563eb;
+}
+.match-status {
+  padding: 16px 24px 0 24px;
+  display: flex;
+  justify-content: flex-start;
+}
+.status-badge {
+  padding: 4px 18px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #bdbdbd;
+  display: inline-block;
+}
+.status-badge--active {
+  background: #2563eb;
+}
+.match-info {
+  padding: 0 24px 20px 24px;
+}
+.match-title {
+  color: #2563eb;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+.match-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  color: #222;
+  font-size: 1.1rem;
+  align-items: center;
+}
+.match-details .icon {
+  color: #2563eb;
+  margin-left: 6px;
+  font-size: 1.2em;
+}
+
+@media (max-width: 700px) {
+  .schedule-header, .matches-list {
+    padding: 0 10px;
+  }
+  .match-info {
+    padding: 0 10px 20px 10px;
+  }
+  .match-status {
+    padding: 16px 10px 0 10px;
+  }
+  .match-details {
+    gap: 10px;
+    font-size: 1rem;
+  }
+} 

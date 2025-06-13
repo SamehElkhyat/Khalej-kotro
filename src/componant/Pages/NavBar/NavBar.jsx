@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Admin from "../Admin/Admin";
 
 export default function NavBar() {
   const teamsData = [

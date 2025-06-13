@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import logo from "./componant/Images/Logo.png";
+import Admin from "./componant/Pages/SuperAdmin/Admin/Admin";
 
 export default function App() {
   const teamsData = [
@@ -136,8 +137,14 @@ export default function App() {
             />
           </div>
           <Outlet />
+          <Admin />
+
+
         </div>
       </div>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
+      </style>
     </>
   );
 }

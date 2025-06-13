@@ -368,7 +368,6 @@ export default function Teams() {
 
   return (
     <div className="teams-page">
-      {/* شريط التنقل بين العرضين */}
       <div className="view-toggle-container">
         <div className="view-toggle">
           <button 
