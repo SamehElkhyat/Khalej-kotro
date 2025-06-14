@@ -18,35 +18,41 @@ import ResultMatches from "./componant/Pages/SuperAdmin/ResultMatches/ResultMatc
 import TeamsRanking from "./componant/Pages/SuperAdmin/TeamsRanking/TeamsRanking.jsx";
 import Login from "./componant/Pages/SuperAdmin/Login/Login.jsx";
 import Rules from "./componant/Pages/SuperAdmin/Rules/Rules.jsx";
+import LogOut from "./componant/Pages/LogOut/LogOut.jsx";
 
-const router = createBrowserRouter([
+// تكوين مسارات التطبيق
+const مسارات_التطبيق = createBrowserRouter([
   {
     path: "",
     element: <App/>,
     children: [
-
-      { path: "info", element: <Info /> },
-      { path: "teams", element: <Teams /> },
-      { path: "matches", element: <Matches /> },
-      { path: "shedulde", element: <Shedulde /> },
-      { path: "admin", element: <Admin /> },
-      { path: "landing-admin", element: <LandingAdmin /> },
-      { path: "academies", element: <Acadimics /> },
-      { path: "players", element: <Players /> },
-      { path: "mange-matches", element: <MangeMatches /> },
-      { path: "mange-shedulde", element: <MangeShedulde /> },
-      { path: "camp", element: <Camp /> },
-      { path: "result-matches", element: <ResultMatches /> },
-      { path: "teams-ranking", element: <TeamsRanking /> },
-      { path: "login", element: <Login /> },
-      { path: "rules", element: <Rules /> },
-
+      // الصفحات الرئيسية
+      { path: "info", element: <Info /> },           // صفحة المعلومات
+      { path: "teams", element: <Teams /> },         // صفحة الفرق
+      { path: "matches", element: <Matches /> },     // صفحة المباريات
+      { path: "shedulde", element: <Shedulde /> },   // صفحة الجدول الزمني
+      
+      // صفحات الإدارة
+      { path: "admin", element: <Admin /> },                    // لوحة الإدارة
+      { path: "landing-admin", element: <LandingAdmin /> },     // صفحة دخول الإدارة
+      { path: "academies", element: <Acadimics /> },            // إدارة الأكاديميات
+      { path: "players", element: <Players /> },                // إدارة اللاعبين
+      { path: "mange-matches", element: <MangeMatches /> },     // إدارة المباريات
+      { path: "mange-shedulde", element: <MangeShedulde /> },   // إدارة الجدول الزمني
+      { path: "camp", element: <Camp /> },                      // إدارة المعسكرات
+      { path: "result-matches", element: <ResultMatches /> },   // نتائج المباريات
+      { path: "teams-ranking", element: <TeamsRanking /> },     // ترتيب الفرق
+      { path: "login", element: <Login /> },                    // تسجيل الدخول
+      { path: "rules", element: <Rules /> },                    // القواعد
+      { path: "logout", element: <LogOut /> },                  // تسجيل الخروج
     ],
   },
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+// إنشاء عنصر الجذر للتطبيق
+const عنصر_الجذر = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(
-  <RouterProvider router={router} />
+// عرض التطبيق
+عنصر_الجذر.render(
+  <RouterProvider router={مسارات_التطبيق} />
 );

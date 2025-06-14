@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+  import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const teams = [
-  { id: 1, name: 'ttt', played: 0, win: 0, draw: 0, lose: 0, for: 0, against: 0, diff: 0, points: 0 },
-  { id: 2, name: 'mohamed', played: 0, win: 0, draw: 0, lose: 0, for: 0, against: 0, diff: 0, points: 0 },
-];
+
 
 export default function TeamsRanking() {
   const [age, setAge] = useState('all');
+  const [teams, setTeams] = useState([]);
+  const getTeams = async () => {
+    try {
+      const response = await axios.get('https://sports.runasp.net/api/Matches-Table');
+      setTeams(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getTeams();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f6f7fa] p-4" dir="rtl" style={{ fontFamily: 'Cairo, sans-serif' }}>
@@ -56,14 +67,14 @@ export default function TeamsRanking() {
             {teams.map((team, idx) => (
               <tr key={team.id} className="border-b hover:bg-gray-50">
                 <td className="py-2 font-bold text-[#2563eb]">{idx + 1}</td>
-                <td className="py-2 font-bold">{team.name}</td>
-                <td className="py-2">{team.played}</td>
-                <td className="py-2">{team.win}</td>
-                <td className="py-2">{team.draw}</td>
-                <td className="py-2">{team.lose}</td>
-                <td className="py-2">{team.for}</td>
-                <td className="py-2">{team.against}</td>
-                <td className="py-2">{team.diff}</td>
+                <td className="py-2">{team.matchesPlayed}</td>
+                <td className="py-2">{team.academyName}</td>
+                <td className="py-2">{team.wins}</td>
+                <td className="py-2">{team.draws}</td>
+                <td className="py-2">{team.losses}</td>
+                <td className="py-2">{team.goalsFor}</td>
+                <td className="py-2">{team.goalsAgainst}</td>
+                <td className="py-2">{team.goalDifference}</td>
                 <td className="py-2 font-bold text-[#2563eb]">{team.points}</td>
               </tr>
             ))}

@@ -1,177 +1,537 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Acadimics.css";
-
-const academies = [
-  {
-    name: "موشفر",
-    country: "Egypt",
-    email: "yabloghagi@gmail.com",
-    phone: "01114531437",
-    status: "مكتملة",
-  },
-  {
-    name: "اوتي",
-    country: "Algeria",
-    email: "chinounmohaj@gmail.com",
-    phone: "0540923577",
-    status: "في الانتظار",
-  },
-  {
-    name: "888",
-    country: "88",
-    email: "g8@gmail.com",
-    phone: "01151303980",
-    status: "في الانتظار",
-  },
-  {
-    name: "samehElkhayat",
-    country: "Egypt",
-    email: "ssalih292@gmail.com",
-    phone: "01065369433",
-    status: "في الانتظار",
-  },
-  {
-    name: "اكاديمية العضو999999",
-    country: "gf",
-    email: "",
-    phone: "",
-    status: "في الانتظار",
-  },
-  {
-    name: "موشفر",
-    country: "Egypt",
-    email: "yabloghagi@gmail.com",
-    phone: "01114531437",
-    status: "في الانتظار",
-  },
-  {
-    name: "ghhg",
-    country: "Algeria",
-    email: "evasoft123@gmail.com",
-    phone: "0657274307",
-    status: "في الانتظار",
-  },
-  {
-    name: "hjhjhj",
-    country: "g'hghg",
-    email: "",
-    phone: "",
-    status: "مكتملة",
-  },
-  {
-    name: "ttt",
-    country: "Canada",
-    email: "",
-    phone: "",
-    status: "في الانتظار",
-  },
-  {
-    name: "ttt",
-    country: "ddd",
-    email: "",
-    phone: "",
-    status: "مكتملة",
-  },
-  {
-    name: "mohamed",
-    country: "Algeria",
-    email: "mabrouk@gmail.com",
-    phone: "",
-    status: "في الانتظار",
-  },
-];
-
-const initialForm = {
-  name: "",
-  country: "",
-  manager: "",
-  email: "",
-  phone: "",
-  contact: "",
-  logo: "",
-  under14: false,
-  under16: false,
-  under18: false,
-  certified: false,
-};
-
-const AddAcademyModal = ({ show, onClose, form, onChange, onSubmit }) => {
-  if (!show) return null;
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <span style={{ color: "#2563eb" }}>إضافة أكاديمية جديدة</span>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
-        <form className="edit-player-form" onSubmit={onSubmit}>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="اسم الأكاديمية" value={form.name} onChange={e => onChange({ ...form, name: e.target.value })} required />
-            <label>اسم الأكاديمية</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="الدولة" value={form.country} onChange={e => onChange({ ...form, country: e.target.value })} required />
-            <label>الدولة</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="المنسق" value={form.manager} onChange={e => onChange({ ...form, manager: e.target.value })} />
-            <label>المنسق</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="email" placeholder="البريد الإلكتروني" value={form.email} onChange={e => onChange({ ...form, email: e.target.value })} />
-            <label>البريد الإلكتروني</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="رقم الهاتف" value={form.phone} onChange={e => onChange({ ...form, phone: e.target.value })} />
-            <label>رقم الهاتف</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="رقم الاتصال" value={form.contact} onChange={e => onChange({ ...form, contact: e.target.value })} />
-            <label>رقم الاتصال</label>
-          </div>
-          <div className="form-row">
-            <input className="form-input" type="text" placeholder="رابط الشعار" value={form.logo} onChange={e => onChange({ ...form, logo: e.target.value })} />
-            <label>رابط الشعار</label>
-          </div>
-          <div className="form-row" style={{ flexDirection: "column", alignItems: "flex-end", gap: 0 }}>
-            <label style={{ marginBottom: 4 }}>الفئات المشاركة</label>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <label><input type="checkbox" checked={form.under14} onChange={e => onChange({ ...form, under14: e.target.checked })} /> تحت 14 سنة</label>
-              <label><input type="checkbox" checked={form.under16} onChange={e => onChange({ ...form, under16: e.target.checked })} /> تحت 16 سنة</label>
-              <label><input type="checkbox" checked={form.under18} onChange={e => onChange({ ...form, under18: e.target.checked })} /> تحت 18 سنة</label>
-              <label><input type="checkbox" checked={form.certified} onChange={e => onChange({ ...form, certified: e.target.checked })} /> معتمدة</label>
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <button type="button" className="add-btn" style={{ background: "#eee", color: "#222" }} onClick={onClose}>إلغاء</button>
-            <button type="submit" className="add-btn" style={{ background: "#2563eb" }}>إضافة</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const Acadimics = () => {
+  const [academies, setAcademies] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState(initialForm);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editingAcademy, setEditingAcademy] = useState(null);
+
+  const addAcademY = async () => {
+    try {
+      const response = await axios.post(
+        "https://sports.runasp.net/api/Register-Academy-Admin",
+        registerFormik.values,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log(response);
+      getAcademies();
+      onClose();
+    } catch (error) {}
+  };
+
+  const getAcademies = async () => {
+    try {
+      const response = await axios.get(
+        "https://sports.runasp.net/api/Get-All-Academies",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setAcademies(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const DeleteAcademies = async (id) => {
+    try {
+      const response = await axios.delete(
+        `https://sports.runasp.net/api/Delete-Academy/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      getAcademies();
+    } catch (error) {}
+  };
+
+  const EditAcademies = async (values) => {
+    console.log(values);
+    try {
+      const response = await axios.post(`https://sports.runasp.net/api/Update-Academy/${editingAcademy.id}`, values, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      getAcademies();
+      onCloseEdit();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditClick = (academy) => {
+    setEditingAcademy(academy);
+    // Pre-fill the edit form with academy data
+    editFormik.setValues({
+      academyName: academy.academyName || "",
+      academyEmail: academy.academyEmail || "",
+      academyPhone: academy.academyPhone || "",
+      academyCountry: academy.academyCountry || "",
+      logoURL: academy.logoURL || "",
+      coordinator: academy.coordinator || "",
+      academyCall: academy.academyCall || "",
+      statue: academy.statue || false,
+      under14: academy.under14 || false,
+      under16: academy.under16 || false,
+      under18: academy.under18 || false,
+    });
+    setShowEdit(true);
+  };
+
+  const onClose = () => {
+    setShowAdd(false);
+    registerFormik.resetForm();
+  };
+
+  const onCloseEdit = () => {
+    setShowEdit(false);
+    setEditingAcademy(null);
+    editFormik.resetForm();
+  };
+
+  useEffect(() => {
+    getAcademies();
+  }, []);
+
+  const registerFormik = useFormik({
+    initialValues: {
+      academyName: "",
+      academyEmail: "",
+      academyPhone: "",
+      academyCountry: "",
+      logoURL: "",
+      coordinator: "",
+      academyCall: "",
+      statue: true,
+      under14: true,
+      under16: true,
+      under18: true,
+    },
+    onSubmit: addAcademY,
+  });
+
+  const editFormik = useFormik({
+    initialValues: {
+      academyName: "",
+      academyEmail: "",
+      academyPhone: "",
+      academyCountry: "",
+      logoURL: "",
+      coordinator: "",
+      academyCall: "",
+      statue: false,
+      under14: false,
+      under16: false,
+      under18: false,
+    },
+    onSubmit: EditAcademies,
+  });
 
   return (
     <div className="academies-page" dir="rtl">
       <div className="academies-header">
         <h2>إدارة الأكاديميات</h2>
         <p>يمكنك إضافة وتعديل وحذف الأكاديميات المشاركة في البطولة</p>
-        <button className="add-btn" onClick={() => setShowAdd(true)}>إضافة أكاديمية جديدة</button>
+        <button className="add-btn" onClick={() => setShowAdd(true)}>
+          إضافة أكاديمية جديدة
+        </button>
       </div>
-      <AddAcademyModal
-        show={showAdd}
-        onClose={() => setShowAdd(false)}
-        form={form}
-        onChange={setForm}
-        onSubmit={e => { e.preventDefault(); setShowAdd(false); setForm(initialForm); }}
-      />
+
+      {showAdd && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <span style={{ color: "#2563eb" }}>إضافة أكاديمية جديدة</span>
+              <button className="close-btn" onClick={onClose}>
+                ×
+              </button>
+            </div>
+            <form
+              className="edit-player-form"
+              onSubmit={registerFormik.handleSubmit}
+            >
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="اسم الأكاديمية"
+                  value={registerFormik.values.academyName}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("academyName", e.target.value)
+                  }
+                  required
+                />
+                <label>اسم الأكاديمية</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="الدولة"
+                  value={registerFormik.values.academyCountry}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue(
+                      "academyCountry",
+                      e.target.value
+                    )
+                  }
+                  required
+                />
+                <label>الدولة</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="المنسق"
+                  value={registerFormik.values.coordinator}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("coordinator", e.target.value)
+                  }
+                />
+                <label>المنسق</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  value={registerFormik.values.academyEmail}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("academyEmail", e.target.value)
+                  }
+                />
+                <label>البريد الإلكتروني</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رقم الهاتف"
+                  value={registerFormik.values.academyPhone}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("academyPhone", e.target.value)
+                  }
+                />
+                <label>رقم الهاتف</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رقم الاتصال"
+                  value={registerFormik.values.academyCall}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("academyCall", e.target.value)
+                  }
+                />
+                <label>رقم الاتصال</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رابط الشعار"
+                  value={registerFormik.values.logoURL}
+                  onChange={(e) =>
+                    registerFormik.setFieldValue("logoURL", e.target.value)
+                  }
+                />
+                <label>رابط الشعار</label>
+              </div>
+              <div
+                className="form-row"
+                style={{
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 0,
+                }}
+              >
+                <label style={{ marginBottom: 4 }}>الفئات المشاركة</label>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 2 }}
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={registerFormik.values.under14}
+                      onChange={(e) =>
+                        registerFormik.setFieldValue(
+                          "under14",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 14 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={registerFormik.values.under16}
+                      onChange={(e) =>
+                        registerFormik.setFieldValue(
+                          "under16",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 16 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={registerFormik.values.under18}
+                      onChange={(e) =>
+                        registerFormik.setFieldValue(
+                          "under18",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 18 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={registerFormik.values.certified}
+                      onChange={(e) =>
+                        registerFormik.setFieldValue(
+                          "certified",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    معتمدة
+                  </label>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                <button
+                  type="button"
+                  className="add-btn"
+                  style={{ background: "#eee", color: "#222" }}
+                  onClick={onClose}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="add-btn"
+                  style={{ background: "#2563eb" }}
+                >
+                  إضافة
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {showEdit && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <span style={{ color: "#2563eb" }}>تعديل أكاديمية</span>
+              <button className="close-btn" onClick={onCloseEdit}>
+                ×
+              </button>
+            </div>
+            <form
+              className="edit-player-form"
+              onSubmit={editFormik.handleSubmit}
+            >
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="اسم الأكاديمية"
+                  value={editFormik.values.academyName}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("academyName", e.target.value)
+                  }
+                  required
+                />
+                <label>اسم الأكاديمية</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="الدولة"
+                  value={editFormik.values.academyCountry}
+                  onChange={(e) =>
+                    editFormik.setFieldValue(
+                      "academyCountry",
+                      e.target.value
+                    )
+                  }
+                  required
+                />
+                <label>الدولة</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="المنسق"
+                  value={editFormik.values.coordinator}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("coordinator", e.target.value)
+                  }
+                />
+                <label>المنسق</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  value={editFormik.values.academyEmail}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("academyEmail", e.target.value)
+                  }
+                />
+                <label>البريد الإلكتروني</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رقم الهاتف"
+                  value={editFormik.values.academyPhone}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("academyPhone", e.target.value)
+                  }
+                />
+                <label>رقم الهاتف</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رقم الاتصال"
+                  value={editFormik.values.academyCall}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("academyCall", e.target.value)
+                  }
+                />
+                <label>رقم الاتصال</label>
+              </div>
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="رابط الشعار"
+                  value={editFormik.values.logoURL}
+                  onChange={(e) =>
+                    editFormik.setFieldValue("logoURL", e.target.value)
+                  }
+                />
+                <label>رابط الشعار</label>
+              </div>
+              <div
+                className="form-row"
+                style={{
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 0,
+                }}
+              >
+                <label style={{ marginBottom: 4 }}>الفئات المشاركة</label>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 2 }}
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={editFormik.values.under14}
+                      onChange={(e) =>
+                        editFormik.setFieldValue(
+                          "under14",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 14 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={editFormik.values.under16}
+                      onChange={(e) =>
+                        editFormik.setFieldValue(
+                          "under16",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 16 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={editFormik.values.under18}
+                      onChange={(e) =>
+                        editFormik.setFieldValue(
+                          "under18",
+                          e.target.checked
+                        )
+                      }
+                    />{" "}
+                    تحت 18 سنة
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={editFormik.values.statue}
+                      onChange={(e) =>
+                        editFormik.setFieldValue(
+                          "statue",
+                          e.target.checked
+                        )
+                      }
+                    />
+                    معتمدة
+                  </label>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                <button
+                  type="button"
+                  className="add-btn"
+                  style={{ background: "#eee", color: "#222" }}
+                  onClick={onCloseEdit}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="add-btn"
+                  style={{ background: "#2563eb" }}
+                >
+                  تعديل
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <div className="academies-list-card">
-        <div className="academies-list-title">قائمة الأكاديميات <span>({academies.length})</span></div>
+        <div className="academies-list-title">
+          قائمة الأكاديميات <span>({academies.length})</span>
+        </div>
         <table className="academies-table">
           <thead>
             <tr>
@@ -187,22 +547,29 @@ const Acadimics = () => {
             {academies.map((academy, idx) => (
               <tr key={idx} className={idx % 2 === 1 ? "row-alt" : ""}>
                 <td>
-                  <button className="action-btn delete"><i className="fas fa-trash"></i></button>
-                  <button className="action-btn edit"><i className="fas fa-edit"></i></button>
+                  <button className="action-btn delete" onClick={() => DeleteAcademies(academy.id)}>
+                    <i className="fas fa-trash"></i>
+                  </button>
+                  <button className="action-btn edit" onClick={() => handleEditClick(academy)}>
+                    <i className="fas fa-edit"></i>
+                  </button>
                 </td>
                 <td>
-                  <span className={
-                    academy.status === "مكتملة"
-                      ? "status status-done"
-                      : "status status-pending"
-                  }>
-                    {academy.status}
+                  <span
+                    className={
+                      academy.statue === true
+                        ? "status status-done"
+                        : "status status-pending"
+                    }
+                  >
+
+                    {academy.statue === true ? "معتمدة" : "غير معتمدة"}
                   </span>
                 </td>
-                <td>{academy.phone}</td>
-                <td>{academy.email}</td>
-                <td>{academy.country}</td>
-                <td>{academy.name}</td>
+                <td>{academy.academyPhone}</td>
+                <td>{academy.academyEmail}</td>
+                <td>{academy.academyCountry}</td>
+                <td>{academy.academyName}</td>
               </tr>
             ))}
           </tbody>

@@ -31,6 +31,7 @@ const openedMixin = (theme) => ({
   overflowX: "hidden",
 });
 
+
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -168,7 +169,7 @@ export default function MiniDrawer() {
         <List>
           {["نتائج المباريات","ترتيب الفرق","اللوائح التنظيمية","تسجيل الخروج"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <Link to={`/${text === "نتائج المباريات" ? "result-matches" : text === "ترتيب الفرق" ? "teams-ranking" : text === "اللوائح التنظيمية" ? "rules" : text === "تسجيل الخروج" ? "logout" : ""}`}>
+                <Link to={`/${text === "نتائج المباريات" ? "result-matches" : text === "ترتيب الفرق" ? "teams-ranking" : text === "اللوائح التنظيمية" ? "rules" : text === "تسجيل الخروج" ? "logout" : ''}`}>
                 
                  <ListItemButton
                 sx={[

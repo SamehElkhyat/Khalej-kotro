@@ -1,41 +1,42 @@
 import React, { useState } from 'react'
 import './Teams.css'
 
-const TeamDetailsModal = ({ team, onClose }) => {
-  if (!team) return null;
+// مكون عرض تفاصيل الفريق
+const مكون_تفاصيل_الفريق = ({ فريق, إغلاق }) => {
+  if (!فريق) return null;
   
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={إغلاق}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <img src={team.logo} alt={team.name} className="modal-team-logo" />
-          <h2>{team.name}</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <img src={فريق.logo} alt={فريق.name} className="modal-team-logo" />
+          <h2>{فريق.name}</h2>
+          <button className="close-button" onClick={إغلاق}>×</button>
         </div>
         <div className="modal-body">
           <div className="team-stats">
             <div className="stat-item">
               <span className="stat-label">النقاط الحالية</span>
-              <span className="stat-value">{team.score}</span>
+              <span className="stat-value">{فريق.score}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">المركز</span>
-              <span className="stat-value">{team.position || '-'}</span>
+              <span className="stat-value">{فريق.position || '-'}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">عدد المباريات</span>
-              <span className="stat-value">{team.matches || 0}</span>
+              <span className="stat-value">{فريق.matches || 0}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">الأهداف</span>
-              <span className="stat-value">{team.goals || 0}</span>
+              <span className="stat-value">{فريق.goals || 0}</span>
             </div>
           </div>
           <div className="team-info-details">
             <h3>معلومات النادي</h3>
-            <p><strong>تاريخ التأسيس:</strong> {team.established || '-'}</p>
-            <p><strong>الملعب:</strong> {team.stadium || '-'}</p>
-            <p><strong>المدرب:</strong> {team.coach || '-'}</p>
+            <p><strong>تاريخ التأسيس:</strong> {فريق.established || '-'}</p>
+            <p><strong>الملعب:</strong> {فريق.stadium || '-'}</p>
+            <p><strong>المدرب:</strong> {فريق.coach || '-'}</p>
             <p><strong>الدوري:</strong> دوري أدنوك للمحترفين</p>
           </div>
         </div>
@@ -45,7 +46,7 @@ const TeamDetailsModal = ({ team, onClose }) => {
 };
 
 // مكون البحث والفلترة
-const SearchAndFilter = ({ searchTerm, setSearchTerm, sortBy, setSortBy }) => {
+const مكون_البحث_والفلترة = ({ مصطلح_البحث, تعيين_مصطلح_البحث, ترتيب_حسب, تعيين_الترتيب }) => {
   return (
     <div className="search-filter-container">
       <div className="search-box">
@@ -55,15 +56,15 @@ const SearchAndFilter = ({ searchTerm, setSearchTerm, sortBy, setSortBy }) => {
         <input
           type="text"
           placeholder="البحث عن فريق..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={مصطلح_البحث}
+          onChange={(e) => تعيين_مصطلح_البحث(e.target.value)}
           className="search-input"
         />
       </div>
       <div className="filter-box">
         <select 
-          value={sortBy} 
-          onChange={(e) => setSortBy(e.target.value)}
+          value={ترتيب_حسب} 
+          onChange={(e) => تعيين_الترتيب(e.target.value)}
           className="filter-select"
         >
           <option value="name">ترتيب حسب الاسم</option>
@@ -76,20 +77,20 @@ const SearchAndFilter = ({ searchTerm, setSearchTerm, sortBy, setSortBy }) => {
   );
 };
 
-// مكون جديد لعرض جميع الفرق بطريقة مبتكرة
-const AllTeamsGrid = ({ teams, onTeamClick }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [hoveredTeam, setHoveredTeam] = useState(null);
+// مكون عرض جميع الفرق بطريقة مبتكرة
+const مكون_عرض_جميع_الفرق = ({ فرق, النقر_على_الفريق }) => {
+  const [مصطلح_البحث, setمصطلح_البحث] = useState('');
+  const [ترتيب_حسب, setترتيب_حسب] = useState('name');
+  const [الفريق_المحوم, setالفريق_المحوم] = useState(null);
 
   // فلترة وبحث الفرق
-  const filteredTeams = teams.filter(team =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const الفرق_المصفاة = فرق.filter(فريق =>
+    فريق.name.toLowerCase().includes(مصطلح_البحث.toLowerCase())
   );
 
   // ترتيب الفرق
-  const sortedTeams = [...filteredTeams].sort((a, b) => {
-    switch (sortBy) {
+  const الفرق_المرتبة = [...الفرق_المصفاة].sort((a, b) => {
+    switch (ترتيب_حسب) {
       case 'score':
         return b.score - a.score;
       case 'position':
@@ -103,39 +104,39 @@ const AllTeamsGrid = ({ teams, onTeamClick }) => {
   });
 
   // الحصول على أعلى 3 فرق حسب النقاط
-  const topTeams = [...teams].sort((a, b) => b.score - a.score).slice(0, 3);
+  const أفضل_الفرق = [...فرق].sort((a, b) => b.score - a.score).slice(0, 3);
 
   return (
     <div className="all-teams-container">
       {/* عرض أفضل 3 فرق */}
-      {searchTerm === '' && sortBy === 'name' && (
+      {مصطلح_البحث === '' && ترتيب_حسب === 'name' && (
         <div className="top-teams-section">
           <h2 className="section-title">🏆 أفضل 3 فرق</h2>
           <div className="top-teams-grid">
-            {topTeams.map((team, index) => (
+            {أفضل_الفرق.map((فريق, index) => (
               <div 
-                key={team.id} 
+                key={فريق.id} 
                 className={`top-team-card rank-${index + 1}`}
-                onClick={() => onTeamClick(team)}
+                onClick={() => النقر_على_الفريق(فريق)}
               >
                 <div className="rank-badge">{index + 1}</div>
-                <img src={team.logo} alt={team.name} className="top-team-logo" />
-                <h3 className="top-team-name">{team.name}</h3>
-                <div className="top-team-score">{team.score} نقطة</div>
+                <img src={فريق.logo} alt={فريق.name} className="top-team-logo" />
+                <h3 className="top-team-name">{فريق.name}</h3>
+                <div className="top-team-score">{فريق.score} نقطة</div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <SearchAndFilter 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
+      <مكون_البحث_والفلترة 
+        مصطلح_البحث={مصطلح_البحث}
+        تعيين_مصطلح_البحث={setمصطلح_البحث}
+        ترتيب_حسب={ترتيب_حسب}
+        تعيين_الترتيب={setترتيب_حسب}
       />
       
-      {sortedTeams.length === 0 ? (
+      {الفرق_المرتبة.length === 0 ? (
         <div className="no-results">
           <svg className="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.881-6.08 2.33" />
@@ -145,26 +146,26 @@ const AllTeamsGrid = ({ teams, onTeamClick }) => {
         </div>
       ) : (
         <div className="teams-grid">
-          {sortedTeams.map((team, index) => (
+          {الفرق_المرتبة.map((فريق, index) => (
             <div 
-              key={team.id || index} 
-              className={`team-card ${hoveredTeam === team.id ? 'hovered' : ''}`}
-              onClick={() => onTeamClick(team)}
-              onMouseEnter={() => setHoveredTeam(team.id)}
-              onMouseLeave={() => setHoveredTeam(null)}
+              key={فريق.id || index} 
+              className={`team-card ${الفريق_المحوم === فريق.id ? 'hovered' : ''}`}
+              onClick={() => النقر_على_الفريق(فريق)}
+              onMouseEnter={() => setالفريق_المحوم(فريق.id)}
+              onMouseLeave={() => setالفريق_المحوم(null)}
             >
               <div className="team-card-header">
                 <div className="team-logo-container">
-                  <img src={team.logo} alt={team.name} className="team-logo" />
+                  <img src={فريق.logo} alt={فريق.name} className="team-logo" />
                   <div className="team-score-badge">
-                    {team.score}
+                    {فريق.score}
                   </div>
                 </div>
                 <div className="team-info">
-                  <h3 className="team-name">{team.name}</h3>
+                  <h3 className="team-name">{فريق.name}</h3>
                   <div className="team-meta">
-                    <span className="team-position">المركز: {team.position || 'غير محدد'}</span>
-                    <span className="team-matches">المباريات: {team.matches || 0}</span>
+                    <span className="team-position">المركز: {فريق.position || 'غير محدد'}</span>
+                    <span className="team-matches">المباريات: {فريق.matches || 0}</span>
                   </div>
                 </div>
               </div>
@@ -172,11 +173,11 @@ const AllTeamsGrid = ({ teams, onTeamClick }) => {
                 <div className="team-stats-mini">
                   <div className="stat-mini">
                     <span className="stat-label-mini">الأهداف</span>
-                    <span className="stat-value-mini">{team.goals || 0}</span>
+                    <span className="stat-value-mini">{فريق.goals || 0}</span>
                   </div>
                   <div className="stat-mini">
                     <span className="stat-label-mini">النقاط</span>
-                    <span className="stat-value-mini">{team.score}</span>
+                    <span className="stat-value-mini">{فريق.score}</span>
                   </div>
                 </div>
                 <button className="view-details-btn">
@@ -191,15 +192,15 @@ const AllTeamsGrid = ({ teams, onTeamClick }) => {
       <div className="teams-summary">
         <div className="summary-item">
           <span className="summary-label">إجمالي الفرق</span>
-          <span className="summary-value">{teams.length}</span>
+          <span className="summary-value">{فرق.length}</span>
         </div>
         <div className="summary-item">
           <span className="summary-label">الفرق المعروضة</span>
-          <span className="summary-value">{sortedTeams.length}</span>
+          <span className="summary-value">{الفرق_المرتبة.length}</span>
         </div>
         <div className="summary-item">
           <span className="summary-label">أعلى نقاط</span>
-          <span className="summary-value">{Math.max(...teams.map(t => t.score))}</span>
+          <span className="summary-value">{Math.max(...فرق.map(t => t.score))}</span>
         </div>
       </div>
     </div>
@@ -207,20 +208,20 @@ const AllTeamsGrid = ({ teams, onTeamClick }) => {
 };
 
 export default function Teams() {
-  const [openDays, setOpenDays] = useState({})
-  const [selectedTeam, setSelectedTeam] = useState(null)
-  const [viewMode, setViewMode] = useState('all') // 'all' or 'groups'
+  const [الأيام_المفتوحة, setالأيام_المفتوحة] = useState({})
+  const [الفريق_المحدد, setالفريق_المحدد] = useState(null)
+  const [وضع_العرض, setوضع_العرض] = useState('all') // 'all' أو 'groups'
 
-  const toggleDay = (dayIndex) => {
-    setOpenDays(prev => ({
+  const تبديل_اليوم = (مؤشر_اليوم) => {
+    setالأيام_المفتوحة(prev => ({
       ...prev,
-      [dayIndex]: !prev[dayIndex]
+      [مؤشر_اليوم]: !prev[مؤشر_اليوم]
     }))
   }
 
-  const showTeamDetails = (team) => {
-    setSelectedTeam({
-      ...team,
+  const عرض_تفاصيل_الفريق = (فريق) => {
+    setالفريق_المحدد({
+      ...فريق,
       established: "1968",
       stadium: "استاد هزاع بن زايد",
       coach: "هيرنان كريسبو",
@@ -231,15 +232,15 @@ export default function Teams() {
   };
 
   // تجميع جميع الفرق من جميع الأيام والمجموعات
-  const getAllTeams = () => {
-    const allTeams = [];
-    teamsData.forEach(day => {
-      day.groups.forEach(group => {
-        group.teams.forEach(team => {
-          if (!allTeams.find(t => t.name === team.name)) {
-            allTeams.push({
-              ...team,
-              id: allTeams.length + 1,
+  const الحصول_على_جميع_الفرق = () => {
+    const جميع_الفرق = [];
+    بيانات_الفرق.forEach(يوم => {
+      يوم.groups.forEach(مجموعة => {
+        مجموعة.teams.forEach(فريق => {
+          if (!جميع_الفرق.find(t => t.name === فريق.name)) {
+            جميع_الفرق.push({
+              ...فريق,
+              id: جميع_الفرق.length + 1,
               position: Math.floor(Math.random() * 12) + 1,
               matches: Math.floor(Math.random() * 20) + 5,
               goals: Math.floor(Math.random() * 30) + 10
@@ -248,16 +249,17 @@ export default function Teams() {
         });
       });
     });
-    return allTeams;
+    return جميع_الفرق;
   };
 
-  const teamsData = [
+  // بيانات الفرق المنظمة حسب الأيام والمجموعات
+  const بيانات_الفرق = [
     {
-      date: "Monday 3 March 2025",
+      date: "الاثنين 3 مارس 2025",
       groups: [
         {
-          name: "Group 1",
-          column: "A",
+          name: "المجموعة الأولى",
+          column: "أ",
           teams: [
             { 
               name: "العين", 
@@ -278,8 +280,8 @@ export default function Teams() {
           ]
         },
         {
-          name: "Group 1",
-          column: "B",
+          name: "المجموعة الأولى",
+          column: "ب",
           teams: [
             { 
               name: "الجزيرة", 
@@ -294,8 +296,8 @@ export default function Teams() {
           ]
         },
         {
-          name: "Group 2",
-          column: "C",
+          name: "المجموعة الثانية",
+          column: "ج",
           teams: [
             { 
               name: "النصر", 
@@ -312,11 +314,11 @@ export default function Teams() {
       ]
     },
     {
-      date: "Tuesday 4 March 2025",
+      date: "الثلاثاء 4 مارس 2025",
       groups: [
         {
-          name: "Group 3",
-          column: "A",
+          name: "المجموعة الثالثة",
+          column: "أ",
           teams: [
             { 
               name: "عجمان", 
@@ -331,8 +333,8 @@ export default function Teams() {
           ]
         },
         {
-          name: "Group 3",
-          column: "B",
+          name: "المجموعة الثالثة",
+          column: "ب",
           teams: [
             { 
               name: "خورفكان", 
@@ -347,8 +349,8 @@ export default function Teams() {
           ]
         },
         {
-          name: "Group 4",
-          column: "C",
+          name: "المجموعة الرابعة",
+          column: "ج",
           teams: [
             { 
               name: "الإمارات", 
@@ -371,8 +373,8 @@ export default function Teams() {
       <div className="view-toggle-container">
         <div className="view-toggle">
           <button 
-            className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
-            onClick={() => setViewMode('all')}
+            className={`toggle-btn ${وضع_العرض === 'all' ? 'active' : ''}`}
+            onClick={() => setوضع_العرض('all')}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -380,8 +382,8 @@ export default function Teams() {
             عرض جميع الفرق
           </button>
           <button 
-            className={`toggle-btn ${viewMode === 'groups' ? 'active' : ''}`}
-            onClick={() => setViewMode('groups')}
+            className={`toggle-btn ${وضع_العرض === 'groups' ? 'active' : ''}`}
+            onClick={() => setوضع_العرض('groups')}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -392,383 +394,69 @@ export default function Teams() {
       </div>
 
       {/* عرض جميع الفرق */}
-      {viewMode === 'all' && (
-        <AllTeamsGrid 
-          teams={getAllTeams()} 
-          onTeamClick={showTeamDetails}
+      {وضع_العرض === 'all' && (
+        <مكون_عرض_جميع_الفرق 
+          فرق={الحصول_على_جميع_الفرق()} 
+          النقر_على_الفريق={عرض_تفاصيل_الفريق}
         />
       )}
 
-      {/* عرض المجموعات (العرض الأصلي) */}
-      {viewMode === 'groups' && (
-        <div>
-          {teamsData.map((day, dayIndex) => (
-            <div key={dayIndex} className="day-section">
-              <div className="day-header" onClick={() => toggleDay(dayIndex)}>
-                <h3>{day.date}</h3>
-                <span className={`arrow ${openDays[dayIndex] ? 'rotated' : ''}`}>▼</span>
+      {/* عرض المجموعات */}
+      {وضع_العرض === 'groups' && (
+        <div className="groups-container">
+          {بيانات_الفرق.map((يوم, يوم_مؤشر) => (
+            <div key={يوم_مؤشر} className="day-section">
+              <div className="day-header" onClick={() => تبديل_اليوم(يوم_مؤشر)}>
+                <h2 className="day-title">{يوم.date}</h2>
+                <svg 
+                  className={`toggle-icon ${الأيام_المفتوحة[يوم_مؤشر] ? 'rotated' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
-              <div className={`groups-grid ${openDays[dayIndex] ? 'open' : ''}`}>
-                {day.groups.map((group, groupIndex) => (
-                  <div key={groupIndex} className="group-box">
-                    <div className="group-title">
-                      <span>{group.name}</span>
-                      <span>Column {group.column}</span>
-                    </div>
-                    <div className="teams-list">
-                      {group.teams.map((team, teamIndex) => (
-                        <div key={teamIndex} className="team-row">
-                          <div className="team-info">
-                            <img src={team.logo} alt={team.name} />
-                            <span>{team.name}</span>
-                          </div>
-                          <div className="team-actions">
-                            <div className={`score-badge ${team.score > 2 ? 'green' : 'red'}`}>
-                              {team.score}
+              
+              {الأيام_المفتوحة[يوم_مؤشر] && (
+                <div className="groups-grid">
+                  {يوم.groups.map((مجموعة, مجموعة_مؤشر) => (
+                    <div key={مجموعة_مؤشر} className="group-card">
+                      <div className="group-header">
+                        <h3 className="group-name">{مجموعة.name}</h3>
+                        <span className="group-column">المجموعة {مجموعة.column}</span>
+                      </div>
+                      <div className="teams-list">
+                        {مجموعة.teams.map((فريق, فريق_مؤشر) => (
+                          <div 
+                            key={فريق_مؤشر} 
+                            className="team-item"
+                            onClick={() => عرض_تفاصيل_الفريق(فريق)}
+                          >
+                            <img src={فريق.logo} alt={فريق.name} className="team-logo-small" />
+                            <div className="team-info-small">
+                              <h4 className="team-name-small">{فريق.name}</h4>
+                              <span className="team-score-small">{فريق.score} نقطة</span>
                             </div>
-                            <button 
-                              className="details-button"
-                              onClick={() => showTeamDetails(team)}
-                            >
-                              التفاصيل
-                            </button>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal */}
-      {selectedTeam && (
-        <TeamDetailsModal 
-          team={selectedTeam} 
-          onClose={() => setSelectedTeam(null)} 
+      {/* نافذة تفاصيل الفريق */}
+      {الفريق_المحدد && (
+        <مكون_تفاصيل_الفريق 
+          فريق={الفريق_المحدد} 
+          إغلاق={() => setالفريق_المحدد(null)} 
         />
       )}
-
-      {/* كود HTML كامل للفرق الإماراتية */}
-      <div className="uae-teams-html-section">
-        <div className="uae-teams-container">
-          <div className="uae-teams-header">
-            <h1 className="uae-teams-title">🏆 الفرق الإماراتية في خليجية كواترو 2025</h1>
-            <p className="uae-teams-subtitle">جميع الفرق المشاركة في البطولة مع تفاصيلها الكاملة</p>
-          </div>
-          
-          <div className="uae-teams-grid">
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/1e40af/ffffff?text=العين" alt="العين" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">العين</h3>
-                <p className="uae-team-description">نادي العين لكرة القدم - أحد أقوى الأندية في الإمارات وأكثرها تتويجاً بالألقاب</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 15</span>
-                  <span className="uae-team-stat">المركز: 1</span>
-                  <span className="uae-team-stat">المباريات: 18</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 أحمد عبدالله - كابتن</li>
-                    <li>محمد علي - لاعب</li>
-                    <li>علي حسن - لاعب</li>
-                    <li>يوسف أحمد - لاعب</li>
-                    <li>خالد محمد - لاعب</li>
-                    <li>عمر سعيد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/dc2626/ffffff?text=الوحدة" alt="الوحدة" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الوحدة</h3>
-                <p className="uae-team-description">نادي الوحدة - من أعرق الأندية الإماراتية وأكثرها شعبية في أبوظبي</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 12</span>
-                  <span className="uae-team-stat">المركز: 2</span>
-                  <span className="uae-team-stat">المباريات: 16</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 سعيد راشد - كابتن</li>
-                    <li>عبدالله محمد - لاعب</li>
-                    <li>حسن علي - لاعب</li>
-                    <li>أحمد يوسف - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/059669/ffffff?text=الجزيرة" alt="الجزيرة" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الجزيرة</h3>
-                <p className="uae-team-description">نادي الجزيرة - من أقوى الأندية في أبوظبي وله تاريخ عريق في كرة القدم</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 14</span>
-                  <span className="uae-team-stat">المركز: 3</span>
-                  <span className="uae-team-stat">المباريات: 17</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 محمد سعيد - كابتن</li>
-                    <li>علي أحمد - لاعب</li>
-                    <li>يوسف محمد - لاعب</li>
-                    <li>خالد علي - لاعب</li>
-                    <li>عمر أحمد - لاعب</li>
-                    <li>سعيد محمد - لاعب</li>
-                    <li>أحمد علي - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/7c3aed/ffffff?text=الشارقة" alt="الشارقة" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الشارقة</h3>
-                <p className="uae-team-description">نادي الشارقة - من أقدم الأندية في الإمارات وأول من فاز بدوري الخليج العربي</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 11</span>
-                  <span className="uae-team-stat">المركز: 4</span>
-                  <span className="uae-team-stat">المباريات: 15</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 عبدالله سعيد - كابتن</li>
-                    <li>محمد أحمد - لاعب</li>
-                    <li>علي محمد - لاعب</li>
-                    <li>يوسف علي - لاعب</li>
-                    <li>خالد أحمد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/ea580c/ffffff?text=النصر" alt="النصر" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">النصر</h3>
-                <p className="uae-team-description">نادي النصر - من الأندية التاريخية في دبي وله قاعدة جماهيرية كبيرة</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 9</span>
-                  <span className="uae-team-stat">المركز: 5</span>
-                  <span className="uae-team-stat">المباريات: 14</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 سعيد محمد - كابتن</li>
-                    <li>أحمد علي - لاعب</li>
-                    <li>محمد يوسف - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/be185d/ffffff?text=الوصل" alt="الوصل" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الوصل</h3>
-                <p className="uae-team-description">نادي الوصل - من الأندية العريقة في دبي وله تاريخ مشرف في كرة القدم</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 13</span>
-                  <span className="uae-team-stat">المركز: 6</span>
-                  <span className="uae-team-stat">المباريات: 16</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 علي سعيد - كابتن</li>
-                    <li>يوسف محمد - لاعب</li>
-                    <li>خالد أحمد - لاعب</li>
-                    <li>عمر علي - لاعب</li>
-                    <li>أحمد محمد - لاعب</li>
-                    <li>محمد يوسف - لاعب</li>
-                    <li>سعيد علي - لاعب</li>
-                    <li>علي أحمد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/0891b2/ffffff?text=عجمان" alt="عجمان" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">عجمان</h3>
-                <p className="uae-team-description">نادي عجمان - من الأندية المهمة في إمارة عجمان وله دور بارز في تطوير كرة القدم</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 8</span>
-                  <span className="uae-team-stat">المركز: 7</span>
-                  <span className="uae-team-stat">المباريات: 13</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 راشد علي - كابتن</li>
-                    <li>عبدالله حسن - لاعب</li>
-                    <li>محمد سعيد - لاعب</li>
-                    <li>أحمد يوسف - لاعب</li>
-                    <li>علي محمد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/16a34a/ffffff?text=بني+ياس" alt="بني ياس" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">بني ياس</h3>
-                <p className="uae-team-description">نادي بني ياس - من الأندية المهمة في أبوظبي وله قاعدة جماهيرية قوية</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 10</span>
-                  <span className="uae-team-stat">المركز: 8</span>
-                  <span className="uae-team-stat">المباريات: 15</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 حسن راشد - كابتن</li>
-                    <li>سعيد أحمد - لاعب</li>
-                    <li>عبدالله علي - لاعب</li>
-                    <li>محمد حسن - لاعب</li>
-                    <li>يوسف سعيد - لاعب</li>
-                    <li>أحمد عبدالله - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/9333ea/ffffff?text=خورفكان" alt="خورفكان" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">خورفكان</h3>
-                <p className="uae-team-description">نادي خورفكان - من الأندية المهمة في إمارة الشارقة وله تاريخ عريق</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 7</span>
-                  <span className="uae-team-stat">المركز: 9</span>
-                  <span className="uae-team-stat">المباريات: 12</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 علي محمد - كابتن</li>
-                    <li>أحمد حسن - لاعب</li>
-                    <li>محمد علي - لاعب</li>
-                    <li>يوسف أحمد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/c2410c/ffffff?text=الاتحاد" alt="الاتحاد" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الاتحاد</h3>
-                <p className="uae-team-description">نادي الاتحاد - من الأندية المهمة في كلباء وله دور بارز في تطوير كرة القدم المحلية</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 6</span>
-                  <span className="uae-team-stat">المركز: 10</span>
-                  <span className="uae-team-stat">المباريات: 11</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 سعيد يوسف - كابتن</li>
-                    <li>عبدالله محمد - لاعب</li>
-                    <li>حسن أحمد - لاعب</li>
-                    <li>علي سعيد - لاعب</li>
-                    <li>محمد عبدالله - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/0d9488/ffffff?text=الإمارات" alt="الإمارات" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الإمارات</h3>
-                <p className="uae-team-description">نادي الإمارات - من الأندية المهمة في رأس الخيمة وله تاريخ مشرف</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 5</span>
-                  <span className="uae-team-stat">المركز: 11</span>
-                  <span className="uae-team-stat">المباريات: 10</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 أحمد علي - كابتن</li>
-                    <li>محمد حسن - لاعب</li>
-                    <li>يوسف محمد - لاعب</li>
-                    <li>علي أحمد - لاعب</li>
-                    <li>سعيد يوسف - لاعب</li>
-                    <li>عبدالله علي - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="uae-team-card">
-              <div className="uae-team-logo">
-                <img src="https://via.placeholder.com/150x150/be123c/ffffff?text=الشباب" alt="الشباب" />
-              </div>
-              <div className="uae-team-info">
-                <h3 className="uae-team-name">الشباب</h3>
-                <p className="uae-team-description">نادي الشباب - من الأندية المهمة في دبي وله تاريخ عريق في كرة القدم</p>
-                <div className="uae-team-stats">
-                  <span className="uae-team-stat">النقاط: 16</span>
-                  <span className="uae-team-stat">المركز: 12</span>
-                  <span className="uae-team-stat">المباريات: 19</span>
-                </div>
-                <div className="uae-team-players">
-                  <h4>👥 قائمة اللاعبين</h4>
-                  <ul className="uae-players-list">
-                    <li>👑 محمد سعيد - كابتن</li>
-                    <li>علي أحمد - لاعب</li>
-                    <li>يوسف محمد - لاعب</li>
-                    <li>أحمد علي - لاعب</li>
-                    <li>حسن يوسف - لاعب</li>
-                    <li>سعيد محمد - لاعب</li>
-                    <li>عبدالله أحمد - لاعب</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

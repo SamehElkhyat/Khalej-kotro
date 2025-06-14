@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Matches.css'
+import axios from 'axios';
 
 // مكون عرض تفاصيل الفريق مع اللاعبين
 const TeamDetailsModal = ({ team, onClose }) => {
@@ -89,6 +90,19 @@ const TeamsWithPlayersGrid = ({ teams, onTeamClick }) => {
   const [filterBy, setFilterBy] = useState('all');
   const [hoveredTeam, setHoveredTeam] = useState(null);
 
+const AllMatches = async () => {
+try { 
+  const response = await axios.get("https://sports.runasp.net/api/Get-Matches",{
+ 
+  });
+  console.log(response);
+} catch (error) {
+  console.log(error);
+}
+
+}
+
+
   // فلترة وبحث الفرق
   const filteredTeams = teams.filter(team => {
     const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -114,7 +128,9 @@ const TeamsWithPlayersGrid = ({ teams, onTeamClick }) => {
 
   // ترتيب الفرق حسب عدد الأعضاء
   const sortedTeams = [...filteredTeams].sort((a, b) => b.members.length - a.members.length);
-
+useEffect(() => {
+  AllMatches();
+}, []);
   return (
     <div className="teams-players-container">
       <SearchAndFilter 
@@ -211,6 +227,22 @@ const TeamsWithPlayersGrid = ({ teams, onTeamClick }) => {
 export default function Matches() {
   const [selectedTeam, setSelectedTeam] = useState(null);
 
+  const AllMatches = async () => {
+    console.log("AllMatches");
+    try { 
+      const response = await axios.get("https://sports.runasp.net/api/Get-Matches",{
+     
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    
+    }
+    useEffect(() => {
+      AllMatches();
+      console.log(AllMatches);
+    }, []);
   const showTeamDetails = (team) => {
     setSelectedTeam(team);
   };
