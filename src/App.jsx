@@ -32,7 +32,7 @@ export default function App() {
     <>
       <div className="min-h-screen bg-[#c5c5c5] flex flex-col items-center justify-center py-4 sm:py-6 lg:py-10 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-4 sm:mb-6 w-full max-w-4xl">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow leading-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#ef4343] font-bold drop-shadow leading-tight">
             خليجيه كواترو 2025
           </h1>
           <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white opacity-80 drop-shadow mt-2">

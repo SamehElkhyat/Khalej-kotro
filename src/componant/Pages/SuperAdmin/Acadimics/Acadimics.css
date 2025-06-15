@@ -339,7 +339,7 @@
   padding: 20px 28px 10px 20px;
   font-size: 20px;
   font-weight: bold;
-  color: #2563eb;
+  color: #ef4343;
 }
 .close-btn {
   background: none;
@@ -383,6 +383,6 @@
   background: #fafbfc;
 }
 .form-input:focus {
-  border-color: #2563eb;
+  border-color: #ef4343;
   outline: none;
 }
