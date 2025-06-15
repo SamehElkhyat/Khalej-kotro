@@ -1,206 +1,196 @@
-import React, { useState } from 'react'
-import './Teams.css'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./Teams.css";
 
-// مكون عرض تفاصيل الفريق
-const مكون_تفاصيل_الفريق = ({ فريق, إغلاق }) => {
-  if (!فريق) return null;
-  
-  return (
-    <div className="modal-overlay" onClick={إغلاق}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <img src={فريق.logo} alt={فريق.name} className="modal-team-logo" />
-          <h2>{فريق.name}</h2>
-          <button className="close-button" onClick={إغلاق}>×</button>
-        </div>
-        <div className="modal-body">
-          <div className="team-stats">
-            <div className="stat-item">
-              <span className="stat-label">النقاط الحالية</span>
-              <span className="stat-value">{فريق.score}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">المركز</span>
-              <span className="stat-value">{فريق.position || '-'}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">عدد المباريات</span>
-              <span className="stat-value">{فريق.matches || 0}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">الأهداف</span>
-              <span className="stat-value">{فريق.goals || 0}</span>
-            </div>
-          </div>
-          <div className="team-info-details">
-            <h3>معلومات النادي</h3>
-            <p><strong>تاريخ التأسيس:</strong> {فريق.established || '-'}</p>
-            <p><strong>الملعب:</strong> {فريق.stadium || '-'}</p>
-            <p><strong>المدرب:</strong> {فريق.coach || '-'}</p>
-            <p><strong>الدوري:</strong> دوري أدنوك للمحترفين</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// مكون البحث والفلترة
-const مكون_البحث_والفلترة = ({ مصطلح_البحث, تعيين_مصطلح_البحث, ترتيب_حسب, تعيين_الترتيب }) => {
+// Search and Filter Component
+const SearchAndFilter = ({ searchTerm, setSearchTerm, sortBy, setSortBy }) => {
   return (
     <div className="search-filter-container">
       <div className="search-box">
-        <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg
+          className="search-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
         <input
           type="text"
-          placeholder="البحث عن فريق..."
-          value={مصطلح_البحث}
-          onChange={(e) => تعيين_مصطلح_البحث(e.target.value)}
+          placeholder="Search for an academy..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
       </div>
       <div className="filter-box">
-        <select 
-          value={ترتيب_حسب} 
-          onChange={(e) => تعيين_الترتيب(e.target.value)}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
           className="filter-select"
         >
-          <option value="name">ترتيب حسب الاسم</option>
-          <option value="score">ترتيب حسب النقاط</option>
-          <option value="position">ترتيب حسب المركز</option>
-          <option value="goals">ترتيب حسب الأهداف</option>
+          <option value="name">Sort by Name</option>
+          <option value="city">Sort by City</option>
+          <option value="country">Sort by Country</option>
         </select>
       </div>
     </div>
   );
 };
 
-// مكون عرض جميع الفرق بطريقة مبتكرة
-const مكون_عرض_جميع_الفرق = ({ فرق, النقر_على_الفريق }) => {
-  const [مصطلح_البحث, setمصطلح_البحث] = useState('');
-  const [ترتيب_حسب, setترتيب_حسب] = useState('name');
-  const [الفريق_المحوم, setالفريق_المحوم] = useState(null);
+// All Academies Display Component
+const AllAcademiesDisplay = ({ academies, onAcademyClick }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [hoveredAcademy, setHoveredAcademy] = useState(null);
 
-  // فلترة وبحث الفرق
-  const الفرق_المصفاة = فرق.filter(فريق =>
-    فريق.name.toLowerCase().includes(مصطلح_البحث.toLowerCase())
+  // Filter and search academies
+  const filteredAcademies = academies.filter((academy) =>
+    academy.academyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    academy.academyCity.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    academy.academyCountry.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ترتيب الفرق
-  const الفرق_المرتبة = [...الفرق_المصفاة].sort((a, b) => {
-    switch (ترتيب_حسب) {
-      case 'score':
-        return b.score - a.score;
-      case 'position':
-        return (a.position || 999) - (b.position || 999);
-      case 'goals':
-        return (b.goals || 0) - (a.goals || 0);
-      case 'name':
+  // Sort academies
+  const sortedAcademies = [...filteredAcademies].sort((a, b) => {
+    switch (sortBy) {
+      case "city":
+        return a.academyCity.localeCompare(b.academyCity);
+      case "country":
+        return a.academyCountry.localeCompare(b.academyCountry);
+      case "name":
       default:
-        return a.name.localeCompare(b.name);
+        return a.academyName.localeCompare(b.academyName);
     }
   });
 
-  // الحصول على أعلى 3 فرق حسب النقاط
-  const أفضل_الفرق = [...فرق].sort((a, b) => b.score - a.score).slice(0, 3);
+  // Get top 3 academies (for demonstration, using first 3)
+  const topAcademies = academies.slice(0, 3);
 
   return (
     <div className="all-teams-container">
-      {/* عرض أفضل 3 فرق */}
-      {مصطلح_البحث === '' && ترتيب_حسب === 'name' && (
+      {/* Display top 3 academies */}
+      {searchTerm === "" && sortBy === "name" && (
         <div className="top-teams-section">
-          <h2 className="section-title">🏆 أفضل 3 فرق</h2>
+          <h2 className="section-title">🏆 Top 3 Academies</h2>
           <div className="top-teams-grid">
-            {أفضل_الفرق.map((فريق, index) => (
-              <div 
-                key={فريق.id} 
+            {topAcademies.map((academy, index) => (
+              <div
+                key={academy.id}
                 className={`top-team-card rank-${index + 1}`}
-                onClick={() => النقر_على_الفريق(فريق)}
+                onClick={() => onAcademyClick(academy)}
               >
                 <div className="rank-badge">{index + 1}</div>
-                <img src={فريق.logo} alt={فريق.name} className="top-team-logo" />
-                <h3 className="top-team-name">{فريق.name}</h3>
-                <div className="top-team-score">{فريق.score} نقطة</div>
+                <img
+                  src={academy.logoURL || "https://via.placeholder.com/150x150/1e40af/ffffff?text=Academy"}
+                  alt={academy.academyName}
+                  className="top-team-logo"
+                />
+                <h3 className="top-team-name">{academy.academyName}</h3>
+                <div className="top-team-score">{academy.academyCity}</div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <مكون_البحث_والفلترة 
-        مصطلح_البحث={مصطلح_البحث}
-        تعيين_مصطلح_البحث={setمصطلح_البحث}
-        ترتيب_حسب={ترتيب_حسب}
-        تعيين_الترتيب={setترتيب_حسب}
+      <SearchAndFilter
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
       />
-      
-      {الفرق_المرتبة.length === 0 ? (
+
+      {sortedAcademies.length === 0 ? (
         <div className="no-results">
-          <svg className="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.881-6.08 2.33" />
+          <svg
+            className="no-results-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.881-6.08 2.33"
+            />
           </svg>
-          <h3>لا توجد نتائج</h3>
-          <p>جرب البحث بكلمات مختلفة</p>
+          <h3>No Results Found</h3>
+          <p>Try searching with different keywords</p>
         </div>
       ) : (
         <div className="teams-grid">
-          {الفرق_المرتبة.map((فريق, index) => (
-            <div 
-              key={فريق.id || index} 
-              className={`team-card ${الفريق_المحوم === فريق.id ? 'hovered' : ''}`}
-              onClick={() => النقر_على_الفريق(فريق)}
-              onMouseEnter={() => setالفريق_المحوم(فريق.id)}
-              onMouseLeave={() => setالفريق_المحوم(null)}
+          {sortedAcademies.map((academy, index) => (
+            <div
+              key={academy.id || index}
+              className={`team-card ${
+                hoveredAcademy === academy.id ? "hovered" : ""
+              }`}
+              onClick={() => onAcademyClick(academy)}
+              onMouseEnter={() => setHoveredAcademy(academy.id)}
+              onMouseLeave={() => setHoveredAcademy(null)}
             >
               <div className="team-card-header">
                 <div className="team-logo-container">
-                  <img src={فريق.logo} alt={فريق.name} className="team-logo" />
+                  <img
+                    src={academy.logoURL || "https://via.placeholder.com/150x150/1e40af/ffffff?text=Academy"}
+                    alt={academy.academyName}
+                    className="team-logo"
+                  />
                   <div className="team-score-badge">
-                    {فريق.score}
+                    {academy.statue ? "Active" : "Inactive"}
                   </div>
                 </div>
                 <div className="team-info">
-                  <h3 className="team-name">{فريق.name}</h3>
-                  <div className="team-meta">
-                    <span className="team-position">المركز: {فريق.position || 'غير محدد'}</span>
-                    <span className="team-matches">المباريات: {فريق.matches || 0}</span>
+                  <h3 className="team-name">{academy.academyName}</h3>
+                  <div className="team-meta w-full flex flex-col justify-end items-center">
+                    <span className="team-position">Country: {academy.academyCountry}</span>
+                    <span className="team-position">City: {academy.academyCity}</span>
                   </div>
                 </div>
               </div>
               <div className="team-card-footer">
                 <div className="team-stats-mini">
                   <div className="stat-mini">
-                    <span className="stat-label-mini">الأهداف</span>
-                    <span className="stat-value-mini">{فريق.goals || 0}</span>
+                    <span className="stat-label-mini">Phone</span>
+                    <span className="stat-value-mini">{academy.academyPhone}</span>
                   </div>
                   <div className="stat-mini">
-                    <span className="stat-label-mini">النقاط</span>
-                    <span className="stat-value-mini">{فريق.score}</span>
+                    <span className="stat-label-mini">Age Groups</span>
+                    <span className="stat-value-mini">
+                      {academy.under14 ? "U14 " : ""}
+                      {academy.under16 ? "U16 " : ""}
+                      {academy.under18 ? "U18" : ""}
+                    </span>
                   </div>
                 </div>
-                <button className="view-details-btn">
-                  عرض التفاصيل
-                </button>
+                <button className="view-details-btn">View Details</button>
               </div>
             </div>
           ))}
         </div>
       )}
-      
+
       <div className="teams-summary">
         <div className="summary-item">
-          <span className="summary-label">إجمالي الفرق</span>
-          <span className="summary-value">{فرق.length}</span>
+          <span className="summary-label">Total Academies</span>
+          <span className="summary-value">{academies.length}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">الفرق المعروضة</span>
-          <span className="summary-value">{الفرق_المرتبة.length}</span>
+          <span className="summary-label">Displayed Academies</span>
+          <span className="summary-value">{sortedAcademies.length}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">أعلى نقاط</span>
-          <span className="summary-value">{Math.max(...فرق.map(t => t.score))}</span>
+          <span className="summary-label">Active Academies</span>
+          <span className="summary-value">
+            {academies.filter(a => a.statue).length}
+          </span>
         </div>
       </div>
     </div>
@@ -208,254 +198,151 @@ const مكون_عرض_جميع_الفرق = ({ فرق, النقر_على_الف�
 };
 
 export default function Teams() {
-  const [الأيام_المفتوحة, setالأيام_المفتوحة] = useState({})
-  const [الفريق_المحدد, setالفريق_المحدد] = useState(null)
-  const [وضع_العرض, setوضع_العرض] = useState('all') // 'all' أو 'groups'
+  const [academies, setAcademies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedAcademy, setSelectedAcademy] = useState(null);
+  const [displayMode, setDisplayMode] = useState("all");
 
-  const تبديل_اليوم = (مؤشر_اليوم) => {
-    setالأيام_المفتوحة(prev => ({
-      ...prev,
-      [مؤشر_اليوم]: !prev[مؤشر_اليوم]
-    }))
+  // Fetch academies from API
+  useEffect(() => {
+    const fetchAcademies = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("https://sports.runasp.net/api/Get-All-Academies");
+        setAcademies(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch academies");
+        console.error("Error fetching academies:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAcademies();
+  }, []);
+
+  const showAcademyDetails = (academy) => {
+    setSelectedAcademy(academy);
+  };
+
+  if (loading) {
+    return (
+      <div className="teams-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <h2>Loading Academies...</h2>
+        </div>
+      </div>
+    );
   }
 
-  const عرض_تفاصيل_الفريق = (فريق) => {
-    setالفريق_المحدد({
-      ...فريق,
-      established: "1968",
-      stadium: "استاد هزاع بن زايد",
-      coach: "هيرنان كريسبو",
-      position: "3",
-      matches: "15",
-      goals: "25"
-    });
-  };
-
-  // تجميع جميع الفرق من جميع الأيام والمجموعات
-  const الحصول_على_جميع_الفرق = () => {
-    const جميع_الفرق = [];
-    بيانات_الفرق.forEach(يوم => {
-      يوم.groups.forEach(مجموعة => {
-        مجموعة.teams.forEach(فريق => {
-          if (!جميع_الفرق.find(t => t.name === فريق.name)) {
-            جميع_الفرق.push({
-              ...فريق,
-              id: جميع_الفرق.length + 1,
-              position: Math.floor(Math.random() * 12) + 1,
-              matches: Math.floor(Math.random() * 20) + 5,
-              goals: Math.floor(Math.random() * 30) + 10
-            });
-          }
-        });
-      });
-    });
-    return جميع_الفرق;
-  };
-
-  // بيانات الفرق المنظمة حسب الأيام والمجموعات
-  const بيانات_الفرق = [
-    {
-      date: "الاثنين 3 مارس 2025",
-      groups: [
-        {
-          name: "المجموعة الأولى",
-          column: "أ",
-          teams: [
-            { 
-              name: "العين", 
-              score: 15, 
-              logo: "https://via.placeholder.com/150x150/1e40af/ffffff?text=العين",
-              established: "1968",
-              stadium: "استاد هزاع بن زايد",
-              coach: "هيرنان كريسبو"
-            },
-            { 
-              name: "الوحدة",
-              score: 12, 
-              logo: "https://via.placeholder.com/150x150/dc2626/ffffff?text=الوحدة",
-              established: "1974",
-              stadium: "استاد آل نهيان",
-              coach: "مانويل خيمينيز"
-            }
-          ]
-        },
-        {
-          name: "المجموعة الأولى",
-          column: "ب",
-          teams: [
-            { 
-              name: "الجزيرة", 
-              score: 14, 
-              logo: "https://via.placeholder.com/150x150/059669/ffffff?text=الجزيرة"
-            },
-            { 
-              name: "الشارقة", 
-              score: 11, 
-              logo: "https://via.placeholder.com/150x150/7c3aed/ffffff?text=الشارقة"
-            }
-          ]
-        },
-        {
-          name: "المجموعة الثانية",
-          column: "ج",
-          teams: [
-            { 
-              name: "النصر", 
-              score: 9, 
-              logo: "https://via.placeholder.com/150x150/ea580c/ffffff?text=النصر"
-            },
-            { 
-              name: "الوصل", 
-              score: 13, 
-              logo: "https://via.placeholder.com/150x150/be185d/ffffff?text=الوصل"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      date: "الثلاثاء 4 مارس 2025",
-      groups: [
-        {
-          name: "المجموعة الثالثة",
-          column: "أ",
-          teams: [
-            { 
-              name: "عجمان", 
-              score: 8, 
-              logo: "https://via.placeholder.com/150x150/0891b2/ffffff?text=عجمان"
-            },
-            { 
-              name: "بني ياس", 
-              score: 10, 
-              logo: "https://via.placeholder.com/150x150/16a34a/ffffff?text=بني+ياس"
-            }
-          ]
-        },
-        {
-          name: "المجموعة الثالثة",
-          column: "ب",
-          teams: [
-            { 
-              name: "خورفكان", 
-              score: 7, 
-              logo: "https://via.placeholder.com/150x150/9333ea/ffffff?text=خورفكان"
-            },
-            { 
-              name: "الاتحاد", 
-              score: 6, 
-              logo: "https://via.placeholder.com/150x150/c2410c/ffffff?text=الاتحاد"
-            }
-          ]
-        },
-        {
-          name: "المجموعة الرابعة",
-          column: "ج",
-          teams: [
-            { 
-              name: "الإمارات", 
-              score: 5, 
-              logo: "https://via.placeholder.com/150x150/0d9488/ffffff?text=الإمارات"
-            },
-            { 
-              name: "الشباب", 
-              score: 16, 
-              logo: "https://via.placeholder.com/150x150/be123c/ffffff?text=الشباب"
-            }
-          ]
-        }
-      ]
-    }
-  ];
+  if (error) {
+    return (
+      <div className="teams-page">
+        <div className="error-container">
+          <h2>Error Loading Academies</h2>
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="teams-page">
       <div className="view-toggle-container">
         <div className="view-toggle">
-          <button 
-            className={`toggle-btn ${وضع_العرض === 'all' ? 'active' : ''}`}
-            onClick={() => setوضع_العرض('all')}
+          <button
+            className={`toggle-btn ${displayMode === "all" ? "active" : ""}`}
+            onClick={() => setDisplayMode("all")}
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
             </svg>
-            عرض جميع الفرق
-          </button>
-          <button 
-            className={`toggle-btn ${وضع_العرض === 'groups' ? 'active' : ''}`}
-            onClick={() => setوضع_العرض('groups')}
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            عرض المجموعات
+            View All Academies
           </button>
         </div>
       </div>
 
-      {/* عرض جميع الفرق */}
-      {وضع_العرض === 'all' && (
-        <مكون_عرض_جميع_الفرق 
-          فرق={الحصول_على_جميع_الفرق()} 
-          النقر_على_الفريق={عرض_تفاصيل_الفريق}
-        />
+      {/* Display all academies */}
+      {displayMode === "all" && (
+        <AllAcademiesDisplay academies={academies} onAcademyClick={showAcademyDetails} />
       )}
 
-      {/* عرض المجموعات */}
-      {وضع_العرض === 'groups' && (
-        <div className="groups-container">
-          {بيانات_الفرق.map((يوم, يوم_مؤشر) => (
-            <div key={يوم_مؤشر} className="day-section">
-              <div className="day-header" onClick={() => تبديل_اليوم(يوم_مؤشر)}>
-                <h2 className="day-title">{يوم.date}</h2>
-                <svg 
-                  className={`toggle-icon ${الأيام_المفتوحة[يوم_مؤشر] ? 'rotated' : ''}`}
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              
-              {الأيام_المفتوحة[يوم_مؤشر] && (
-                <div className="groups-grid">
-                  {يوم.groups.map((مجموعة, مجموعة_مؤشر) => (
-                    <div key={مجموعة_مؤشر} className="group-card">
-                      <div className="group-header">
-                        <h3 className="group-name">{مجموعة.name}</h3>
-                        <span className="group-column">المجموعة {مجموعة.column}</span>
-                      </div>
-                      <div className="teams-list">
-                        {مجموعة.teams.map((فريق, فريق_مؤشر) => (
-                          <div 
-                            key={فريق_مؤشر} 
-                            className="team-item"
-                            onClick={() => عرض_تفاصيل_الفريق(فريق)}
-                          >
-                            <img src={فريق.logo} alt={فريق.name} className="team-logo-small" />
-                            <div className="team-info-small">
-                              <h4 className="team-name-small">{فريق.name}</h4>
-                              <span className="team-score-small">{فريق.score} نقطة</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+      {/* Academy Details Modal */}
+      {selectedAcademy && (
+        <div className="modal-overlay" onClick={() => setSelectedAcademy(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              {console.log(selectedAcademy.logoURL)}
+              <img
+                src={selectedAcademy.logoURL}
+                alt={selectedAcademy.academyName}
+                className="modal-team-logo"
+              />
+              <h2>{selectedAcademy.academyName}</h2>
+              <button
+                className="close-button"
+                onClick={() => setSelectedAcademy(null)}
+              >
+                ×
+              </button>
             </div>
-          ))}
+            <div className="modal-body">
+              <div className="team-stats">
+                <div className="stat-item">
+                  <span className="stat-label">Status</span>
+                  <span className="stat-value">
+                    {selectedAcademy.statue ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">City</span>
+                  <span className="stat-value">{selectedAcademy.academyCity}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Country</span>
+                  <span className="stat-value">{selectedAcademy.academyCountry}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Phone</span>
+                  <span className="stat-value">{selectedAcademy.academyPhone}</span>
+                </div>
+              </div>
+              <div className="team-info-details">
+                <h3>Academy Information</h3>
+                <p>
+                  <strong>Email:</strong> {selectedAcademy.academyEmail}
+                </p>
+                <p>
+                  <strong>Coordinator:</strong> {selectedAcademy.coordinator}
+                </p>
+                <p>
+                  <strong>Age Groups:</strong>
+                </p>
+                <ul>
+                  {selectedAcademy.under14 && <li>Under 14</li> }
+                  {selectedAcademy.under16 && <li>Under 16</li>}
+                  {selectedAcademy.under18 && <li>Under 18</li>}
+                  {selectedAcademy.statue && <li>معتمده</li>}
+                  {!selectedAcademy.statue && <li>غير معتمده</li>}
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* نافذة تفاصيل الفريق */}
-      {الفريق_المحدد && (
-        <مكون_تفاصيل_الفريق 
-          فريق={الفريق_المحدد} 
-          إغلاق={() => setالفريق_المحدد(null)} 
-        />
       )}
     </div>
   );

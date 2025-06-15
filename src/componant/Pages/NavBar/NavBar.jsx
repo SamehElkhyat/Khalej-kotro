@@ -15,7 +15,7 @@ export default function NavBar() {
   );
   return (
     <>
-      <div className="min-h-screen bg-[#c5c5c5] flex flex-col items-center justify-center py-10">
+      <div className="min-h-screen bg-[#ef4343] flex flex-col items-center justify-center py-10">
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow">
             ADQ Ramadan Tournament 2025

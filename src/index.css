@@ -90,7 +90,7 @@ body {
 }
 
 .attachment-btn {
-    background: #4285f4;
+    background: #ef4343;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -99,18 +99,18 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.2);
+    box-shadow: 0 2px 4px rgba(239, 67, 67, 0.2);
 }
 
 .attachment-btn:hover {
-    background: #3367d6;
+    background: #d63333;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
+    box-shadow: 0 4px 8px rgba(239, 67, 67, 0.3);
 }
 
 .attachment-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.2);
+    box-shadow: 0 2px 4px rgba(239, 67, 67, 0.2);
 }
 
 /* Layout Section */
@@ -142,19 +142,19 @@ body {
     right: 20px;
     width: 120px;
     height: 80px;
-    background: #6b46c1;
+    background: #ef4343;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(107, 70, 193, 0.3);
+    box-shadow: 0 4px 8px rgba(239, 67, 67, 0.3);
 }
 
 .main-field:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(107, 70, 193, 0.4);
+    box-shadow: 0 6px 12px rgba(239, 67, 67, 0.4);
 }
 
 /* Side Fields Container */
@@ -184,33 +184,33 @@ body {
 }
 
 .field-a {
-    background: #6b46c1;
+    background: #ef4343;
     order: 3;
-    box-shadow: 0 3px 6px rgba(107, 70, 193, 0.3);
+    box-shadow: 0 3px 6px rgba(239, 67, 67, 0.3);
 }
 
 .field-a:hover {
-    box-shadow: 0 5px 10px rgba(107, 70, 193, 0.4);
+    box-shadow: 0 5px 10px rgba(239, 67, 67, 0.4);
 }
 
 .field-b {
-    background: #3b82f6;
+    background: #ef4343;
     order: 2;
-    box-shadow: 0 3px 6px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 3px 6px rgba(239, 67, 67, 0.3);
 }
 
 .field-b:hover {
-    box-shadow: 0 5px 10px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 5px 10px rgba(239, 67, 67, 0.4);
 }
 
 .field-c {
-    background: #6b46c1;
+    background: #ef4343;
     order: 1;
-    box-shadow: 0 3px 6px rgba(107, 70, 193, 0.3);
+    box-shadow: 0 3px 6px rgba(239, 67, 67, 0.3);
 }
 
 .field-c:hover {
-    box-shadow: 0 5px 10px rgba(107, 70, 193, 0.4);
+    box-shadow: 0 5px 10px rgba(239, 67, 67, 0.4);
 }
 
 .field-label {

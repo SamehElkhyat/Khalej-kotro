@@ -12,7 +12,7 @@ export default function App() {
     { معرف: 3, اسم: "الفريق الثالث" },
     { معرف: 4, اسم: "الفريق الرابع" },
   ];
-  
+
   const [بحث, setبحث] = useState("");
   const [رمز_الوصول, setرمز_الوصول] = useState(null);
 
@@ -22,12 +22,12 @@ export default function App() {
   const الفرق_المصفاة = بياناتالفرق.filter((فريق) =>
     فريق.اسم.toLowerCase().includes(بحث.toLowerCase())
   );
-  
+
   useEffect(() => {
     const رمز_الوصول = localStorage.getItem("token");
     setرمز_الوصول(رمز_الوصول);
   }, []);
-  
+
   return (
     <>
       <div className="min-h-screen bg-[#c5c5c5] flex flex-col items-center justify-center py-4 sm:py-6 lg:py-10 px-4 sm:px-6 lg:px-8">
@@ -42,13 +42,13 @@ export default function App() {
 
         <div className="bg-white rounded-xl shadow-lg w-full max-w-6xl">
           {/* شريط التنقل العلوي */}
-          <div className="bg-blue-600 text-white rounded-t-lg px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
+          <div className="bg-[#ef4343]  text-white rounded-t-lg px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 lg:gap-6">
               {/* أزرار التنقل */}
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1 sm:gap-2 lg:gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => التنقل("/info")}
-                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-blue-700 rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
                 >
                   <i className="fas fa-info-circle w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
                   <span className="hidden sm:inline">المعلومات</span>
@@ -57,7 +57,7 @@ export default function App() {
 
                 <button
                   onClick={() => التنقل("/teams")}
-                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-blue-700 rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
                 >
                   <i className="fas fa-users w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
                   <span className="hidden sm:inline">الفرق</span>
@@ -66,7 +66,7 @@ export default function App() {
 
                 <button
                   onClick={() => التنقل("/matches")}
-                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-blue-700 rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
                 >
                   <i className="fas fa-futbol w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
                   <span className="hidden sm:inline">المباريات</span>
@@ -75,7 +75,7 @@ export default function App() {
 
                 <button
                   onClick={() => التنقل("/shedulde")}
-                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-blue-700 rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                  className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
                 >
                   <i className="fas fa-calendar-alt w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
                   <span className="hidden lg:inline">جدول المباريات</span>

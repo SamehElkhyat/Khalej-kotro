@@ -56,7 +56,6 @@ const Players = () => {
   };
 
   const editPlayer = async (values) => {
-    console.log(values);
     try {
       const response = await axios.post(
         `https://sports.runasp.net/api/Update-Player/${editingPlayer.id}`,
@@ -184,8 +183,8 @@ const Players = () => {
       {showAdd && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div className="modal-header">
-              <span>إضافة لاعب جديد</span>
+            <div className="modal-header bg-[#ef4343]">
+              <span className="text-white bg-[#ef4343] p-2 rounded-md">إضافة لاعب جديد</span>
               <button className="close-btn" onClick={() => setShowAdd(false)}>
                 ×
               </button>

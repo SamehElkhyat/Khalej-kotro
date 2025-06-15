@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios, { Axios } from "axios";
 import "./Rules.css";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function Rules() {
+  const [editingRule, setEditingRule] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newRule, setNewRule] = useState({ title: "", rule: "" });
@@ -12,13 +16,13 @@ export default function Rules() {
 
   const [rulesData, setRulesData] = useState([]);
 
-  const saveRuleToAPI = async (ruleData) => {
+  const saveRuleToAPI = async (values) => {
     try {
       const response = await axios.post(
         "https://sports.runasp.net/api/Add-Role",
         {
-          roleName: ruleData.title,
-          roleDescription: ruleData.rule,
+          roleName: values.roleName,
+          roleDescription: values.roleDescription,
         },
         {
           headers: {
@@ -26,23 +30,25 @@ export default function Rules() {
           },
         }
       );
+      loadRulesFromAPI();
+      console.log(response.data);
       // Axios automatically throws on HTTP error status
-      return { success: true, data: response.data };
     } catch (error) {
-      console.error("Error saving rule:", error);
-      const errorMessage =
-        error.response?.data?.message || error.message || "خطأ في حفظ اللائحة";
-      return { success: false, error: errorMessage };
+      console.log(error);
     }
   };
 
   const loadRulesFromAPI = async () => {
     try {
-      const response = await axios.get("https://sports.runasp.net/api/Get-Roles", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        "https://sports.runasp.net/api/Get-Roles",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       setRulesData(response.data);
     } catch (error) {
       console.error("Error loading rules:", error);
@@ -55,98 +61,94 @@ export default function Rules() {
     }
   };
 
+  const handleEditClick = (rule) => {
+    setEditingRule(rule);
+    setShowEditForm(true);
+
+    // Pre-fill the edit form with rule data
+    editFormik.setValues({
+      roleName: rule.roleName || "",
+      roleDescription: rule.roleDescription || "",
+    });
+  };
+
+  const handleCloseEditForm = () => {
+    setShowEditForm(false);
+    setEditingRule(null);
+    editFormik.resetForm();
+    setMessage({ type: "", text: "" });
+  };
+
+  const handleEditRule = async (values) => {
+    if (!editingRule || !editingRule.id) {
+      setMessage({ type: "error", text: "خطأ: لم يتم العثور على معرف اللائحة" });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `https://sports.runasp.net/api/Update-Role/${editingRule.id}`,
+        {
+          roleName: values.roleName,
+          roleDescription: values.roleDescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      
+      console.log(response.data);
+      await loadRulesFromAPI();
+      setMessage({ type: "success", text: "تم تحديث اللائحة بنجاح!" });
+      
+      // Close the modal after successful update
+      setTimeout(() => {
+        handleCloseEditForm();
+      }, 1500);
+      
+    } catch (error) {
+      console.log(error);
+      setMessage({ type: "error", text: "خطأ في تحديث اللائحة" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const deleteRuleFromAPI = async (ruleId) => {
     try {
-        const response = await axios.delete(`https://sports.runasp.net/api/Delete-Role/${ruleId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      return { success: true, data: response.data };
-    } catch (error) {
-      console.error("Error deleting rule:", error);
-      const errorMessage =
-        error.response?.data?.message || error.message || "خطأ في حذف اللائحة";
-      return { success: false, error: errorMessage };
-    }
-  };
-
-  const handleAddRule = async () => {
-    if (newRule.title && newRule.rule) {
-      setIsLoading(true);
-      setMessage({ type: "", text: "" });
-
-      // Save to API first
-      const apiResult = await saveRuleToAPI(newRule);
-
-      if (apiResult.success) {
-        // Update local state
-        const updatedRules = { ...rulesData };
-        const currentTabRules = [...updatedRules[activeTab]];
-
-        // Check if section already exists
-        const existingSectionIndex = currentTabRules.findIndex(
-          (section) => section.title === newRule.title
-        );
-
-        if (existingSectionIndex >= 0) {
-          // Add rule to existing section
-          currentTabRules[existingSectionIndex].rules.push(newRule.rule);
-        } else {
-          // Create new section
-          currentTabRules.push({
-            title: newRule.title,
-            rules: [newRule.rule],
-          });
+      const response = await axios.delete(
+        `https://sports.runasp.net/api/Delete-Role/${ruleId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-
-        updatedRules[activeTab] = currentTabRules;
-        setRulesData(updatedRules);
-        setNewRule({ title: "", rule: "" });
-        setShowAddForm(false);
-        setMessage({ type: "success", text: "تم حفظ اللائحة بنجاح!" });
-      } else {
-        setMessage({
-          type: "error",
-          text: `خطأ في حفظ اللائحة: ${apiResult.error}`,
-        });
-      }
-
-      setIsLoading(false);
+      );
+      console.log(response.data);
+      loadRulesFromAPI();
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const handleDeleteRule = async (ruleId) => {
-    if (window.confirm("هل أنت متأكد من حذف هذه اللائحة؟")) {
-      setIsLoading(true);
-      setMessage({ type: "", text: "" });
+  const editFormik = useFormik({
+    initialValues: {
+      roleName: "",
+      roleDescription: "",
+    },
+    onSubmit: handleEditRule,
+  });
 
-      // If ruleId is a number (index), we can't delete from API, just remove from local state
-      if (typeof ruleId === 'number') {
-        const updatedRules = rulesData.filter((_, index) => index !== ruleId);
-        setRulesData(updatedRules);
-        setMessage({ type: "success", text: "تم حذف اللائحة بنجاح!" });
-        setIsLoading(false);
-        return;
-      }
-
-      const deleteResult = await deleteRuleFromAPI(ruleId);
-
-      if (deleteResult.success) {
-        // Remove from local state
-        const updatedRules = rulesData.filter(rule => rule.id !== ruleId);
-        setRulesData(updatedRules);
-        setMessage({ type: "success", text: "تم حذف اللائحة بنجاح!" });
-      } else {
-        setMessage({
-          type: "error",
-          text: `خطأ في حذف اللائحة: ${deleteResult.error}`,
-        });
-      }
-
-      setIsLoading(false);
-    }
-  };
+  const formik = useFormik({
+    initialValues: {
+      roleName: "",
+      roleDescription: "",
+    },
+    onSubmit: saveRuleToAPI,
+  });
 
   useEffect(() => {
     loadRulesFromAPI();
@@ -155,14 +157,6 @@ export default function Rules() {
   return (
     <div className="rules-page" dir="rtl">
       {/* Loading Indicator */}
-      {isInitialLoading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p className="loading-text">جاري تحميل اللوائح...</p>
-          </div>
-        </div>
-      )}
 
       {/* Header */}
       <div className="rules-header">
@@ -196,69 +190,79 @@ export default function Rules() {
 
       {/* Add Rule Form */}
       {showAddForm && (
-        <div className="add-rule-form">
-          <div className="form-header">
-            <h3 className="form-title">إضافة لائحة جديدة</h3>
-          </div>
-
-          {/* Message Display */}
-          {message.text && (
-            <div className={`message ${message.type}`}>
-              <span className="message-icon">
-                {message.type === "success" ? "✅" : "❌"}
-              </span>
-              {message.text}
-            </div>
-          )}
-
-          <div className="form-content">
-            <div className="form-group">
-              <label className="form-label">عنوان القسم:</label>
-              <input
-                type="text"
-                className="form-input"
-                value={newRule.title}
-                onChange={(e) =>
-                  setNewRule({ ...newRule, title: e.target.value })
-                }
-                placeholder="مثال: قواعد جديدة"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">نص اللائحة:</label>
-              <textarea
-                className="form-textarea"
-                value={newRule.rule}
-                onChange={(e) =>
-                  setNewRule({ ...newRule, rule: e.target.value })
-                }
-                placeholder="اكتب نص اللائحة هنا..."
-                rows="3"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="form-actions">
-              <button
-                className="save-btn"
-                onClick={handleAddRule}
-                disabled={!newRule.title || !newRule.rule || isLoading}
-              >
-                <span className="btn-icon">{isLoading ? "⏳" : "💾"}</span>
-                {isLoading ? "جاري الحفظ..." : "حفظ اللائحة"}
+        <div className="modal-overlay">
+        <div className="modal-content">
+        <div className="modal-header">
+              <span>إضافة لائحة جديدة</span>
+              <button className="close-btn" onClick={() => setShowAddForm(false)}>
+                ×
               </button>
-              <button
-                className="cancel-btn"
-                onClick={() => {
-                  setShowAddForm(false);
-                  setNewRule({ title: "", rule: "" });
-                  setMessage({ type: "", text: "" });
-                }}
-                disabled={isLoading}
-              >
-                <span className="btn-icon">❌</span>
-                إلغاء
-              </button>
+            </div>
+          <div className="add-rule-form">
+            <div className="form-header">
+              <h3 className="form-title">إضافة لائحة جديدة</h3>
+            </div>
+            <div className="form-content">
+            <form onSubmit={formik.handleSubmit}>
+
+              <div className="form-group">
+
+                <label className="form-label">عنوان اللائحة:</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  name="roleName"
+                  value={formik.values.roleName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="مثال: قواعد جديدة"
+                  disabled={isLoading}
+                  required
+                />
+                {formik.touched.roleName && formik.errors.roleName && (
+                  <div className="error-message">{formik.errors.roleName}</div>
+                )}
+              </div>
+              <div className="form-group">
+                <label className="form-label">نص اللائحة:</label>
+                <textarea
+                  className="form-textarea"
+                  name="roleDescription"
+                  value={formik.values.roleDescription}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="اكتب نص اللائحة هنا..."
+                  rows="3"
+                  disabled={isLoading}
+                  required
+                />
+                {formik.touched.roleDescription &&
+                  formik.errors.roleDescription && (
+                    <div className="error-message">
+                      {formik.errors.roleDescription}
+                    </div>
+                  )}
+              </div>
+              <div className="form-actions">
+                <button className="save-btn" type="submit" disabled={isLoading}>
+                  <span className="btn-icon">{isLoading ? "⏳" : "💾"}</span>
+                  {isLoading ? "جاري الحفظ..." : "حفظ اللائحة"}
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    formik.resetForm();
+                    setMessage({ type: "", text: "" });
+                  }}
+                  disabled={isLoading}
+                >
+                  <span className="btn-icon">❌</span>
+                  إلغاء
+                </button>
+                </div>
+              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -298,15 +302,20 @@ export default function Rules() {
                 <span className="section-icon">📌</span>
                 {section.roleName}
               </h2>
-              <button
-                className="delete-rule-btn"
-                onClick={() => handleDeleteRule(section.id || index)}
-                disabled={isLoading}
-                title="حذف اللائحة"
-              >
-                <span className="btn-icon">🗑️</span>
-                حذف
-              </button>
+              <div className="section-actions">
+                <button
+                  className="action-btn delete"
+                  onClick={() => deleteRuleFromAPI(section.id)}
+                >
+                  <i className="fas fa-trash"></i>
+                </button>
+                <button
+                  className="action-btn edit"
+                  onClick={() => handleEditClick(section)}
+                >
+                  <i className="fas fa-edit"></i>
+                </button>
+              </div>
             </div>
             <div className="section-content">
               <p className="section-description">{section.roleDescription}</p>
@@ -314,6 +323,69 @@ export default function Rules() {
           </div>
         ))}
       </div>
+
+      {showEditForm && (
+        
+        <div className="modal-overlay">
+        <div className="modal-content">
+        <div className="modal-header">
+              <span>تعديل اللائحة</span>
+              <button className="close-btn" onClick={() => setShowEditForm(false)}>
+                ×
+              </button>
+            </div>  
+        <div className="edit-rule-form">
+          <div className="form-header">
+            <h3 className="form-title">تعديل اللائحة</h3>
+          </div>
+          <div className="form-content">
+            <form onSubmit={editFormik.handleSubmit} className="form-container">
+              <div className="form-group">
+                <label className="form-label">عنوان اللائحة:</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  name="roleName"
+                  value={editFormik.values.roleName}
+                  onChange={editFormik.handleChange}
+                  onBlur={editFormik.handleBlur}
+                  placeholder="مثال: قواعد جديدة"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">نص اللائحة:</label>
+                <textarea
+                  className="form-textarea"
+                  name="roleDescription"
+                  value={editFormik.values.roleDescription}
+                  onChange={editFormik.handleChange}
+                  onBlur={editFormik.handleBlur}
+                  placeholder="اكتب نص اللائحة هنا..."
+                  rows="3"
+                  disabled={isLoading}
+                  required
+                />
+                {editFormik.touched.roleDescription &&
+                  editFormik.errors.roleDescription && (
+                    <div className="error-message">
+                      {editFormik.errors.roleDescription}
+                    </div>
+                  )}
+              </div>
+              <div className="form-actions">
+                <button className="save-btn" type="submit" disabled={isLoading}>
+                  <span className="btn-icon">{isLoading ? "⏳" : "💾"}</span>
+                  {isLoading ? "جاري الحفظ..." : "حفظ اللائحة"}
+                </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="rules-footer">

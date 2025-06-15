@@ -2,48 +2,84 @@ import React, { useEffect, useState } from 'react'
 import './Matches.css'
 import axios from 'axios';
 
-// مكون عرض تفاصيل الفريق مع اللاعبين
-const TeamDetailsModal = ({ team, onClose }) => {
-  if (!team) return null;
+// مكون عرض تفاصيل المباراة
+const MatchDetailsModal = ({ match, onClose }) => {
+  if (!match) return null;
   
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content match-details-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <img src={team.logo} alt={team.name} className="modal-team-logo" />
-          <h2>{team.name}</h2>
+          <h2>تفاصيل المباراة</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
         <div className="modal-body">
-          <div className="team-description">
-            <p>{team.description}</p>
-          </div>
-          <div className="team-stats">
-            <div className="stat-item">
-              <span className="stat-label">عدد الأعضاء</span>
-              <span className="stat-value">{team.members.length}</span>
+          <div className="match-info-grid">
+            <div className="match-date-time">
+              <h3>📅 التاريخ والوقت</h3>
+              <p className="date">{match.date}</p>
+              <p className="time">{match.time}</p>
             </div>
-            <div className="stat-item">
-              <span className="stat-label">الكابتن</span>
-              <span className="stat-value">{team.members.find(m => m.role === 'Captain')?.name || '-'}</span>
+            <div className="match-stadium">
+              <h3>🏟️ الاستاد</h3>
+              <p>{match.stadium}</p>
+            </div>
+            <div className="match-category">
+              <h3>🏆 الفئة</h3>
+              <p>{match.category}</p>
+            </div>
+            <div className="match-status">
+              <h3>📊 حالة المباراة</h3>
+              <span className={`status-badge ${match.status.toLowerCase()}`}>
+                {match.status}
+              </span>
             </div>
           </div>
-          <div className="players-section">
-            <h3>👥 قائمة اللاعبين</h3>
-            <div className="players-grid">
-              {team.members.map((member, index) => (
-                <div key={member.id} className="player-card">
-                  <div className="player-avatar">
-                    <span className="player-number">{index + 1}</span>
-                  </div>
-                  <div className="player-info">
-                    <h4 className="player-name">{member.name}</h4>
-                    <span className={`player-role ${member.role === 'Captain' ? 'captain' : 'member'}`}>
-                      {member.role === 'Captain' ? '👑 كابتن' : 'لاعب'}
-                    </span>
-                  </div>
+          
+          <div className="teams-details">
+            <div className="team-detail">
+              <h3>{match.team1.name}</h3>
+              <img src={match.team1.logo} alt={match.team1.name} className="team-logo-large" />
+              <div className="team-stats">
+                <div className="stat">
+                  <span className="stat-label">عدد اللاعبين</span>
+                  <span className="stat-value">{match.team1.players?.length || 0}</span>
                 </div>
-              ))}
+                <div className="stat">
+                  <span className="stat-label">الكابتن</span>
+                  <span className="stat-value">{match.team1.captain || 'غير محدد'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="vs-section">
+              <div className="vs-badge">VS</div>
+              <div className="score">
+                {match.status === 'مكتملة' ? (
+                  <>
+                    <span className="score-number">{match.team1.score || 0}</span>
+                    <span className="score-separator">-</span>
+                    <span className="score-number">{match.team2.score || 0}</span>
+                  </>
+                ) : (
+                  <span className="upcoming">قريباً</span>
+                )}
+              </div>
+            </div>
+            
+            <div className="team-detail">
+              <h3>{match.team2.name}</h3>
+              <img src={match.team2.logo} alt={match.team2.name} className="team-logo-large" />
+              <div className="team-stats">
+                <div className="stat">
+                  <span className="stat-label">عدد اللاعبين</span>
+                  <span className="stat-value">{match.team2.players?.length || 0}</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-label">الكابتن</span>
+                  <span className="stat-value">{match.team2.captain || 'غير محدد'}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -52,7 +88,7 @@ const TeamDetailsModal = ({ team, onClose }) => {
   );
 };
 
-// مكون البحث والفلترة
+// مكون البحث والفلترة للمباريات
 const SearchAndFilter = ({ searchTerm, setSearchTerm, filterBy, setFilterBy }) => {
   return (
     <div className="search-filter-container">
@@ -62,7 +98,7 @@ const SearchAndFilter = ({ searchTerm, setSearchTerm, filterBy, setFilterBy }) =
         </svg>
         <input
           type="text"
-          placeholder="البحث عن فريق أو لاعب..."
+          placeholder="البحث عن فريق أو استاد..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
@@ -74,50 +110,40 @@ const SearchAndFilter = ({ searchTerm, setSearchTerm, filterBy, setFilterBy }) =
           onChange={(e) => setFilterBy(e.target.value)}
           className="filter-select"
         >
-          <option value="all">جميع الفرق</option>
-          <option value="captain">الفرق مع كابتن</option>
-          <option value="large">الفرق الكبيرة (5+ لاعبين)</option>
-          <option value="small">الفرق الصغيرة (أقل من 5 لاعبين)</option>
+          <option value="all">جميع المباريات</option>
+          <option value="upcoming">المباريات القادمة</option>
+          <option value="completed">المباريات المكتملة</option>
+          <option value="live">المباريات المباشرة</option>
         </select>
       </div>
     </div>
   );
 };
 
-// مكون عرض الفرق مع اللاعبين
-const TeamsWithPlayersGrid = ({ teams, onTeamClick }) => {
+// مكون عرض المباريات
+const MatchesGrid = ({ matches, onMatchClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState('all');
-  const [hoveredTeam, setHoveredTeam] = useState(null);
+  const [hoveredMatch, setHoveredMatch] = useState(null);
 
-const AllMatches = async () => {
-try { 
-  const response = await axios.get("https://sports.runasp.net/api/Get-Matches",{
- 
-  });
-  console.log(response);
-} catch (error) {
-  console.log(error);
-}
-
-}
-
-
-  // فلترة وبحث الفرق
-  const filteredTeams = teams.filter(team => {
-    const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         team.members.some(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  // فلترة وبحث المباريات
+  const filteredMatches = matches.filter(match => {
+    const matchesSearch = 
+      match.team1.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      match.team2.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      match.stadium.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      match.category.toLowerCase().includes(searchTerm.toLowerCase());
     
     let matchesFilter = true;
     switch (filterBy) {
-      case 'captain':
-        matchesFilter = team.members.some(member => member.role === 'Captain');
+      case 'upcoming':
+        matchesFilter = match.status === 'قادمة';
         break;
-      case 'large':
-        matchesFilter = team.members.length >= 5;
+      case 'completed':
+        matchesFilter = match.status === 'مكتملة';
         break;
-      case 'small':
-        matchesFilter = team.members.length < 5;
+      case 'live':
+        matchesFilter = match.status === 'مباشرة';
         break;
       default:
         matchesFilter = true;
@@ -126,13 +152,15 @@ try {
     return matchesSearch && matchesFilter;
   });
 
-  // ترتيب الفرق حسب عدد الأعضاء
-  const sortedTeams = [...filteredTeams].sort((a, b) => b.members.length - a.members.length);
-useEffect(() => {
-  AllMatches();
-}, []);
+  // ترتيب المباريات حسب التاريخ
+  const sortedMatches = [...filteredMatches].sort((a, b) => {
+    const dateA = new Date(a.date + ' ' + a.time);
+    const dateB = new Date(b.date + ' ' + b.time);
+    return dateA - dateB;
+  });
+
   return (
-    <div className="teams-players-container">
+    <div className="matches-container">
       <SearchAndFilter 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -140,65 +168,82 @@ useEffect(() => {
         setFilterBy={setFilterBy}
       />
       
-      {sortedTeams.length === 0 ? (
+      {sortedMatches.length === 0 ? (
         <div className="no-results">
           <svg className="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47.881-6.08 2.33" />
           </svg>
-          <h3>لا توجد نتائج</h3>
-          <p>جرب البحث بكلمات مختلفة</p>
+          <h3>لا توجد مباريات</h3>
+          <p>جرب البحث بكلمات مختلفة أو تغيير الفلتر</p>
         </div>
       ) : (
-        <div className="teams-players-grid">
-          {sortedTeams.map((team, index) => (
+        <div className="matches-grid">
+          {sortedMatches.map((match, index) => (
             <div 
-              key={team.id} 
-              className={`team-player-card ${hoveredTeam === team.id ? 'hovered' : ''}`}
-              onClick={() => onTeamClick(team)}
-              onMouseEnter={() => setHoveredTeam(team.id)}
-              onMouseLeave={() => setHoveredTeam(null)}
+              key={match.id} 
+              className={`match-card ${hoveredMatch === match.id ? 'hovered' : ''}`}
+              onClick={() => onMatchClick(match)}
+              onMouseEnter={() => setHoveredMatch(match.id)}
+              onMouseLeave={() => setHoveredMatch(null)}
             >
-              <div className="team-player-header">
-                <div className="team-logo-container">
-                  <img src={team.logo} alt={team.name} className="team-logo" />
-                  <div className="team-members-badge">
-                    {team.members.length}
+              <div className="match-header">
+                <div className="match-date-time">
+                  <div className="date-badge">
+                    <span className="date-icon">📅</span>
+                    <span className="date-text">{match.date}</span>
+                  </div>
+                  <div className="time-badge">
+                    <span className="time-icon">🕐</span>
+                    <span className="time-text">{match.time}</span>
                   </div>
                 </div>
-                <div className="team-info">
-                  <h3 className="team-name">{team.name}</h3>
-                  <p className="team-description">{team.description}</p>
-                  <div className="team-meta">
-                    <span className="team-captain">
-                      👑 {team.members.find(m => m.role === 'Captain')?.name || 'غير محدد'}
-                    </span>
-                  </div>
+                <div className="match-status-badge">
+                  <span className={`status-indicator ${match.status.toLowerCase()}`}>
+                    {match.status}
+                  </span>
                 </div>
               </div>
               
-              <div className="players-preview">
-                <h4 className="players-preview-title">👥 اللاعبين ({team.members.length})</h4>
-                <div className="players-list">
-                  {team.members.slice(0, 4).map((member, memberIndex) => (
-                    <div key={member.id} className="player-preview-item">
-                      <div className="player-avatar-small">
-                        <span className="player-number-small">{memberIndex + 1}</span>
-                      </div>
-                      <span className="player-name-small">{member.name}</span>
-                      {member.role === 'Captain' && <span className="captain-badge">👑</span>}
-                    </div>
-                  ))}
-                  {team.members.length > 4 && (
-                    <div className="more-players">
-                      +{team.members.length - 4} لاعبين آخرين
+              <div className="match-teams">
+                <div className="team-section">
+                  <div className="team-logo">
+                    <img src={match.team1.logo} alt={match.team1.name} />
+                  </div>
+                  <div className="team-info">
+                    <h3 className="team-name">{match.team1.name}</h3>
+                    <p className="team-category">{match.category}</p>
+                  </div>
+                </div>
+                
+                <div className="vs-section">
+                  <div className="vs-badge">VS</div>
+                  {match.status === 'مكتملة' && (
+                    <div className="score-display">
+                      <span className="score">{match.team1.score || 0}</span>
+                      <span className="score-separator">-</span>
+                      <span className="score">{match.team2.score || 0}</span>
                     </div>
                   )}
                 </div>
+                
+                <div className="team-section">
+                  <div className="team-logo">
+                    <img src={match.team2.logo} alt={match.team2.name} />
+                  </div>
+                  <div className="team-info">
+                    <h3 className="team-name">{match.team2.name}</h3>
+                    <p className="team-category">{match.category}</p>
+                  </div>
+                </div>
               </div>
               
-              <div className="team-player-footer">
-                <button className="view-team-details-btn">
-                  عرض تفاصيل الفريق
+              <div className="match-footer">
+                <div className="stadium-info">
+                  <span className="stadium-icon">🏟️</span>
+                  <span className="stadium-name">{match.stadium}</span>
+                </div>
+                <button className="view-match-details-btn">
+                  عرض التفاصيل
                 </button>
               </div>
             </div>
@@ -206,18 +251,22 @@ useEffect(() => {
         </div>
       )}
       
-      <div className="teams-summary">
+      <div className="matches-summary">
         <div className="summary-item">
-          <span className="summary-label">إجمالي الفرق</span>
-          <span className="summary-value">{teams.length}</span>
+          <span className="summary-label">إجمالي المباريات</span>
+          <span className="summary-value">{matches.length}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">الفرق المعروضة</span>
-          <span className="summary-value">{sortedTeams.length}</span>
+          <span className="summary-label">المباريات المعروضة</span>
+          <span className="summary-value">{sortedMatches.length}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">إجمالي اللاعبين</span>
-          <span className="summary-value">{teams.reduce((total, team) => total + team.members.length, 0)}</span>
+          <span className="summary-label">المباريات القادمة</span>
+          <span className="summary-value">{matches.filter(m => m.status === 'قادمة').length}</span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-label">المباريات المكتملة</span>
+          <span className="summary-value">{matches.filter(m => m.status === 'مكتملة').length}</span>
         </div>
       </div>
     </div>
@@ -225,210 +274,170 @@ useEffect(() => {
 };
 
 export default function Matches() {
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [selectedMatch, setSelectedMatch] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const AllMatches = async () => {
-    console.log("AllMatches");
-    try { 
-      const response = await axios.get("https://sports.runasp.net/api/Get-Matches",{
-     
-      });
-      console.log(response);
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("https://sports.runasp.net/api/Get-Matches");
+      console.log("API Response:", response.data);
+      
+      // تحويل البيانات من API إلى الشكل المطلوب
+      const formattedMatches = response.data.map((match, index) => ({
+        id: match.id || index + 1,
+        date: match.date || '2024-01-15',
+        time: match.time || '20:00',
+        stadium: match.stadium || 'استاد محمد بن زايد',
+        category: match.category || 'الدوري المحلي',
+        status: match.status || 'قادمة',
+        team1: {
+          name: match.team1Name || 'الفريق الأول',
+          logo: match.team1Logo || 'https://via.placeholder.com/80x80/1e40af/ffffff?text=فريق1',
+          score: match.team1Score,
+          captain: match.team1Captain,
+          players: match.team1Players || []
+        },
+        team2: {
+          name: match.team2Name || 'الفريق الثاني',
+          logo: match.team2Logo || 'https://via.placeholder.com/80x80/dc2626/ffffff?text=فريق2',
+          score: match.team2Score,
+          captain: match.team2Captain,
+          players: match.team2Players || []
+        }
+      }));
+      
+      setMatches(formattedMatches);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching matches:", error);
+      setError("حدث خطأ في تحميل المباريات");
+      
+      // بيانات تجريبية في حالة فشل API
+      setMatches([
+        {
+          id: 1,
+          date: '2024-01-15',
+          time: '20:00',
+          stadium: 'استاد محمد بن زايد',
+          category: 'الدوري المحلي',
+          status: 'قادمة',
+          team1: {
+            name: 'العين',
+            logo: 'https://via.placeholder.com/80x80/1e40af/ffffff?text=العين',
+            score: null,
+            captain: 'أحمد عبدالله',
+            players: []
+          },
+          team2: {
+            name: 'الوحدة',
+            logo: 'https://via.placeholder.com/80x80/dc2626/ffffff?text=الوحدة',
+            score: null,
+            captain: 'سعيد راشد',
+            players: []
+          }
+        },
+        {
+          id: 2,
+          date: '2024-01-14',
+          time: '18:30',
+          stadium: 'استاد الشارقة',
+          category: 'كأس الخليج',
+          status: 'مكتملة',
+          team1: {
+            name: 'الجزيرة',
+            logo: 'https://via.placeholder.com/80x80/059669/ffffff?text=الجزيرة',
+            score: 2,
+            captain: 'محمد سعيد',
+            players: []
+          },
+          team2: {
+            name: 'الشارقة',
+            logo: 'https://via.placeholder.com/80x80/7c3aed/ffffff?text=الشارقة',
+            score: 1,
+            captain: 'عبدالله سعيد',
+            players: []
+          }
+        },
+        {
+          id: 3,
+          date: '2024-01-16',
+          time: '19:45',
+          stadium: 'استاد الوصل',
+          category: 'الدوري المحلي',
+          status: 'مباشرة',
+          team1: {
+            name: 'النصر',
+            logo: 'https://via.placeholder.com/80x80/ea580c/ffffff?text=النصر',
+            score: 1,
+            captain: 'سعيد محمد',
+            players: []
+          },
+          team2: {
+            name: 'الوصل',
+            logo: 'https://via.placeholder.com/80x80/be185d/ffffff?text=الوصل',
+            score: 1,
+            captain: 'علي سعيد',
+            players: []
+          }
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-    
-    }
-    useEffect(() => {
-      AllMatches();
-      console.log(AllMatches);
-    }, []);
-  const showTeamDetails = (team) => {
-    setSelectedTeam(team);
   };
 
-  const teams = [
-    {
-      id: 1,
-      name: 'العين',
-      logo: 'https://via.placeholder.com/150x150/1e40af/ffffff?text=العين',
-      description: 'نادي العين لكرة القدم - أحد أقوى الأندية في الإمارات وأكثرها تتويجاً بالألقاب',
-      members: [
-        { id: 1, name: 'أحمد عبدالله', role: 'Captain' },
-        { id: 2, name: 'محمد علي', role: 'Member' },
-        { id: 3, name: 'علي حسن', role: 'Member' },
-        { id: 4, name: 'يوسف أحمد', role: 'Member' },
-        { id: 5, name: 'خالد محمد', role: 'Member' },
-        { id: 6, name: 'عمر سعيد', role: 'Member' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'الوحدة',
-      logo: 'https://via.placeholder.com/150x150/dc2626/ffffff?text=الوحدة',
-      description: 'نادي الوحدة - من أعرق الأندية الإماراتية وأكثرها شعبية في أبوظبي',
-      members: [
-        { id: 7, name: 'سعيد راشد', role: 'Captain' },
-        { id: 8, name: 'عبدالله محمد', role: 'Member' },
-        { id: 9, name: 'حسن علي', role: 'Member' },
-        { id: 10, name: 'أحمد يوسف', role: 'Member' }
-      ]
-    },
-    {
-      id: 3,
-      name: 'الجزيرة',
-      logo: 'https://via.placeholder.com/150x150/059669/ffffff?text=الجزيرة',
-      description: 'نادي الجزيرة - من أقوى الأندية في أبوظبي وله تاريخ عريق في كرة القدم',
-      members: [
-        { id: 11, name: 'محمد سعيد', role: 'Captain' },
-        { id: 12, name: 'علي أحمد', role: 'Member' },
-        { id: 13, name: 'يوسف محمد', role: 'Member' },
-        { id: 14, name: 'خالد علي', role: 'Member' },
-        { id: 15, name: 'عمر أحمد', role: 'Member' },
-        { id: 16, name: 'سعيد محمد', role: 'Member' },
-        { id: 17, name: 'أحمد علي', role: 'Member' }
-      ]
-    },
-    {
-      id: 4,
-      name: 'الشارقة',
-      logo: 'https://via.placeholder.com/150x150/7c3aed/ffffff?text=الشارقة',
-      description: 'نادي الشارقة - من أقدم الأندية في الإمارات وأول من فاز بدوري الخليج العربي',
-      members: [
-        { id: 18, name: 'عبدالله سعيد', role: 'Captain' },
-        { id: 19, name: 'محمد أحمد', role: 'Member' },
-        { id: 20, name: 'علي محمد', role: 'Member' },
-        { id: 21, name: 'يوسف علي', role: 'Member' },
-        { id: 22, name: 'خالد أحمد', role: 'Member' }
-      ]
-    },
-    {
-      id: 5,
-      name: 'النصر',
-      logo: 'https://via.placeholder.com/150x150/ea580c/ffffff?text=النصر',
-      description: 'نادي النصر - من الأندية التاريخية في دبي وله قاعدة جماهيرية كبيرة',
-      members: [
-        { id: 23, name: 'سعيد محمد', role: 'Captain' },
-        { id: 24, name: 'أحمد علي', role: 'Member' },
-        { id: 25, name: 'محمد يوسف', role: 'Member' }
-      ]
-    },
-    {
-      id: 6,
-      name: 'الوصل',
-      logo: 'https://via.placeholder.com/150x150/be185d/ffffff?text=الوصل',
-      description: 'نادي الوصل - من الأندية العريقة في دبي وله تاريخ مشرف في كرة القدم',
-      members: [
-        { id: 26, name: 'علي سعيد', role: 'Captain' },
-        { id: 27, name: 'يوسف محمد', role: 'Member' },
-        { id: 28, name: 'خالد أحمد', role: 'Member' },
-        { id: 29, name: 'عمر علي', role: 'Member' },
-        { id: 30, name: 'أحمد محمد', role: 'Member' },
-        { id: 31, name: 'محمد يوسف', role: 'Member' },
-        { id: 32, name: 'سعيد علي', role: 'Member' },
-        { id: 33, name: 'علي أحمد', role: 'Member' }
-      ]
-    },
-    {
-      id: 7,
-      name: 'عجمان',
-      logo: 'https://via.placeholder.com/150x150/0891b2/ffffff?text=عجمان',
-      description: 'نادي عجمان - من الأندية المهمة في إمارة عجمان وله دور بارز في تطوير كرة القدم',
-      members: [
-        { id: 34, name: 'راشد علي', role: 'Captain' },
-        { id: 35, name: 'عبدالله حسن', role: 'Member' },
-        { id: 36, name: 'محمد سعيد', role: 'Member' },
-        { id: 37, name: 'أحمد يوسف', role: 'Member' },
-        { id: 38, name: 'علي محمد', role: 'Member' }
-      ]
-    },
-    {
-      id: 8,
-      name: 'بني ياس',
-      logo: 'https://via.placeholder.com/150x150/16a34a/ffffff?text=بني+ياس',
-      description: 'نادي بني ياس - من الأندية المهمة في أبوظبي وله قاعدة جماهيرية قوية',
-      members: [
-        { id: 39, name: 'حسن راشد', role: 'Captain' },
-        { id: 40, name: 'سعيد أحمد', role: 'Member' },
-        { id: 41, name: 'عبدالله علي', role: 'Member' },
-        { id: 42, name: 'محمد حسن', role: 'Member' },
-        { id: 43, name: 'يوسف سعيد', role: 'Member' },
-        { id: 44, name: 'أحمد عبدالله', role: 'Member' }
-      ]
-    },
-    {
-      id: 9,
-      name: 'خورفكان',
-      logo: 'https://via.placeholder.com/150x150/9333ea/ffffff?text=خورفكان',
-      description: 'نادي خورفكان - من الأندية المهمة في إمارة الشارقة وله تاريخ عريق',
-      members: [
-        { id: 45, name: 'علي محمد', role: 'Captain' },
-        { id: 46, name: 'أحمد حسن', role: 'Member' },
-        { id: 47, name: 'محمد علي', role: 'Member' },
-        { id: 48, name: 'يوسف أحمد', role: 'Member' }
-      ]
-    },
-    {
-      id: 10,
-      name: 'الاتحاد',
-      logo: 'https://via.placeholder.com/150x150/c2410c/ffffff?text=الاتحاد',
-      description: 'نادي الاتحاد - من الأندية المهمة في كلباء وله دور بارز في تطوير كرة القدم المحلية',
-      members: [
-        { id: 49, name: 'سعيد يوسف', role: 'Captain' },
-        { id: 50, name: 'عبدالله محمد', role: 'Member' },
-        { id: 51, name: 'حسن أحمد', role: 'Member' },
-        { id: 52, name: 'علي سعيد', role: 'Member' },
-        { id: 53, name: 'محمد عبدالله', role: 'Member' }
-      ]
-    },
-    {
-      id: 11,
-      name: 'الإمارات',
-      logo: 'https://via.placeholder.com/150x150/0d9488/ffffff?text=الإمارات',
-      description: 'نادي الإمارات - من الأندية المهمة في رأس الخيمة وله تاريخ مشرف',
-      members: [
-        { id: 54, name: 'أحمد علي', role: 'Captain' },
-        { id: 55, name: 'محمد حسن', role: 'Member' },
-        { id: 56, name: 'يوسف محمد', role: 'Member' },
-        { id: 57, name: 'علي أحمد', role: 'Member' },
-        { id: 58, name: 'سعيد يوسف', role: 'Member' },
-        { id: 59, name: 'عبدالله علي', role: 'Member' }
-      ]
-    },
-    {
-      id: 12,
-      name: 'الشباب',
-      logo: 'https://via.placeholder.com/150x150/be123c/ffffff?text=الشباب',
-      description: 'نادي الشباب - من الأندية المهمة في دبي وله تاريخ عريق في كرة القدم',
-      members: [
-        { id: 60, name: 'محمد سعيد', role: 'Captain' },
-        { id: 61, name: 'علي أحمد', role: 'Member' },
-        { id: 62, name: 'يوسف محمد', role: 'Member' },
-        { id: 63, name: 'أحمد علي', role: 'Member' },
-        { id: 64, name: 'حسن يوسف', role: 'Member' },
-        { id: 65, name: 'سعيد محمد', role: 'Member' },
-        { id: 66, name: 'عبدالله أحمد', role: 'Member' }
-      ]
-    }
-  ];
+  useEffect(() => {
+    fetchMatches();
+  }, []);
+
+  const showMatchDetails = (match) => {
+    setSelectedMatch(match);
+  };
+
+  if (loading) {
+    return (
+      <div className="matches-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>جاري تحميل المباريات...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="matches-page">
+        <div className="error-container">
+          <h3>خطأ في التحميل</h3>
+          <p>{error}</p>
+          <button onClick={fetchMatches} className="retry-btn">
+            إعادة المحاولة
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="matches-page">
       <div className="page-header">
-        <h1 className="page-title">🏆 المباريات والفرق المشاركة</h1>
-        <p className="page-subtitle">عرض جميع الفرق المشاركة مع قوائم اللاعبين</p>
+        <h1 className="page-title">⚽ المباريات</h1>
+        <p className="page-subtitle">عرض جميع المباريات مع تفاصيل الفريقين والتواريخ</p>
       </div>
 
-      <TeamsWithPlayersGrid 
-        teams={teams} 
-        onTeamClick={showTeamDetails}
+      <MatchesGrid 
+        matches={matches} 
+        onMatchClick={showMatchDetails}
       />
 
       {/* Modal */}
-      {selectedTeam && (
-        <TeamDetailsModal 
-          team={selectedTeam} 
-          onClose={() => setSelectedTeam(null)} 
+      {selectedMatch && (
+        <MatchDetailsModal 
+          match={selectedMatch} 
+          onClose={() => setSelectedMatch(null)} 
         />
       )}
     </div>
