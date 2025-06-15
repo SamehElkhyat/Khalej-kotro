@@ -5,10 +5,9 @@ export default function LogOut() {
     localStorage.removeItem("token");
     window.location.href = "/login";
   }, []);
-  return <div>
-    <h1>Logging out...</h1>
-  
-
-
-  </div>;
+  return (
+    <div>
+      <h1>Logging out...</h1>
+    </div>
+  );
 }

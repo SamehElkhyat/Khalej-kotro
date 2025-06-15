@@ -23,6 +23,7 @@ import LogOut from "./componant/Pages/LogOut/LogOut.jsx";
 // تكوين مسارات التطبيق
 const مسارات_التطبيق = createBrowserRouter([
   {
+    
     path: "",
     element: <App/>,
     children: [

@@ -16,11 +16,20 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { Link, Outlet } from "react-router-dom";
 
-const drawerWidth = 240;
+// Import proper icons for each menu item
+import SchoolIcon from "@mui/icons-material/School";
+import PeopleIcon from "@mui/icons-material/People";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import CampIcon from "@mui/icons-material/Cabin";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
+import RuleIcon from "@mui/icons-material/Rule";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+const drawerWidth = 280;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -30,7 +39,6 @@ const openedMixin = (theme) => ({
   }),
   overflowX: "hidden",
 });
-
 
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
@@ -49,8 +57,13 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
+  background: "linear-gradient(135deg, #ef4343 0%, #d63333 100%)",
+  color: "white",
+  minHeight: 64,
+  "& .MuiSvgIcon-root": {
+    color: "white",
+    fontSize: 28,
+  },
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -60,6 +73,11 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
+  "& .MuiDrawer-paper": {
+    background: "#f8f9fa",
+    borderRight: "1px solid #e9ecef",
+    boxShadow: "2px 0 8px rgba(0,0,0,0.1)",
+  },
   variants: [
     {
       props: ({ open }) => open,
@@ -77,6 +95,58 @@ const Drawer = styled(MuiDrawer, {
     },
   ],
 }));
+
+// Menu items configuration with proper icons
+const menuItems = [
+  {
+    text: "إدارة الأكاديميات",
+    icon: <SchoolIcon />,
+    path: "academies",
+  },
+  {
+    text: "إدارة اللاعبين",
+    icon: <PeopleIcon />,
+    path: "players",
+  },
+  {
+    text: "إدارة المباريات",
+    icon: <SportsSoccerIcon />,
+    path: "mange-matches",
+  },
+  {
+    text: "إدارة جدول المباريات",
+    icon: <ScheduleIcon />,
+    path: "mange-shedulde",
+  },
+  {
+    text: "برنامج المعسكر",
+    icon: <CampIcon />,
+    path: "camp",
+  },
+];
+
+const secondaryMenuItems = [
+  {
+    text: "نتائج المباريات",
+    icon: <EmojiEventsIcon />,
+    path: "result-matches",
+  },
+  {
+    text: "ترتيب الفرق",
+    icon: <LeaderboardIcon />,
+    path: "teams-ranking",
+  },
+  {
+    text: "اللوائح التنظيمية",
+    icon: <RuleIcon />,
+    path: "rules",
+  },
+  {
+    text: "تسجيل الخروج",
+    icon: <LogoutIcon />,
+    path: "logout",
+  },
+];
 
 export default function MiniDrawer() {
   const [open, setOpen] = React.useState(false);
@@ -107,117 +177,149 @@ export default function MiniDrawer() {
             />
           )}
         </DrawerHeader>
+        
         <Divider />
+        
+        {/* Main Menu Items */}
         <List>
-          {["إدارة الأكاديميات", "إدارة اللاعبين", "إدارة المباريات", "إدارة جدول المباريات","برنامج المعسكر"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <Link to={`/${text === "إدارة الأكاديميات" ? "academies" : text === "إدارة اللاعبين" ? "players" : text === "إدارة المباريات" ? "mange-matches" : text === "إدارة جدول المباريات" ? "mange-shedulde" : text === "برنامج المعسكر" ? "camp" : ""}`}>
-                
-                
-                
-                
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: "initial",
-                      }
-                    : {
-                        justifyContent: "center",
-                      },
-                ]}
+          {menuItems.map((item) => (
+            <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+              <Link 
+                to={`/${item.path}`}
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={[
                     {
-                      minWidth: 0,
-                      justifyContent: "center",
+                      minHeight: 56,
+                      px: 2.5,
+                      margin: "4px 8px",
+                      borderRadius: "8px",
+                      "&:hover": {
+                        backgroundColor: "rgba(239, 67, 67, 0.1)",
+                        color: "#ef4343",
+                      },
                     },
                     open
                       ? {
-                          mr: 3,
+                          justifyContent: "flex-start",
                         }
                       : {
-                          mr: "auto",
+                          justifyContent: "center",
                         },
                   ]}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
+                  <ListItemIcon
+                    sx={[
+                      {
+                        minWidth: 0,
+                        justifyContent: "center",
+                        color: "inherit",
+                      },
+                      open
+                        ? {
+                            mr: 3,
+                          }
+                        : {
+                            mr: "auto",
+                          },
+                    ]}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={[
+                      {
+                        "& .MuiListItemText-primary": {
+                          fontSize: "14px",
+                          fontWeight: 500,
                         },
-                  ]}
-                />
-              </ListItemButton>
+                      },
+                      open
+                        ? {
+                            opacity: 1,
+                          }
+                        : {
+                            opacity: 0,
+                          },
+                    ]}
+                  />
+                </ListItemButton>
               </Link>
             </ListItem>
           ))}
         </List>
-        <Divider />
+        
+        <Divider sx={{ margin: "8px 0" }} />
+        
+        {/* Secondary Menu Items */}
         <List>
-          {["نتائج المباريات","ترتيب الفرق","اللوائح التنظيمية","تسجيل الخروج"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <Link to={`/${text === "نتائج المباريات" ? "result-matches" : text === "ترتيب الفرق" ? "teams-ranking" : text === "اللوائح التنظيمية" ? "rules" : text === "تسجيل الخروج" ? "logout" : ''}`}>
-                
-                 <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: "initial",
-                      }
-                    : {
-                        justifyContent: "center",
-                      },
-                ]}
+          {secondaryMenuItems.map((item) => (
+            <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+              <Link 
+                to={`/${item.path}`}
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={[
                     {
-                      minWidth: 0,
-                      justifyContent: "center",
+                      minHeight: 56,
+                      px: 2.5,
+                      margin: "4px 8px",
+                      borderRadius: "8px",
+                      "&:hover": {
+                        backgroundColor: "rgba(239, 67, 67, 0.1)",
+                        color: "#ef4343",
+                      },
                     },
                     open
                       ? {
-                          mr: 3,
+                          justifyContent: "flex-start",
                         }
                       : {
-                          mr: "auto",
+                          justifyContent: "center",
                         },
                   ]}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
+                  <ListItemIcon
+                    sx={[
+                      {
+                        minWidth: 0,
+                        justifyContent: "center",
+                        color: "inherit",
+                      },
+                      open
+                        ? {
+                            mr: 3,
+                          }
+                        : {
+                            mr: "auto",
+                          },
+                    ]}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={[
+                      {
+                        "& .MuiListItemText-primary": {
+                          fontSize: "14px",
+                          fontWeight: 500,
                         },
-                  ]}
-                />
-              </ListItemButton>
-                </Link>
-             
+                      },
+                      open
+                        ? {
+                            opacity: 1,
+                          }
+                        : {
+                            opacity: 0,
+                          },
+                    ]}
+                  />
+                </ListItemButton>
+              </Link>
             </ListItem>
           ))}
         </List>

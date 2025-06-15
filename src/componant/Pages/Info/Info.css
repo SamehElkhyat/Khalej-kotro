@@ -440,8 +440,7 @@
 
 @media print {
   .container {
-    max-width: none;
-    padding: 0;
+    flex-direction: column;
   }
 
   .sidebar {

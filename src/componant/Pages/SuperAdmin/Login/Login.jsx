@@ -83,7 +83,7 @@ const Login = () => {
         .then((response) => {
           if (response.status === 200) {
             localStorage.setItem("token", response.data);
-            window.location.href = "/dashboard";
+            window.location.href = "/";
           }
           resetForm();
           setShowRegister(false);
