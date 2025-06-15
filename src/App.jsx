@@ -35,7 +35,7 @@ export default function App() {
       if (window.location.pathname === "/") {
         التنقل("/info");
       }
-    }, 9000); // تحميل لمدة ثانيتين
+    }, 5000); // تحميل لمدة ثانيتين
 
     return () => clearTimeout(timer);
   }, [التنقل]);
