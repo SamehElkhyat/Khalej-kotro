@@ -29,7 +29,7 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import RuleIcon from "@mui/icons-material/Rule";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-const drawerWidth = 280;
+const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -46,9 +46,9 @@ const closedMixin = (theme) => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  width: `calc(${theme.spacing(5)} + 1px)`,
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(6)} + 1px)`,
   },
 });
 
@@ -192,7 +192,7 @@ export default function MiniDrawer() {
                   sx={[
                     {
                       minHeight: 56,
-                      px: 2.5,
+                      px: 1.5,
                       margin: "4px 8px",
                       borderRadius: "8px",
                       "&:hover": {
@@ -265,7 +265,7 @@ export default function MiniDrawer() {
                   sx={[
                     {
                       minHeight: 56,
-                      px: 2.5,
+                      px: 1.5,
                       margin: "4px 8px",
                       borderRadius: "8px",
                       "&:hover": {

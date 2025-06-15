@@ -245,4 +245,191 @@
   .form-input {
     font-size: 13px;
   }
+}
+
+/* Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  .players-page {
+    padding: 10px 0 0 0;
+  }
+  
+  .header-bar {
+    padding-right: 5px;
+    margin-bottom: 15px;
+  }
+  
+  .add-player-btn {
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  
+  .filters-bar {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 5px;
+    margin-bottom: 15px;
+  }
+  
+  .filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .search-input {
+    width: 100%;
+    min-width: auto;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .players-table-container {
+    margin: 0 5px;
+    padding: 10px 0 0 0;
+    overflow-x: auto;
+  }
+  
+  .players-table {
+    font-size: 12px;
+    min-width: 600px;
+  }
+  
+  .players-table th, 
+  .players-table td {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+  
+  .yellow-badge,
+  .red-badge {
+    font-size: 12px;
+    padding: 1px 6px;
+  }
+  
+  .action-btn {
+    font-size: 16px;
+    margin: 0 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .players-page {
+    padding: 5px 0 0 0;
+  }
+  
+  .header-bar {
+    padding-right: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .add-player-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+  
+  .filters-bar {
+    gap: 6px;
+    padding: 0 5px;
+    margin-bottom: 10px;
+  }
+  
+  .filter-select,
+  .search-input {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+  }
+  
+  .players-table-container {
+    margin: 0 5px;
+    border-radius: 8px;
+  }
+  
+  .players-table {
+    font-size: 11px;
+    min-width: 500px;
+  }
+  
+  .players-table th, 
+  .players-table td {
+    padding: 6px 2px;
+    font-size: 11px;
+  }
+  
+  .yellow-badge,
+  .red-badge {
+    font-size: 11px;
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+  
+  .action-btn {
+    font-size: 14px;
+    margin: 0 1px;
+  }
+  
+  /* Modal improvements for very small screens */
+  .modal-content {
+    width: 95vw;
+    margin: 10px;
+  }
+  
+  .modal-header {
+    padding: 12px 8px 6px 8px;
+    font-size: 16px;
+  }
+  
+  .edit-player-form {
+    padding: 0 8px;
+    gap: 8px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .form-row label {
+    min-width: auto;
+    font-size: 12px;
+    text-align: right;
+    margin-bottom: 2px;
+  }
+  
+  .form-input {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+  
+  .update-btn {
+    padding: 8px 0;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  
+  .close-btn {
+    font-size: 24px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .filters-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .filter-select {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .search-input {
+    width: auto;
+    flex: 2;
+    min-width: 150px;
+  }
 } 

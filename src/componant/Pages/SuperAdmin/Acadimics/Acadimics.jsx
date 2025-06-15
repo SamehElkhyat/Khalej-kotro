@@ -532,48 +532,99 @@ const Acadimics = () => {
         <div className="academies-list-title">
           قائمة الأكاديميات <span>({academies.length})</span>
         </div>
-        <table className="academies-table">
-          <thead>
-            <tr>
-              <th>العمليات</th>
-              <th>الحالة</th>
-              <th>الهاتف</th>
-              <th>البريد الإلكتروني</th>
-              <th>الدولة</th>
-              <th>الاسم</th>
-            </tr>
-          </thead>
-          <tbody>
-            {academies.map((academy, idx) => (
-              <tr key={idx} className={idx % 2 === 1 ? "row-alt" : ""}>
-                <td>
+        
+        {/* Desktop Table View */}
+        <div className="table-wrapper">
+          <table className="academies-table">
+            <thead>
+              <tr>
+                <th>العمليات</th>
+                <th>الحالة</th>
+                <th>الهاتف</th>
+                <th>البريد الإلكتروني</th>
+                <th>الدولة</th>
+                <th>الاسم</th>
+              </tr>
+            </thead>
+            <tbody>
+              {academies.map((academy, idx) => (
+                <tr key={idx} className={idx % 2 === 1 ? "row-alt" : ""}>
+                  <td>
+                    <button className="action-btn delete" onClick={() => DeleteAcademies(academy.id)}>
+                      <i className="fas fa-trash"></i>
+                    </button>
+                    <button className="action-btn edit" onClick={() => handleEditClick(academy)}>
+                      <i className="fas fa-edit"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span
+                      className={
+                        academy.statue === true
+                          ? "status status-done"
+                          : "status status-pending"
+                      }
+                    >
+                      {academy.statue === true ? "معتمدة" : "غير معتمدة"}
+                    </span>
+                  </td>
+                  <td>{academy.academyPhone}</td>
+                  <td>{academy.academyEmail}</td>
+                  <td>{academy.academyCountry}</td>
+                  <td>{academy.academyName}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="academies-mobile-cards">
+          {academies.map((academy, idx) => (
+            <div key={idx} className="academy-card">
+              <div className="academy-card-header">
+                <div className="academy-name">{academy.academyName}</div>
+                <div className="academy-actions">
                   <button className="action-btn delete" onClick={() => DeleteAcademies(academy.id)}>
                     <i className="fas fa-trash"></i>
                   </button>
                   <button className="action-btn edit" onClick={() => handleEditClick(academy)}>
                     <i className="fas fa-edit"></i>
                   </button>
-                </td>
-                <td>
-                  <span
-                    className={
-                      academy.statue === true
-                        ? "status status-done"
-                        : "status status-pending"
-                    }
-                  >
-
-                    {academy.statue === true ? "معتمدة" : "غير معتمدة"}
-                  </span>
-                </td>
-                <td>{academy.academyPhone}</td>
-                <td>{academy.academyEmail}</td>
-                <td>{academy.academyCountry}</td>
-                <td>{academy.academyName}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+              <div className="academy-info">
+                <div className="academy-info-item">
+                  <div className="academy-info-label">الدولة</div>
+                  <div className="academy-info-value">{academy.academyCountry}</div>
+                </div>
+                <div className="academy-info-item">
+                  <div className="academy-info-label">البريد الإلكتروني</div>
+                  <div className="academy-info-value">{academy.academyEmail}</div>
+                </div>
+                <div className="academy-info-item">
+                  <div className="academy-info-label">الهاتف</div>
+                  <div className="academy-info-value">{academy.academyPhone}</div>
+                </div>
+                <div className="academy-info-item">
+                  <div className="academy-info-label">المنسق</div>
+                  <div className="academy-info-value">{academy.coordinator || "غير محدد"}</div>
+                </div>
+              </div>
+              <div className="academy-status">
+                <span
+                  className={
+                    academy.statue === true
+                      ? "status status-done"
+                      : "status status-pending"
+                  }
+                >
+                  {academy.statue === true ? "معتمدة" : "غير معتمدة"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

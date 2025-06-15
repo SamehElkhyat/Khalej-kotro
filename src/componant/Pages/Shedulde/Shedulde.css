@@ -18,6 +18,7 @@
 }
 
 .page-title {
+  color: white;
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0 0 12px 0;
@@ -25,6 +26,7 @@
 }
 
 .page-subtitle {
+  color: white;
   font-size: 1.1rem;
   margin: 0;
   opacity: 0.9;
