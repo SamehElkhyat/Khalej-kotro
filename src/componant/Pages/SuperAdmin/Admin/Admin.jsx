@@ -143,10 +143,16 @@ const secondaryMenuItems = [
     path: "rules",
   },
   {
+    text: "جدول المباريات",
+    icon: <ScheduleIcon />,
+    path: "shedulde",
+  },
+  {
     text: "تسجيل الخروج",
     icon: <LogoutIcon />,
     path: "logout",
   },
+
 ];
 
 export default function MiniDrawer() {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Teams.css";
@@ -36,7 +35,6 @@ const SearchAndFilter = ({ searchTerm, setSearchTerm, sortBy, setSortBy }) => {
           className="filter-select"
         >
           <option value="name">Sort by Name</option>
-          <option value="city">Sort by City</option>
           <option value="country">Sort by Country</option>
         </select>
       </div>
@@ -53,15 +51,12 @@ const AllAcademiesDisplay = ({ academies, onAcademyClick }) => {
   // Filter and search academies
   const filteredAcademies = academies.filter((academy) =>
     academy.academyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    academy.academyCity.toLowerCase().includes(searchTerm.toLowerCase()) ||
     academy.academyCountry.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort academies
   const sortedAcademies = [...filteredAcademies].sort((a, b) => {
     switch (sortBy) {
-      case "city":
-        return a.academyCity.localeCompare(b.academyCity);
       case "country":
         return a.academyCountry.localeCompare(b.academyCountry);
       case "name":
@@ -93,7 +88,7 @@ const AllAcademiesDisplay = ({ academies, onAcademyClick }) => {
                   className="top-team-logo"
                 />
                 <h3 className="top-team-name">{academy.academyName}</h3>
-                <div className="top-team-score">{academy.academyCity}</div>
+                <div className="top-team-score">{academy.academyCountry}</div>
               </div>
             ))}
           </div>
@@ -152,7 +147,6 @@ const AllAcademiesDisplay = ({ academies, onAcademyClick }) => {
                   <h3 className="team-name">{academy.academyName}</h3>
                   <div className="team-meta w-full flex flex-col justify-end items-center">
                     <span className="team-position">Country: {academy.academyCountry}</span>
-                    <span className="team-position">City: {academy.academyCity}</span>
                   </div>
                 </div>
               </div>
@@ -163,7 +157,7 @@ const AllAcademiesDisplay = ({ academies, onAcademyClick }) => {
                     <span className="stat-value-mini">{academy.academyPhone}</span>
                   </div>
                   <div className="stat-mini">
-                    <span className="stat-label-mini">Age Groups</span>
+                    <span className="stat-label-mini">Category</span>
                     <span className="stat-value-mini">
                       {academy.under14 ? "U14 " : ""}
                       {academy.under16 ? "U16 " : ""}
@@ -210,7 +204,14 @@ export default function Teams() {
     const fetchAcademies = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://sports.runasp.net/api/Get-All-Academies");
+        const response = await axios.get("https://sports.runasp.net/api/Get-All-Academies"
+,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         setAcademies(response.data);
         setError(null);
       } catch (err) {
@@ -310,10 +311,6 @@ export default function Teams() {
                   </span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">City</span>
-                  <span className="stat-value">{selectedAcademy.academyCity}</span>
-                </div>
-                <div className="stat-item">
                   <span className="stat-label">Country</span>
                   <span className="stat-value">{selectedAcademy.academyCountry}</span>
                 </div>
@@ -328,12 +325,10 @@ export default function Teams() {
                   <strong>Email:</strong> {selectedAcademy.academyEmail}
                 </p>
                 <p>
-                  <strong>Coordinator:</strong> {selectedAcademy.coordinator}
-                </p>
-                <p>
-                  <strong>Age Groups:</strong>
+                  <strong>Category:</strong>
                 </p>
                 <ul>
+                  {console.log(selectedAcademy)}
                   {selectedAcademy.under14 && <li>Under 14</li> }
                   {selectedAcademy.under16 && <li>Under 16</li>}
                   {selectedAcademy.under18 && <li>Under 18</li>}
