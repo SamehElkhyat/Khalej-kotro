@@ -20,14 +20,23 @@ const Players = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [filteredPlayers, setFilteredPlayers] = useState([]);
+  const [showPassport, setShowPassport] = useState(false);
+  const [selectedPassport, setSelectedPassport] = useState(null);
+  const [showPlayerImage, setShowPlayerImage] = useState(false);
+  const [selectedPlayerImage, setSelectedPlayerImage] = useState(null);
 
   const allPlayers = async () => {
     try {
-      const response = await axios.get("https://sports.runasp.net/api/Get-Players-By-Academy", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        "https://sports.runasp.net/api/Get-Player-By-Id",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setPlayers(response.data);
       console.log(response.data);
     } catch (error) {
@@ -36,14 +45,32 @@ const Players = () => {
   };
 
   const addPlayer = async () => {
-    console.log(addPlayerFormik.values);
     try {
+      const formData = new FormData();
+
+      // Append all form values to FormData
+      Object.keys(addPlayerFormik.values).forEach((key) => {
+        if (
+          addPlayerFormik.values[key] !== null &&
+          addPlayerFormik.values[key] !== undefined
+        ) {
+          if (key === "URLImage " || key === "URLPassport ") {
+            if (addPlayerFormik.values[key]) {
+              formData.append(key, addPlayerFormik.values[key]);
+            }
+          } else {
+            formData.append(key, addPlayerFormik.values[key]);
+          }
+        }
+      });
+      console.log(addPlayerFormik.values);
       const response = await axios.post(
         "https://sports.runasp.net/api/Add-Players",
         addPlayerFormik.values,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -57,12 +84,32 @@ const Players = () => {
 
   const editPlayer = async (values) => {
     try {
+      const formData = new FormData();
+
+      // Append all form values to FormData
+      Object.keys(values).forEach((key) => {
+        if (
+          values[key] !== null &&
+          values[key] !== undefined &&
+          values[key] !== ""
+        ) {
+          if (key === "URLImage" || key === "URLPassport") {
+            if (values[key]) {
+              formData.append(key, values[key]);
+            }
+          } else {
+            formData.append(key, values[key]);
+          }
+        }
+      });
+
       const response = await axios.post(
-        `https://sports.runasp.net/api/Update-Player/${editingPlayer.id}`,
-        values,
+        `https://sports.runasp.net/api/Update-Player/${editingPlayer.playerID}`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -99,13 +146,22 @@ const Players = () => {
       category: player.category || "",
       possition: player.possition || "",
       numberShirt: player.numberShirt || "",
-      goals: player.goals || "",
-      yellowCards: player.yellowCards || "",
-      redCards: player.redCards || "",
       nationality: player.nationality || "",
       birthDate: player.birthDate || "",
+      URLImage: null,
+      URLPassport: null,
     });
     setShowEdit(true);
+  };
+
+  const handlePassportClick = (player) => {
+    setSelectedPassport(player.urlPassport);
+    setShowPassport(true);
+  };
+
+  const handlePlayerImageClick = (player) => {
+    setSelectedPlayerImage(player.urlImage);
+    setShowPlayerImage(true);
   };
 
   const onCloseAdd = () => {
@@ -119,22 +175,53 @@ const Players = () => {
     editPlayerFormik.resetForm();
   };
 
+  const onClosePassport = () => {
+    setShowPassport(false);
+    setSelectedPassport(null);
+  };
+
+  const onClosePlayerImage = () => {
+    setShowPlayerImage(false);
+    setSelectedPlayerImage(null);
+  };
+
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    const filtered = players.filter((player) => player.category === category);
+    setFilteredPlayers(filtered);
+  };
+
+  const handleAddPlayerToCategory = (category) => {
+    setSelectedCategory(category);
+    addPlayerFormik.setFieldValue("category", category);
+    setShowAdd(true);
+  };
+
   useEffect(() => {
     allPlayers();
   }, []);
 
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = players.filter(
+        (player) => player.category === selectedCategory
+      );
+      setFilteredPlayers(filtered);
+    } else {
+      setFilteredPlayers(players);
+    }
+  }, [players, selectedCategory]);
+
   const addPlayerFormik = useFormik({
     initialValues: {
       pLayerName: "",
-      academyName: "",
+      nationality: "",
+      birthDate: "",
       category: "",
       possition: "",
       numberShirt: "",
-      goals: "",
-      yellowCards: "",
-      redCards: "",
-      nationality: "",
-      birthDate: "",
+      URLImage: null,
+      URLPassport: null,
     },
     onSubmit: addPlayer,
   });
@@ -151,45 +238,174 @@ const Players = () => {
       redCards: "",
       nationality: "",
       birthDate: "",
+      URLImage: null,
+      URLPassport: null,
     },
     onSubmit: editPlayer,
   });
 
+  const categories = ["12", "14", "16"];
+
   return (
     <div className="players-page">
-      {/* زر إضافة لاعب */}
-      <div className="header-bar">
-        <button className="add-player-btn" onClick={() => setShowAdd(true)}>
-          إضافة لاعب +
-        </button>
+      {/* Cards for Age Categories */}
+      <div className="categories-container">
+        {categories.map((category) => (
+          <div
+            key={category}
+            className={`category-card ${
+              selectedCategory === category ? "active" : ""
+            }`}
+            onClick={() => handleCategoryClick(category)}
+          >
+            <div className="category-header">
+              <h3 className="category-title">فئة {category} سنة</h3>
+              <div className="player-count">
+                {
+                  players.filter((player) => player.category === category)
+                    .length
+                }{" "}
+                لاعب
+              </div>
+            </div>
+            <div className="category-actions">
+              <button
+                className="add-player-category-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddPlayerToCategory(category);
+                }}
+              >
+                إضافة لاعب +
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* الفلاتر وحقل البحث */}
-      <div className="filters-bar">
-        <select className="filter-select">
-          <option>جميع الأكاديميات</option>
-        </select>
-        <select className="filter-select">
-          <option>جميع الفئات</option>
-        </select>
-        <select className="filter-select">
-          <option>تصفية حسب الأكاديمية</option>
-        </select>
-        <select className="filter-select">
-          <option>تصفية حسب الفئة</option>
-        </select>
-        <input className="search-input" placeholder="ابحث باسم اللاعب" />
-      </div>
+      {/* Players Cards for Selected Category */}
+      {selectedCategory && (
+        <div className="selected-category-section">
+          <div className="category-header-section">
+            <h2 className="selected-category-title">
+              لاعبي فئة {selectedCategory} سنة
+            </h2>
+            <button
+              className="add-player-btn"
+              onClick={() => handleAddPlayerToCategory(selectedCategory)}
+            >
+              إضافة لاعب جديد +
+            </button>
+          </div>
+
+          <div className="players-cards-container">
+            {filteredPlayers.map((player, idx) => (
+              <div key={idx} className="player-card">
+                <div className="player-image-container">
+                  <img
+                    src={player.urlImage || "/default-player.png"}
+                    alt={player.pLayerName}
+                    className="player-image"
+                    onError={(e) => {
+                      e.target.src = "/default-player.png";
+                    }}
+                  />
+                  <div className="player-number">{player.numberShirt}</div>
+                </div>
+
+                <div className="player-info">
+                  <h3 className="player-name">{player.pLayerName}</h3>
+                  <div className="player-details">
+                    <div className="detail-item">
+                      <span className="detail-label">الأكاديمية:</span>
+                      <span className="detail-value">{player.academyName}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">المركز:</span>
+                      <span className="detail-value">{player.possition}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">الجنسية:</span>
+                      <span className="detail-value">{player.nationality}</span>
+                    </div>
+                  </div>
+
+                  <div className="player-stats">
+                    <div className="stat-item">
+                      <span className="stat-label">رقم القميص</span>
+                      <span className="stat-value goals">
+                        {player.numberShirt || 0}
+                      </span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">المركز</span>
+                      <span className="stat-value goals">
+                        {player.possition || 0}
+                      </span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">تاريخ الميلاد</span>
+                      <span className="stat-value red-cards">
+                        {player.birthDate || 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="player-actions">
+                  <button
+                    className="action-btn image-btn"
+                    onClick={() => handlePlayerImageClick(player)}
+                    title="عرض صورة اللاعب"
+                  >
+                    <i className="fas fa-image"></i>
+                    عرض الصورة
+                  </button>
+                  <button
+                    className="action-btn passport-btn"
+                    onClick={() => handlePassportClick(player)}
+                    title="عرض الباسبور"
+                  >
+                    <i className="fas fa-passport"></i>
+                    عرض الباسبور
+                  </button>
+                  <button
+                    className="action-btn edit-btn"
+                    onClick={() => handleEditClick(player)}
+                    title="تعديل"
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
+                    className="action-btn delete-btn"
+                    onClick={() => deletePlayer(player.playerID)}
+                    title="حذف"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Player Modal */}
       {showAdd && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header bg-[#ef4343]">
-              <span className="text-white bg-[#ef4343] p-2 rounded-md">إضافة لاعب جديد</span>
-              <button className="close-btn" onClick={() => setShowAdd(false)}>
+              <span className="text-white bg-[#ef4343] p-2 rounded-md">
+                إضافة لاعب جديد - فئة {selectedCategory} سنة
+              </span>
+              <button className="close-btn" onClick={onCloseAdd}>
                 ×
               </button>
             </div>
-              <form className="edit-player-form" onSubmit={addPlayerFormik.handleSubmit}>
+            <form
+              className="edit-player-form"
+              onSubmit={addPlayerFormik.handleSubmit}
+            >
               <div className="form-row">
                 <input
                   className={`form-input ${
@@ -203,34 +419,23 @@ const Players = () => {
                   }
                   required
                 />
-                <label>اسم اللاعب</label>
+                <label>اسم اللاعب *</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
                   type="text"
-                  placeholder="الأكاديمية"
-                  value={addPlayerFormik.values.academyName}
+                  placeholder="الجنسية"
+                  value={addPlayerFormik.values.nationality}
                   onChange={(e) =>
-                    addPlayerFormik.setFieldValue("academyName", e.target.value)
+                    addPlayerFormik.setFieldValue("nationality", e.target.value)
                   }
                   required
                 />
-                <label>الأكاديمية</label>
+                <label>الجنسية *</label>
               </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="text"
-                  placeholder="الفئة"
-                  value={addPlayerFormik.values.category}
-                  onChange={(e) =>
-                    addPlayerFormik.setFieldValue("category", e.target.value)
-                  }
-                  required
-                />
-                <label>الفئة</label>
-              </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -239,23 +444,38 @@ const Players = () => {
                   onChange={(e) =>
                     addPlayerFormik.setFieldValue("birthDate", e.target.value)
                   }
+                  required
                 />
-                <label>تاريخ الميلاد</label>
+                <label>تاريخ الميلاد *</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
                   type="text"
-                  placeholder="المركز"
+                  value={addPlayerFormik.values.category}
+                  disabled
+                />
+                <label>الفئة</label>
+              </div>
+
+              <div className="form-row">
+                <select
+                  className="form-input"
                   value={addPlayerFormik.values.possition}
                   onChange={(e) =>
                     addPlayerFormik.setFieldValue("possition", e.target.value)
                   }
-                  required
-                />
-
-                <label>المركز</label>
+                >
+                  {positions.map((position) => (
+                    <option key={position} value={position}>
+                      {position}
+                    </option>
+                  ))}
+                </select>
+                <label>المركز (اختياري)</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -267,56 +487,36 @@ const Players = () => {
                   }
                   required
                 />
-                <label>رقم القميص</label>
+                <label>رقم القميص *</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
-                  type="number"
-                  placeholder="الأهداف"
-                  value={addPlayerFormik.values.goals}
+                  type="file"
+                  accept="image/*"
                   onChange={(e) =>
-                    addPlayerFormik.setFieldValue("goals", e.target.value)
+                    addPlayerFormik.setFieldValue("URLImage", e.target.files[0])
                   }
                 />
-                <label>الأهداف</label>
+                <label>صورة اللاعب</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
-                  type="number"
-                  placeholder="البطاقات الصفراء"
-                  value={addPlayerFormik.values.yellowCards}
+                  type="file"
+                  accept="image/*"
                   onChange={(e) =>
-                    addPlayerFormik.setFieldValue("yellowCards", e.target.value)
+                    addPlayerFormik.setFieldValue(
+                      "URLPassport",
+                      e.target.files[0]
+                    )
                   }
                 />
-                <label>البطاقات الصفراء</label>
+                <label>جواز السفر</label>
               </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="number"
-                  placeholder="البطاقات الحمراء"
-                  value={addPlayerFormik.values.redCards}
-                  onChange={(e) =>
-                    addPlayerFormik.setFieldValue("redCards", e.target.value)
-                  }
-                />
-                <label>البطاقات الحمراء</label>
-              </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="text"
-                  placeholder="الجنسية"
-                  value={addPlayerFormik.values.nationality}
-                  onChange={(e) =>
-                    addPlayerFormik.setFieldValue("nationality", e.target.value)
-                  }
-                />
-                <label>الجنسية</label>
-              </div>
+
               <button className="update-btn" type="submit">
                 إضافة
               </button>
@@ -325,67 +525,113 @@ const Players = () => {
         </div>
       )}
 
-      {/* جدول اللاعبين */}
-      <div className="players-table-container">
-        <table className="players-table">
-          <thead>
-            <tr>
-              <th>اسم اللاعب</th>
-              <th>الأكاديمية</th>
-              <th>الفئة</th>
-              <th>المركز</th>
-              <th>رقم القميص</th>
-              <th>الأهداف</th>
-              <th>البطاقات الصفراء</th>
-              <th>البطاقات الحمراء</th>
-              <th>الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.map((player, idx) => (
-              <tr key={idx}>
-                <td>{player.pLayerName}</td>
-                <td>{player.academyName}</td>
-                <td>{player.category}</td>
-                <td>{player.possition}</td>
-                <td>{player.numberShirt}</td>
-                <td>
-                  <span className="yellow-badge">{player.goals}</span>
-                </td>
-                <td>
-                  <span className="yellow-badge">{player.yellowCards}</span>
-                </td>
-                <td>
-                  <span className="red-badge">{player.redCards}</span>
-                </td>
-                <td>
-                <button className="action-btn delete" onClick={() => deletePlayer(player.id)}>
-                    <i className="fas fa-trash"></i>
-                  </button>
-                  <button className="action-btn edit" onClick={() => handleEditClick(player)}>
-                    <i className="fas fa-edit"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Player Image Modal */}
+      {showPlayerImage && (
+        <div className="modal-overlay">
+          <div className="modal-content image-modal">
+            <div className="modal-header">
+              <span>عرض صورة اللاعب</span>
+              <button className="close-btn" onClick={onClosePlayerImage}>
+                ×
+              </button>
+            </div>
+            <div className="image-content">
+              {selectedPlayerImage ? (
+                <img
+                  src={selectedPlayerImage}
+                  alt="صورة اللاعب"
+                  className="player-detail-image"
+                  onError={(e) => {
+                    e.target.src = "/default-player.png";
+                  }}
+                />
+              ) : (
+                <div className="no-image">
+                  <i className="fas fa-image"></i>
+                  <p>لا توجد صورة متاحة</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* نافذة التعديل */}
+      {/* Passport Modal */}
+      {showPassport && (
+        <div className="modal-overlay">
+          <div className="modal-content passport-modal">
+            <div className="modal-header">
+              <span>عرض جواز السفر</span>
+              <button className="close-btn" onClick={onClosePassport}>
+                ×
+              </button>
+            </div>
+            <div className="passport-content">
+              {selectedPassport ? (
+                <img
+                  src={selectedPassport}
+                  alt="جواز السفر"
+                  className="passport-image"
+                  onError={(e) => {
+                    e.target.src = "/default-passport.png";
+                  }}
+                />
+              ) : (
+                <div className="no-passport">
+                  <i className="fas fa-passport"></i>
+                  <p>لا يوجد جواز سفر متاح</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Edit Player Modal */}
       {showEdit && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content edit-modal">
             <div className="modal-header">
               <span>تعديل بيانات لاعب</span>
               <button className="close-btn" onClick={onCloseEdit}>
                 ×
               </button>
             </div>
-            <form className="edit-player-form" onSubmit={editPlayerFormik.handleSubmit}>
+            <form
+              className="edit-player-form"
+              onSubmit={editPlayerFormik.handleSubmit}
+            >
+              {/* Current Images Section */}
+              <div className="current-images-section">
+                <div className="current-image-item">
+                  <h4>الصورة الحالية:</h4>
+                  <img
+                    src={editingPlayer?.urlImage || "/default-player.png"}
+                    alt="الصورة الحالية"
+                    className="current-image-preview"
+                    onError={(e) => {
+                      e.target.src = "/default-player.png";
+                    }}
+                  />
+                </div>
+                <div className="current-image-item">
+                  <h4>صورة الباسبور الحالية:</h4>
+                  <img
+                    src={editingPlayer?.urlPassport || "/default-passport.png"}
+                    alt="صورة الباسبور الحالية"
+                    className="current-image-preview"
+                    onError={(e) => {
+                      e.target.src = "/default-passport.png";
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Player Information Fields */}
               <div className="form-row">
                 <input
-                  className={`form-input ${!editPlayerFormik.values.pLayerName ? "input-error" : ""}`}
+                  className={`form-input ${
+                    !editPlayerFormik.values.pLayerName ? "input-error" : ""
+                  }`}
                   type="text"
                   placeholder="اسم اللاعب"
                   value={editPlayerFormik.values.pLayerName}
@@ -396,6 +642,7 @@ const Players = () => {
                 />
                 <label>اسم اللاعب</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -403,25 +650,16 @@ const Players = () => {
                   placeholder="الأكاديمية"
                   value={editPlayerFormik.values.academyName}
                   onChange={(e) =>
-                    editPlayerFormik.setFieldValue("academyName", e.target.value)
+                    editPlayerFormik.setFieldValue(
+                      "academyName",
+                      e.target.value
+                    )
                   }
                   required
                 />
                 <label>الأكاديمية</label>
               </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="text"
-                  placeholder="الفئة"
-                  value={editPlayerFormik.values.category}
-                  onChange={(e) =>
-                    editPlayerFormik.setFieldValue("category", e.target.value)
-                  }
-                  required
-                />
-                <label>الفئة</label>
-              </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -433,6 +671,7 @@ const Players = () => {
                 />
                 <label>تاريخ الميلاد</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -446,6 +685,7 @@ const Players = () => {
                 />
                 <label>المركز</label>
               </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -453,48 +693,16 @@ const Players = () => {
                   placeholder="رقم القميص"
                   value={editPlayerFormik.values.numberShirt}
                   onChange={(e) =>
-                    editPlayerFormik.setFieldValue("numberShirt", e.target.value)
+                    editPlayerFormik.setFieldValue(
+                      "numberShirt",
+                      e.target.value
+                    )
                   }
                   required
                 />
                 <label>رقم القميص</label>
               </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="number"
-                  placeholder="الأهداف"
-                  value={editPlayerFormik.values.goals}
-                  onChange={(e) =>
-                    editPlayerFormik.setFieldValue("goals", e.target.value)
-                  }
-                />
-                <label>الأهداف</label>
-              </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="number"
-                  placeholder="البطاقات الصفراء"
-                  value={editPlayerFormik.values.yellowCards}
-                  onChange={(e) =>
-                    editPlayerFormik.setFieldValue("yellowCards", e.target.value)
-                  }
-                />
-                <label>البطاقات الصفراء</label>
-              </div>
-              <div className="form-row">
-                <input
-                  className="form-input"
-                  type="number"
-                  placeholder="البطاقات الحمراء"
-                  value={editPlayerFormik.values.redCards}
-                  onChange={(e) =>
-                    editPlayerFormik.setFieldValue("redCards", e.target.value)
-                  }
-                />
-                <label>البطاقات الحمراء</label>
-              </div>
+
               <div className="form-row">
                 <input
                   className="form-input"
@@ -502,11 +710,46 @@ const Players = () => {
                   placeholder="الجنسية"
                   value={editPlayerFormik.values.nationality}
                   onChange={(e) =>
-                    editPlayerFormik.setFieldValue("nationality", e.target.value)
+                    editPlayerFormik.setFieldValue(
+                      "nationality",
+                      e.target.value
+                    )
                   }
                 />
                 <label>الجنسية</label>
               </div>
+
+              {/* Image Upload Fields */}
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    editPlayerFormik.setFieldValue(
+                      "URLImage",
+                      e.target.files[0]
+                    )
+                  }
+                />
+                <label>تعديل صورة اللاعب</label>
+              </div>
+
+              <div className="form-row">
+                <input
+                  className="form-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    editPlayerFormik.setFieldValue(
+                      "URLPassport",
+                      e.target.files[0]
+                    )
+                  }
+                />
+                <label>تعديل صورة الباسبور</label>
+              </div>
+
               <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
                 <button
                   type="button"
@@ -528,8 +771,6 @@ const Players = () => {
           </div>
         </div>
       )}
-
-      {/* نافذة إضافة لاعب جديد */}
     </div>
   );
 };

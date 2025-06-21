@@ -452,4 +452,204 @@
   .register-form {
     padding: 20px;
   }
+}
+
+/* Country Code Selector Styles */
+.phone-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.country-code-selector {
+  position: relative;
+  min-width: 120px;
+}
+
+.country-code-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #f3f6fd;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  min-width: 120px;
+  justify-content: space-between;
+}
+
+.country-code-btn:hover {
+  border-color: #ef4343;
+  background: #fff;
+}
+
+.country-code-btn:focus {
+  outline: none;
+  border-color: #ef4343;
+  background: #fff;
+}
+
+.country-flag {
+  font-size: 1.2rem;
+}
+
+.country-code {
+  font-weight: 500;
+  color: #374151;
+}
+
+.country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  margin-top: 4px;
+}
+
+.country-search {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.country-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.country-search input:focus {
+  border-color: #ef4343;
+}
+
+.country-options {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.country-option:hover {
+  background: #f9fafb;
+}
+
+.country-option:last-child {
+  border-bottom: none;
+}
+
+.country-option .country-flag {
+  font-size: 1.1rem;
+  min-width: 20px;
+}
+
+.country-option .country-name {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #374151;
+  text-align: right;
+}
+
+.country-option .country-code {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.phone-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+  background: #f3f6fd;
+  direction: rtl;
+}
+
+.phone-input:focus {
+  border-color: #ef4343;
+  background: #fff;
+}
+
+.phone-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.phone-input.error:focus {
+  border-color: #ef4444;
+  background: #fff;
+}
+
+/* Checkbox styles for terms */
+.checkbox-group {
+  margin-top: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #ef4343;
+  cursor: pointer;
+}
+
+.checkbox-label:hover {
+  color: #ef4343;
+}
+
+/* Responsive adjustments for country selector */
+@media (max-width: 768px) {
+  .phone-input-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .country-code-selector {
+    width: 100%;
+  }
+  
+  .country-code-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .country-dropdown {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
 } 

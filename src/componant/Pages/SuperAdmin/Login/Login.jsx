@@ -9,6 +9,101 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState({
+    code: '+966',
+    name: 'Saudi Arabia',
+    flag: '🇸🇦'
+  });
+
+  // Country data for phone codes
+  const countries = [
+    { code: '+966', name: 'Saudi Arabia', flag: '🇸🇦' },
+    { code: '+971', name: 'UAE', flag: '🇦🇪' },
+    { code: '+973', name: 'Bahrain', flag: '🇧🇭' },
+    { code: '+974', name: 'Qatar', flag: '🇶🇦' },
+    { code: '+965', name: 'Kuwait', flag: '🇰🇼' },
+    { code: '+968', name: 'Oman', flag: '🇴🇲' },
+    { code: '+962', name: 'Jordan', flag: '🇯🇴' },
+    { code: '+961', name: 'Lebanon', flag: '🇱🇧' },
+    { code: '+20', name: 'Egypt', flag: '🇪🇬' },
+    { code: '+212', name: 'Morocco', flag: '🇲🇦' },
+    { code: '+216', name: 'Tunisia', flag: '🇹🇳' },
+    { code: '+213', name: 'Algeria', flag: '🇩🇿' },
+    { code: '+1', name: 'USA/Canada', flag: '🇺🇸' },
+    { code: '+44', name: 'UK', flag: '🇬🇧' },
+    { code: '+33', name: 'France', flag: '🇫🇷' },
+    { code: '+49', name: 'Germany', flag: '🇩🇪' },
+    { code: '+39', name: 'Italy', flag: '🇮🇹' },
+    { code: '+34', name: 'Spain', flag: '🇪🇸' },
+    { code: '+31', name: 'Netherlands', flag: '🇳🇱' },
+    { code: '+32', name: 'Belgium', flag: '🇧🇪' },
+    { code: '+41', name: 'Switzerland', flag: '🇨🇭' },
+    { code: '+43', name: 'Austria', flag: '🇦🇹' },
+    { code: '+46', name: 'Sweden', flag: '🇸🇪' },
+    { code: '+47', name: 'Norway', flag: '🇳🇴' },
+    { code: '+45', name: 'Denmark', flag: '🇩🇰' },
+    { code: '+358', name: 'Finland', flag: '🇫🇮' },
+    { code: '+48', name: 'Poland', flag: '🇵🇱' },
+    { code: '+420', name: 'Czech Republic', flag: '🇨🇿' },
+    { code: '+36', name: 'Hungary', flag: '🇭🇺' },
+    { code: '+30', name: 'Greece', flag: '🇬🇷' },
+    { code: '+351', name: 'Portugal', flag: '🇵🇹' },
+    { code: '+353', name: 'Ireland', flag: '🇮🇪' },
+    { code: '+61', name: 'Australia', flag: '🇦🇺' },
+    { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
+    { code: '+81', name: 'Japan', flag: '🇯🇵' },
+    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+    { code: '+86', name: 'China', flag: '🇨🇳' },
+    { code: '+91', name: 'India', flag: '🇮🇳' },
+    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+    { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
+    { code: '+66', name: 'Thailand', flag: '🇹🇭' },
+    { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
+    { code: '+63', name: 'Philippines', flag: '🇵🇭' },
+    { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
+    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
+    { code: '+94', name: 'Sri Lanka', flag: '🇱🇰' },
+    { code: '+95', name: 'Myanmar', flag: '🇲🇲' },
+    { code: '+977', name: 'Nepal', flag: '🇳🇵' },
+    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
+    { code: '+93', name: 'Afghanistan', flag: '🇦🇫' },
+    { code: '+98', name: 'Iran', flag: '🇮🇷' },
+    { code: '+964', name: 'Iraq', flag: '🇮🇶' },
+    { code: '+963', name: 'Syria', flag: '🇸🇾' },
+    { code: '+90', name: 'Turkey', flag: '🇹🇷' },
+    { code: '+7', name: 'Russia', flag: '🇷🇺' },
+    { code: '+380', name: 'Ukraine', flag: '🇺🇦' },
+    { code: '+48', name: 'Poland', flag: '🇵🇱' },
+    { code: '+420', name: 'Czech Republic', flag: '🇨🇿' },
+    { code: '+36', name: 'Hungary', flag: '🇭🇺' },
+    { code: '+30', name: 'Greece', flag: '🇬🇷' },
+    { code: '+351', name: 'Portugal', flag: '🇵🇹' },
+    { code: '+353', name: 'Ireland', flag: '🇮🇪' },
+    { code: '+61', name: 'Australia', flag: '🇦🇺' },
+    { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
+    { code: '+81', name: 'Japan', flag: '🇯🇵' },
+    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+    { code: '+86', name: 'China', flag: '🇨🇳' },
+    { code: '+91', name: 'India', flag: '🇮🇳' },
+    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+    { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
+    { code: '+66', name: 'Thailand', flag: '🇹🇭' },
+    { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
+    { code: '+63', name: 'Philippines', flag: '🇵🇭' },
+    { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
+    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
+    { code: '+94', name: 'Sri Lanka', flag: '🇱🇰' },
+    { code: '+95', name: 'Myanmar', flag: '🇲🇲' },
+    { code: '+977', name: 'Nepal', flag: '🇳🇵' },
+    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
+    { code: '+93', name: 'Afghanistan', flag: '🇦🇫' },
+    { code: '+98', name: 'Iran', flag: '🇮🇷' },
+    { code: '+964', name: 'Iraq', flag: '🇮🇶' },
+    { code: '+963', name: 'Syria', flag: '🇸🇾' },
+    { code: '+90', name: 'Turkey', flag: '🇹🇷' },
+    { code: '+7', name: 'Russia', flag: '🇷🇺' },
+    { code: '+380', name: 'Ukraine', flag: '🇺🇦' },
+  ];
 
   // Validation schema for registration form
   const registerValidationSchema = Yup.object({
@@ -18,21 +113,24 @@ const Login = () => {
     academyEmail: Yup.string()
       .email("البريد الإلكتروني غير صحيح")
       .required("البريد الإلكتروني مطلوب"),
-    academyPhone: Yup.string().matches(
-      /^[0-9+\-\s()]+$/,
-      "رقم الهاتف غير صحيح"
-    ),
-    academyCity: Yup.string()
-      .min(2, "اسم المدينة يجب أن يكون على الأقل حرفين")
-      .required("المدينة مطلوبة"),
+    academyPhone: Yup.string()
+      .matches(
+        /^[0-9\s\-\(\)]+$/,
+        "رقم الهاتف غير صحيح"
+      )
+      .min(7, "رقم الهاتف يجب أن يكون على الأقل 7 أرقام")
+      .required("رقم الهاتف مطلوب"),
     academyCountry: Yup.string()
       .min(2, "اسم الدولة يجب أن يكون على الأقل حرفين")
       .required("الدولة مطلوبة"),
-    academyPassword: Yup.string()
+    password: Yup.string()
       .min(6, "كلمة المرور يجب أن تكون على الأقل 6 أحرف")
       .required("كلمة المرور مطلوبة"),
-    logoURL: Yup.string().url("رابط الشعار غير صحيح"),
-    coordinator: Yup.string().min(2, "اسم المنسق يجب أن يكون على الأقل حرفين"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], 'كلمة المرور غير متطابقة')
+      .required("تأكيد كلمة المرور مطلوب"),
+    logoURL: Yup.mixed(),
+
   });
 
   // Formik hook for registration form
@@ -41,15 +139,31 @@ const Login = () => {
       academyName: "",
       academyEmail: "",
       academyPhone: "",
-      academyCity: "",
       academyCountry: "",
-      academyPassword: "",
-      logoURL: "",
-      coordinator: "",
+      password: "",
+      confirmPassword: "",
+      logoURL: null,
     },
     validationSchema: registerValidationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      axios.post("https://sports.runasp.net/api/Register-Academy", values)
+      const formData = new FormData();
+      formData.append('academyName', values.academyName);
+      formData.append('academyEmail', values.academyEmail);
+      formData.append('academyPhone', selectedCountry.code + ' ' + values.academyPhone);
+      formData.append('academyCountry', values.academyCountry);
+      formData.append('password', values.password);
+      formData.append('confirmPassword', values.confirmPassword);
+        if (values.logoURL) {
+        formData.append('logoURL', values.logoURL);
+
+      }
+   
+
+      axios.post("https://sports.runasp.net/api/Register-Academy", values, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
         .then((response) => {
           resetForm();
           setShowRegister(false);
@@ -122,6 +236,7 @@ const Login = () => {
             value={FormikLogin.values.academyEmail}
             onChange={FormikLogin.handleChange}
             onBlur={FormikLogin.handleBlur}
+            required
           />
           <label className="login-label" htmlFor="password">
             كلمة المرور
@@ -135,6 +250,7 @@ const Login = () => {
             value={FormikLogin.values.academyPassword}
             onChange={FormikLogin.handleChange}
             onBlur={FormikLogin.handleBlur}
+            required
           />
           <button className="login-btn" type="submit">
             <i className="fas fa-sign-in-alt login-btn-icon"></i> تسجيل الدخول
@@ -145,7 +261,7 @@ const Login = () => {
           type="button"
           onClick={() => setShowRegister(true)}
         >
-          <i className="fas fa-plus register-btn-icon"></i> تسجيل أكاديمية جديدة
+          <i className="fas fa-plus register-btn-icon"></i> تسجيل جديد
         </button>
       </div>
 
@@ -160,7 +276,7 @@ const Login = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="register-modal-header">
-              <h2>تسجيل أكاديمية جديدة</h2>
+              <h2>تسجيل جديد</h2>
               <button
                 className="register-close-btn"
                 onClick={() => setShowRegister(false)}
@@ -174,7 +290,7 @@ const Login = () => {
               onSubmit={registerFormik.handleSubmit}
             >
               <div className="register-form-section">
-                <h3><i className="fas fa-building"></i> معلومات الأكاديمية الأساسية</h3>
+                <h3><i className="fas fa-building"></i> معلومات الأكاديمية</h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>اسم الأكاديمية *</label>
@@ -208,6 +324,7 @@ const Login = () => {
                       onChange={registerFormik.handleChange}
                       onBlur={registerFormik.handleBlur}
                       placeholder="أدخل الدولة"
+                      required
                       className={
                         registerFormik.touched.academyCountry &&
                         registerFormik.errors.academyCountry
@@ -219,78 +336,6 @@ const Login = () => {
                       registerFormik.errors.academyCountry && (
                         <div className="error-message">
                           {registerFormik.errors.academyCountry}
-                        </div>
-                      )}
-                  </div>
-                  <div className="form-group">
-                    <label>المدينه *</label>
-                    <input
-                      type="text"
-                      name="academyCity"
-                      value={registerFormik.values.academyCity}
-                      onChange={registerFormik.handleChange}
-                      onBlur={registerFormik.handleBlur}
-                      placeholder="أدخل المدينه"
-                      className={
-                        registerFormik.touched.academyCity &&
-                        registerFormik.errors.academyCity
-                          ? "error"
-                          : ""
-                      }
-                    />
-                    {registerFormik.touched.academyCity &&
-                      registerFormik.errors.academyCity && (
-                        <div className="error-message">
-                          {registerFormik.errors.academyCity}
-                        </div>
-                      )}
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>اسم المنسق</label>
-                    <input
-                      type="text"
-                      name="coordinator"
-                      value={registerFormik.values.coordinator}
-                      onChange={registerFormik.handleChange}
-                      onBlur={registerFormik.handleBlur}
-                      placeholder="أدخل اسم المنسق"
-                      className={
-                        registerFormik.touched.coordinator &&
-                        registerFormik.errors.coordinator
-                          ? "error"
-                          : ""
-                      }
-                    />
-                    {registerFormik.touched.coordinator &&
-                      registerFormik.errors.coordinator && (
-                        <div className="error-message">
-                          {registerFormik.errors.coordinator}
-                        </div>
-                      )}
-                  </div>
-                  <div className="form-group">
-                    <label>رابط الشعار</label>
-                    <input
-                      type="url"
-                      name="logoURL"
-                      value={registerFormik.values.logoURL}
-                      onChange={registerFormik.handleChange}
-                      onBlur={registerFormik.handleBlur}
-                      placeholder="رابط صورة الشعار"
-                      className={
-                        registerFormik.touched.logoURL &&
-                        registerFormik.errors.logoURL
-                          ? "error"
-                          : ""
-                      }
-                    />
-                    {registerFormik.touched.logoURL &&
-                      registerFormik.errors.logoURL && (
-                        <div className="error-message">
-                          {registerFormik.errors.logoURL}
                         </div>
                       )}
                   </div>
@@ -324,21 +369,69 @@ const Login = () => {
                       )}
                   </div>
                   <div className="form-group">
-                    <label>رقم الهاتف</label>
-                    <input
-                      type="tel"
-                      name="academyPhone"
-                      value={registerFormik.values.academyPhone}
-                      onChange={registerFormik.handleChange}
-                      onBlur={registerFormik.handleBlur}
-                      placeholder="رقم الهاتف"
-                      className={
-                        registerFormik.touched.academyPhone &&
-                        registerFormik.errors.academyPhone
-                          ? "error"
-                          : ""
-                      }
-                    />
+                    <label>رقم الهاتف (مفتاح الدولة) *</label>
+                    <div className="phone-input-container">
+                      <div className="country-code-selector">
+                        <button
+                          type="button"
+                          className="country-code-btn"
+                          onClick={() => {
+                            const dropdown = document.getElementById('country-dropdown');
+                            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                          }}
+                        >
+                          <span className="country-flag">{selectedCountry.flag}</span>
+                          <span className="country-code">{selectedCountry.code}</span>
+                          <i className="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="country-dropdown" className="country-dropdown">
+                          <div className="country-search">
+                            <input
+                              type="text"
+                              placeholder="البحث عن دولة..."
+                              onChange={(e) => {
+                                const searchTerm = e.target.value.toLowerCase();
+                                const options = document.querySelectorAll('.country-option');
+                                options.forEach(option => {
+                                  const countryName = option.textContent.toLowerCase();
+                                  option.style.display = countryName.includes(searchTerm) ? 'block' : 'none';
+                                });
+                              }}
+                            />
+                          </div>
+                          <div className="country-options">
+                            {countries.map((country, index) => (
+                              <div
+                                key={index}
+                                className="country-option"
+                                onClick={() => {
+                                  setSelectedCountry(country);
+                                  document.getElementById('country-dropdown').style.display = 'none';
+                                }}
+                              >
+                                <span className="country-flag">{country.flag}</span>
+                                <span className="country-name">{country.name}</span>
+                                <span className="country-code">{country.code}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <input
+                        type="tel"
+                        name="academyPhone"
+                        value={registerFormik.values.academyPhone}
+                        onChange={registerFormik.handleChange}
+                        onBlur={registerFormik.handleBlur}
+                        placeholder="50 123 4567"
+                        className={`phone-input ${
+                          registerFormik.touched.academyPhone &&
+                          registerFormik.errors.academyPhone
+                            ? "error"
+                            : ""
+                        }`}
+                      />
+                    </div>
                     {registerFormik.touched.academyPhone &&
                       registerFormik.errors.academyPhone && (
                         <div className="error-message">
@@ -356,24 +449,93 @@ const Login = () => {
                     <label>كلمة المرور *</label>
                     <input
                       type="password"
-                      name="academyPassword"
-                      value={registerFormik.values.academyPassword}
+                      name="password"
+                      value={registerFormik.values.password}
                       onChange={registerFormik.handleChange}
                       onBlur={registerFormik.handleBlur}
                       placeholder="كلمة المرور"
                       className={
-                        registerFormik.touched.academyPassword &&
-                        registerFormik.errors.academyPassword
+                        registerFormik.touched.password &&
+                        registerFormik.errors.password
                           ? "error"
                           : ""
                       }
                     />
-                    {registerFormik.touched.academyPassword &&
-                      registerFormik.errors.academyPassword && (
+                    {registerFormik.touched.password &&
+                      registerFormik.errors.password && (
                         <div className="error-message">
-                          {registerFormik.errors.academyPassword}
+                          {registerFormik.errors.password}
                         </div>
                       )}
+                  </div>
+                  <div className="form-group">
+                    <label>تأكيد كلمة المرور *</label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={registerFormik.values.confirmPassword}
+                      onChange={registerFormik.handleChange}
+                      onBlur={registerFormik.handleBlur}
+                      placeholder="تأكيد كلمة المرور"
+                      className={
+                        registerFormik.touched.confirmPassword &&
+                        registerFormik.errors.confirmPassword
+                          ? "error"
+                          : ""
+                      }
+                    />
+                        {registerFormik.touched.confirmPassword &&
+                      registerFormik.errors.confirmPassword && (
+                        <div className="error-message">
+                          {registerFormik.errors.confirmPassword}
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="register-form-section">
+                <h3><i className="fas fa-image"></i> شعار الأكاديمية</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>رفع شعار الأكاديمية</label>
+                    <input
+                      type="file"
+                      name="logoURL"
+                      accept="image/*"
+                      onChange={(event) => {
+                        registerFormik.setFieldValue("logoURL", event.currentTarget.files[0]);
+                      }}
+                      className={
+                        registerFormik.touched.logoURL &&
+                        registerFormik.errors.logoURL
+                          ? "error"
+                          : ""
+                      }
+                    />
+                    {registerFormik.touched.logoURL &&
+                      registerFormik.errors.logoURL && (
+                        <div className="error-message">
+                          {registerFormik.errors.logoURL}
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="register-form-section">
+                <div className="form-row">
+                  <div className="form-group checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        name="termsAccepted"
+                        onChange={registerFormik.handleChange}
+                        required
+                      />
+                      أوافق على الشروط والأحكام *
+                    </label>
+            
                   </div>
                 </div>
               </div>

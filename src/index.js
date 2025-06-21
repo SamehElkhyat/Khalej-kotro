@@ -19,6 +19,7 @@ import TeamsRanking from "./componant/Pages/SuperAdmin/TeamsRanking/TeamsRanking
 import Login from "./componant/Pages/SuperAdmin/Login/Login.jsx";
 import Rules from "./componant/Pages/SuperAdmin/Rules/Rules.jsx";
 import LogOut from "./componant/Pages/LogOut/LogOut.jsx";
+import NavBar from "./componant/Pages/NavBar/NavBar.jsx";
 
 // تكوين مسارات التطبيق
 const مسارات_التطبيق = createBrowserRouter([
@@ -27,12 +28,13 @@ const مسارات_التطبيق = createBrowserRouter([
     path: "",
     element: <App/>,
     children: [
+
       // الصفحات الرئيسية
       { path: "info", element: <Info /> },           // صفحة المعلومات
       { path: "teams", element: <Teams /> },         // صفحة الفرق
       { path: "matches", element: <Matches /> },     // صفحة المباريات
       { path: "shedulde", element: <Shedulde /> },   // صفحة الجدول الزمني
-      
+      { path: "NavBar", element: <NavBar /> },     // صفحة اللاندينغ
       // صفحات الإدارة
       { path: "admin", element: <Admin /> },                    // لوحة الإدارة
       { path: "landing-admin", element: <LandingAdmin /> },     // صفحة دخول الإدارة
