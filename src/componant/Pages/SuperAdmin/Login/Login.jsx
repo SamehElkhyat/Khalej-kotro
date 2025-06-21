@@ -110,6 +110,9 @@ const Login = () => {
     academyName: Yup.string()
       .min(2, "اسم الأكاديمية يجب أن يكون على الأقل حرفين")
       .required("اسم الأكاديمية مطلوب"),
+    academyManagerName: Yup.string()
+      .min(2, "اسم مدير الأكاديمية يجب أن يكون على الأقل حرفين")
+      .required("اسم مدير الأكاديمية مطلوب"),
     academyEmail: Yup.string()
       .email("البريد الإلكتروني غير صحيح")
       .required("البريد الإلكتروني مطلوب"),
@@ -129,7 +132,8 @@ const Login = () => {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'كلمة المرور غير متطابقة')
       .required("تأكيد كلمة المرور مطلوب"),
-    logoURL: Yup.mixed(),
+    logoURL: Yup.mixed()
+      .required("الشعار مطلوب"),
 
   });
 
@@ -137,6 +141,7 @@ const Login = () => {
   const registerFormik = useFormik({
     initialValues: {
       academyName: "",
+      academyManagerName: "",
       academyEmail: "",
       academyPhone: "",
       academyCountry: "",
@@ -148,6 +153,7 @@ const Login = () => {
     onSubmit: (values, { setSubmitting, resetForm }) => {
       const formData = new FormData();
       formData.append('academyName', values.academyName);
+      formData.append('academyManagerName', values.academyManagerName);
       formData.append('academyEmail', values.academyEmail);
       formData.append('academyPhone', selectedCountry.code + ' ' + values.academyPhone);
       formData.append('academyCountry', values.academyCountry);
@@ -312,6 +318,31 @@ const Login = () => {
                       registerFormik.errors.academyName && (
                         <div className="error-message">
                           {registerFormik.errors.academyName}
+                        </div>
+                      )}
+                  </div>
+
+                  <div className="form-group">
+                    <label>اسم مدير الأكاديمية *</label>
+                    <input
+                      required
+                      type="text"
+                      name="academyManagerName"
+                      value={registerFormik.values.academyManagerName}
+                      onChange={registerFormik.handleChange}
+                      onBlur={registerFormik.handleBlur}
+                      placeholder="أدخل اسم مدير الأكاديمية"
+                      className={
+                        registerFormik.touched.academyManagerName &&
+                        registerFormik.errors.academyManagerName
+                          ? "error"
+                          : ""
+                      }
+                    />
+                    {registerFormik.touched.academyManagerName &&
+                      registerFormik.errors.academyManagerName && (
+                        <div className="error-message">
+                          {registerFormik.errors.academyManagerName}
                         </div>
                       )}
                   </div>

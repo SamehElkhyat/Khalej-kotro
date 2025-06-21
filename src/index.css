@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
+
+body{
+  background-color: #000;
+  font-family: 'Cairo', sans-serif !important;
+}
+
+
+/* Base styles */
+
 
 * {
   margin: 0;

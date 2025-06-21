@@ -34,15 +34,14 @@ const theme = createTheme({
 });
 
 const days = [
-  { label: "الأحد 7 يوليو", date: "2024-07-07" },
-  { label: "الاثنين 8 يوليو", date: "2024-07-08" },
-  { label: "الثلاثاء 9 يوليو", date: "2024-07-09" },
-  { label: "الأربعاء 10 يوليو", date: "2024-07-10" },
-  { label: "الخميس 11 يوليو", date: "2024-07-11" },
-  { label: "الجمعة 12 يوليو", date: "2024-07-12" },
-  { label: "السبت 13 يوليو", date: "2024-07-13" },
-  { label: "الأحد 14 يوليو", date: "2024-07-14" },
-  { label: "الاثنين 15 يوليو", date: "2024-07-15" },
+  { label: "الثلاثاء 8 يوليو", date: "2024-07-08" },
+  { label: "الأربعاء 9 يوليو", date: "2024-07-09" },
+  { label: "الخميس 10 يوليو", date: "2024-07-10" },
+  { label: "الجمعة 11 يوليو", date: "2024-07-11" },
+  { label: "السبت 12 يوليو", date: "2024-07-12" },
+  { label: "الأحد 13 يوليو", date: "2024-07-13" },
+  { label: "الاثنين 14 يوليو", date: "2024-07-14" },
+  { label: "الثلاثاء 15 يوليو", date: "2024-07-15" },
 ];
 
 export default function Camp() {
@@ -50,7 +49,6 @@ export default function Camp() {
   const [schedule, setSchedule] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [editForm, setEditForm] = useState({ time: "", activity: "" });
   const [DenimicID, setDenimicID] = useState(null);
 
   const addSchedule = async (values) => {

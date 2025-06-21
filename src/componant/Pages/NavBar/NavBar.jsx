@@ -62,7 +62,7 @@ export default function App() {
                 خليجيه كواترو 2025
               </h1>
               <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white opacity-80 drop-shadow mt-2">
-                الاثنين 3 مارس 2025 - الجمعة 21 مارس 2025
+                الثلاثاء 8 يوليو 2025 - الثلاثاء 15 يوليو 2025
               </p>
             </div>
 
