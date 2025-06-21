@@ -126,6 +126,15 @@ export default function App() {
                       <span className="sm:hidden">تسجيل الخروج</span>
                     </button>
 
+                    <button
+                      onClick={() => التنقل("/camp")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-futbol w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">المعسكر</span>
+                      <span className="sm:hidden">معسكر</span>
+                    </button>
+
                   </div>
                 </div>
               </div>

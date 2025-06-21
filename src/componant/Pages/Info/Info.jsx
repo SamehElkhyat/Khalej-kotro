@@ -30,11 +30,10 @@ function Info() {
     AdditionalTShirtColor: Yup.string(),
     AdditionalShortColor: Yup.string(),
     AdditionalShoesColor: Yup.string(),
-    AccessKey: Yup.string().required("يجب إدخال مفتاح الوصول"),
   });
   const handleSave = async (values) => {
     // التحقق من الفئات العمرية
-
+    console.log(values);
     setIsLoading(true);
     setIsSuccess(false);
 
@@ -207,7 +206,7 @@ function Info() {
           AdditionalTShirtColor: academyData.additionalTShirtColor || "#ffffff",
           AdditionalShortColor: academyData.additionalShortColor || "#ffffff",
           AdditionalShoesColor: academyData.additionalShoesColor || "#ffffff",
-                });
+        });
 
         toast.info(
           `تم تحميل البيانات المحفوظة مسبقاً. الفئات: ${categories.join(
@@ -398,6 +397,7 @@ function Info() {
                   )}
               </div>
             </div>
+
             <div className="dashboard-section">
               <div className="section-header">
                 <span className="icon">👥</span>
@@ -438,190 +438,188 @@ function Info() {
                   </div>
                 )}
             </div>
+
+            <div className="dashboard-section">
+              <div className="section-header">
+                <span className="icon">👕</span>
+                <h3>أطقم الملابس</h3>
+                <p className="section-description">
+                  حدد ألوان الأطقم الأساسية (إجبارية) والاحتياطية (اختيارية)
+                </p>
+              </div>
+
+              <div className="kits-container">
+                {/* الطقم الأساسي */}
+                <div className="kit-section">
+                  <h4 className="kit-title">
+                    <span className="kit-icon">🏠</span>
+                    الطقم الأساسي (إجباري)
+                  </h4>
+
+                  <div className="kit-items">
+                    <div className="kit-item">
+                      <label>تيشيرت</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.TShirtColor}
+                          onChange={(e) =>
+                            handleKitColorChange("TShirtColor", e.target.value)
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{ backgroundColor: formik.values.TShirtColor }}
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div className="kit-item">
+                      <label>شورت</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.ShortColor}
+                          onChange={(e) =>
+                            handleKitColorChange("ShortColor", e.target.value)
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{ backgroundColor: formik.values.ShortColor }}
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div className="kit-item">
+                      <label>حذاء</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.ShoesColor}
+                          onChange={(e) =>
+                            handleKitColorChange("ShoesColor", e.target.value)
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{ backgroundColor: formik.values.ShoesColor }}
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* الطقم الاحتياطي */}
+                <div className="kit-section">
+                  <h4 className="kit-title">
+                    <span className="kit-icon">✈️</span>
+                    الطقم الاحتياطي (اختياري)
+                  </h4>
+
+                  <div className="kit-items">
+                    <div className="kit-item">
+                      <label>تيشيرت</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.AdditionalTShirtColor}
+                          onChange={(e) =>
+                            handleKitColorChange(
+                              "AdditionalTShirtColor",
+                              e.target.value
+                            )
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{
+                            backgroundColor:
+                              formik.values.AdditionalTShirtColor,
+                          }}
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div className="kit-item">
+                      <label>شورت</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.AdditionalShortColor}
+                          onChange={(e) =>
+                            handleKitColorChange(
+                              "AdditionalShortColor",
+                              e.target.value
+                            )
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{
+                            backgroundColor: formik.values.AdditionalShortColor,
+                          }}
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div className="kit-item">
+                      <label>حذاء</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          value={formik.values.AdditionalShoesColor}
+                          onChange={(e) =>
+                            handleKitColorChange(
+                              "AdditionalShoesColor",
+                              e.target.value
+                            )
+                          }
+                          className="color-input"
+                        />
+                        <span
+                          className="color-preview"
+                          style={{
+                            backgroundColor: formik.values.AdditionalShoesColor,
+                          }}
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {(!formik.values.TShirtColor ||
+                !formik.values.ShortColor ||
+                !formik.values.ShoesColor) && (
+                <div
+                  className="error-message"
+                  style={{ textAlign: "center", marginTop: "1rem" }}
+                >
+                  يجب تحديد ألوان الطقم الأساسي (تيشيرت، شورت، حذاء)
+                </div>
+              )}
+            </div>
+
+            {/* زر الحفظ */}
+            <div className="save-section">
+              <p className="save-description">{getButtonDescription()}</p>
+              <button
+                type="submit"
+                className={getButtonClass()}
+                onClick={formik.handleSubmit}
+                disabled={isLoading}
+              >
+                <span className="save-icon">{getButtonIcon()}</span>
+                {getButtonText()}
+              </button>
+            </div>
           </form>
-        </div>
-
-        {/* الفئات العمرية */}
-
-        {/* أطقم الملابس */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <span className="icon">👕</span>
-            <h3>أطقم الملابس</h3>
-            <p className="section-description">
-              حدد ألوان الأطقم الأساسية (إجبارية) والاحتياطية (اختيارية)
-            </p>
-          </div>
-
-          <div className="kits-container">
-            {/* الطقم الأساسي */}
-            <div className="kit-section">
-              <h4 className="kit-title">
-                <span className="kit-icon">🏠</span>
-                الطقم الأساسي (إجباري)
-              </h4>
-
-              <div className="kit-items">
-                <div className="kit-item">
-                  <label>تيشيرت</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.TShirtColor}
-                      onChange={(e) =>
-                        handleKitColorChange("TShirtColor", e.target.value)
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{ backgroundColor: formik.values.TShirtColor }}
-                    ></span>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <label>شورت</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.ShortColor}
-                      onChange={(e) =>
-                        handleKitColorChange("ShortColor", e.target.value)
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{ backgroundColor: formik.values.ShortColor }}
-                    ></span>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <label>حذاء</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.ShoesColor}
-                      onChange={(e) =>
-                        handleKitColorChange("ShoesColor", e.target.value)
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{ backgroundColor: formik.values.ShoesColor }}
-                    ></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* الطقم الاحتياطي */}
-            <div className="kit-section">
-              <h4 className="kit-title">
-                <span className="kit-icon">✈️</span>
-                الطقم الاحتياطي (اختياري)
-              </h4>
-
-              <div className="kit-items">
-                <div className="kit-item">
-                  <label>تيشيرت</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.AdditionalTShirtColor}
-                      onChange={(e) =>
-                        handleKitColorChange(
-                          "AdditionalTShirtColor",
-                          e.target.value
-                        )
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{
-                        backgroundColor: formik.values.AdditionalTShirtColor,
-                      }}
-                    ></span>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <label>شورت</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.AdditionalShortColor}
-                      onChange={(e) =>
-                        handleKitColorChange(
-                          "AdditionalShortColor",
-                          e.target.value
-                        )
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{
-                        backgroundColor: formik.values.AdditionalShortColor,
-                      }}
-                    ></span>
-                  </div>
-                </div>
-
-                <div className="kit-item">
-                  <label>حذاء</label>
-                  <div className="color-picker">
-                    <input
-                      type="color"
-                      value={formik.values.AdditionalShoesColor}
-                      onChange={(e) =>
-                        handleKitColorChange(
-                          "AdditionalShoesColor",
-                          e.target.value
-                        )
-                      }
-                      className="color-input"
-                    />
-                    <span
-                      className="color-preview"
-                      style={{
-                        backgroundColor: formik.values.AdditionalShoesColor,
-                      }}
-                    ></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {(!formik.values.TShirtColor ||
-            !formik.values.ShortColor ||
-            !formik.values.ShoesColor) && (
-            <div
-              className="error-message"
-              style={{ textAlign: "center", marginTop: "1rem" }}
-            >
-              يجب تحديد ألوان الطقم الأساسي (تيشيرت، شورت، حذاء)
-            </div>
-          )}
-        </div>
-
-        {/* زر الحفظ */}
-        <div className="save-section">
-          <p className="save-description">{getButtonDescription()}</p>
-          <button
-            type="submit"
-            className={getButtonClass()}
-            onClick={formik.handleSubmit}
-            disabled={isLoading}
-          >
-            <span className="save-icon">{getButtonIcon()}</span>
-            {getButtonText()}
-          </button>
         </div>
       </div>
     </div>

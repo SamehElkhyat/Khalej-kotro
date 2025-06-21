@@ -26,6 +26,26 @@ const Players = () => {
   const [selectedPassport, setSelectedPassport] = useState(null);
   const [showPlayerImage, setShowPlayerImage] = useState(false);
   const [selectedPlayerImage, setSelectedPlayerImage] = useState(null);
+  const [categoriesPlayers, setCategoriesPlayers] = useState([]);
+
+  
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("https://sports.runasp.net/api/Get-Categories",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setCategoriesPlayers(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+
 
   const allPlayers = async () => {
     try {
@@ -199,6 +219,7 @@ const Players = () => {
 
   useEffect(() => {
     allPlayers();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -250,7 +271,93 @@ const Players = () => {
     <div className="players-page">
       {/* Cards for Age Categories */}
       <div className="categories-container">
-        {categories.map((category) => (
+        {categoriesPlayers.map((category) => (
+          <>
+            {category.under12 && (
+              <div
+                key="12"
+                className={`category-card ${selectedCategory === "12" ? "active" : ""}`}
+                onClick={() => handleCategoryClick("12")}
+              >
+                <div className="category-header">
+                  <h3 className="category-title">فئة 12 سنة</h3>
+                  <div className="player-count">
+                    {players.filter((player) => player.category === "12").length}{" "}
+                    لاعب
+                  </div>
+                </div>
+                <div className="category-actions">
+                  <button
+                    className="add-player-category-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddPlayerToCategory("12");
+                    }}
+                  >
+                    إضافة لاعب +
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {category.under14 && (
+              <div
+                key="14" 
+                className={`category-card ${selectedCategory === "14" ? "active" : ""}`}
+                onClick={() => handleCategoryClick("14")}
+              >
+                <div className="category-header">
+                  <h3 className="category-title">فئة 14 سنة</h3>
+                  <div className="player-count">
+                    {players.filter((player) => player.category === "14").length}{" "}
+                    لاعب
+                  </div>
+                </div>
+                <div className="category-actions">
+                  <button
+                    className="add-player-category-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddPlayerToCategory("14");
+                    }}
+                  >
+                    إضافة لاعب +
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {category.under16 && (
+              <div
+                key="16"
+                className={`category-card ${selectedCategory === "16" ? "active" : ""}`}
+                onClick={() => handleCategoryClick("16")}
+              >
+                <div className="category-header">
+                  <h3 className="category-title">فئة 16 سنة</h3>
+                  <div className="player-count">
+                    {players.filter((player) => player.category === "16").length}{" "}
+                    لاعب
+                  </div>
+                </div>
+                <div className="category-actions">
+                  <button
+                    className="add-player-category-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddPlayerToCategory("16");
+                    }}
+                  >
+                    إضافة لاعب +
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ))}
+
+        {/* {categories.map((category) => (
+          <>
           <div
             key={category}
             className={`category-card ${
@@ -280,7 +387,8 @@ const Players = () => {
               </button>
             </div>
           </div>
-        ))}
+          </>
+        ))} */}
       </div>
 
       {/* Players Cards for Selected Category */}
