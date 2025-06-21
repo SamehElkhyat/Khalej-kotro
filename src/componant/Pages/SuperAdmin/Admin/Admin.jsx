@@ -17,6 +17,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Link, Outlet } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 // Import proper icons for each menu item
 import SchoolIcon from "@mui/icons-material/School";
@@ -150,6 +151,19 @@ const secondaryMenuItems = [
 
 export default function MiniDrawer() {
   const [open, setOpen] = React.useState(false);
+  const [decodedToken, setDecodedToken] = React.useState(null);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setDecodedToken(decoded);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -157,6 +171,22 @@ export default function MiniDrawer() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  // Filter menu items based on role
+  const getFilteredMenuItems = () => {
+    if (decodedToken?.Role === "admin") {
+      return menuItems;
+    }
+    return []; // Return empty array for non-admin roles
+  };
+
+  const getFilteredSecondaryMenuItems = () => {
+    if (decodedToken?.Role === "admin") {
+      return secondaryMenuItems;
+    }
+    // For non-admin roles, show only secondary menu items
+    return secondaryMenuItems;
   };
 
   return (
@@ -182,7 +212,7 @@ export default function MiniDrawer() {
         
         {/* Main Menu Items */}
         <List>
-          {menuItems.map((item) => (
+          {getFilteredMenuItems().map((item) => (
             <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
               <Link 
                 to={`/${item.path}`}
@@ -255,7 +285,7 @@ export default function MiniDrawer() {
         
         {/* Secondary Menu Items */}
         <List>
-          {secondaryMenuItems.map((item) => (
+          {getFilteredSecondaryMenuItems().map((item) => (
             <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
               <Link 
                 to={`/${item.path}`}

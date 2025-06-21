@@ -3,6 +3,7 @@ import axios, { Axios } from "axios";
 import "./Rules.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { jwtDecode } from "jwt-decode";
 
 export default function Rules() {
   const [editingRule, setEditingRule] = useState(null);
@@ -13,8 +14,22 @@ export default function Rules() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
 
   const [rulesData, setRulesData] = useState([]);
+
+  // Check user role on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserRole(decoded.Role);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
 
   const saveRuleToAPI = async (values) => {
     try {
@@ -170,13 +185,15 @@ export default function Rules() {
           </p>
         </div>
         <div className="header-actions">
-          <button
-            className="add-rule-btn"
-            onClick={() => setShowAddForm(!showAddForm)}
-          >
-            <span className="btn-icon">➕</span>
-            {showAddForm ? "إلغاء الإضافة" : "إضافة لائحة"}
-          </button>
+          {(userRole === "Admin" || userRole === "admin") && (
+            <button
+              className="add-rule-btn"
+              onClick={() => setShowAddForm(!showAddForm)}
+            >
+              <span className="btn-icon">➕</span>
+              {showAddForm ? "إلغاء الإضافة" : "إضافة لائحة"}
+            </button>
+          )}
           <button className="print-btn">
             <span className="btn-icon">🖨️</span>
             طباعة اللوائح
@@ -303,18 +320,22 @@ export default function Rules() {
                 {section.roleName}
               </h2>
               <div className="section-actions">
-                <button
-                  className="action-btn delete"
-                  onClick={() => deleteRuleFromAPI(section.id)}
-                >
-                  <i className="fas fa-trash"></i>
-                </button>
-                <button
-                  className="action-btn edit"
-                  onClick={() => handleEditClick(section)}
-                >
-                  <i className="fas fa-edit"></i>
-                </button>
+                {(userRole === "Admin" || userRole === "admin") && (
+                  <>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => deleteRuleFromAPI(section.id)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                    <button
+                      className="action-btn edit"
+                      onClick={() => handleEditClick(section)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             <div className="section-content">

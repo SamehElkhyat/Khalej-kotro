@@ -139,7 +139,7 @@ export default function Camp() {
   };
 
   useEffect(() => {
-    console.clear()
+    console.clear();
     fetchSchedule();
   }, []);
 
