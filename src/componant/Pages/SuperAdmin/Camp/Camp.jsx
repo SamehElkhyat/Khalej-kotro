@@ -62,7 +62,6 @@ export default function Camp() {
           },
         }
       );
-      console.log(response.data);
       // Refresh the schedule after adding
       fetchSchedule();
       handleEditCancel();
@@ -129,7 +128,6 @@ export default function Camp() {
           },
         }
       );
-      console.log(response.data);
       setSchedule(response.data);
     } catch (error) {
       console.error("Error fetching schedule:", error);

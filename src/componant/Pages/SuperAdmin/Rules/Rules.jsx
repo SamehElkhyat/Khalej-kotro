@@ -46,10 +46,8 @@ export default function Rules() {
         }
       );
       loadRulesFromAPI();
-      console.log(response.data);
-      // Axios automatically throws on HTTP error status
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -115,7 +113,6 @@ export default function Rules() {
         }
       );
       
-      console.log(response.data);
       await loadRulesFromAPI();
       setMessage({ type: "success", text: "تم تحديث اللائحة بنجاح!" });
       
@@ -125,7 +122,6 @@ export default function Rules() {
       }, 1500);
       
     } catch (error) {
-      console.log(error);
       setMessage({ type: "error", text: "خطأ في تحديث اللائحة" });
     } finally {
       setIsLoading(false);
@@ -142,10 +138,9 @@ export default function Rules() {
           },
         }
       );
-      console.log(response.data);
       loadRulesFromAPI();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 

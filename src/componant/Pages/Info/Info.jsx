@@ -12,7 +12,6 @@ function Info() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [tokenData, setTokenData] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  console.log(process.env.REACT_APP_API_URL);
 
   const ageCategories = [12, 14, 16];
 
@@ -34,7 +33,6 @@ function Info() {
   });
   const handleSave = async (values) => {
     // التحقق من الفئات العمرية
-    console.log(values);
     setIsLoading(true);
     setIsSuccess(false);
 
@@ -70,7 +68,36 @@ function Info() {
         }
       );
 
-      console.log("API Response:", response.data);
+      // تحديث البيانات المحلية بالبيانات من API
+      const academyData = response.data;
+      if (academyData) {
+        // تحديث formik values
+        const categories = [];
+        if (academyData.under12) categories.push(12);
+        if (academyData.under14) categories.push(14);
+        if (academyData.under16) categories.push(16);
+
+        formik.setValues({
+          AdditionalPhoneNumber: academyData.additionalPhoneNumber || "",
+          AdditionalEmail: academyData.additionalEmail || "",
+          TShirtColor: academyData.tShirtColor || "#ffffff",
+          ShortColor: academyData.shortColor || "#ffffff",
+          ShoesColor: academyData.shoesColor || "#ffffff",
+          under12: categories.includes(12),
+          under14: categories.includes(14),
+          under16: categories.includes(16),
+          AdditionalTShirtColor: academyData.additionalTShirtColor || "#ffffff",
+          AdditionalShortColor: academyData.additionalShortColor || "#ffffff",
+          AdditionalShoesColor: academyData.additionalShoesColor || "#ffffff",
+        });
+
+        toast.info(
+          `تم تحميل البيانات المحفوظة مسبقاً. الفئات: ${categories.join(
+            "، "
+          )} سنة`
+        );
+      }
+
       setIsSuccess(true);
 
       // إنشاء رسالة النجاح مع الفئات المختارة
@@ -147,14 +174,11 @@ function Info() {
         const decoded = jwtDecode(token);
         setTokenData(decoded);
         // طباعة بنية التوكن لفهم الحقول المتاحة
-        console.log("Full token data:", decoded);
 
         // تعيين الفئات العمرية من التوكن إذا كانت موجودة
         formik.setFieldValue("under12", decoded.under12 || false);
         formik.setFieldValue("under14", decoded.under14 || false);
         formik.setFieldValue("under16", decoded.under16 || false);
-
-        console.log("Token data:", decoded);
 
         // استخراج معرف الأكاديمية لتحميل البيانات الحالية
         const academyId = decoded.Id || ""; // المعرف الثابت كحل بديل
@@ -181,8 +205,6 @@ function Info() {
           },
         }
       );
-
-      console.log("Current academy data:", response.data);
 
       // تحديث البيانات المحلية بالبيانات من API
       const academyData = response.data;

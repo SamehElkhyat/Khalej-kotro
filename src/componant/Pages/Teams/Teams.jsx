@@ -287,7 +287,6 @@ export default function Teams() {
         <div className="modal-overlay" onClick={() => setSelectedAcademy(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              {console.log(selectedAcademy.logoURL)}
               <img
                 src={selectedAcademy.logoURL}
                 alt={selectedAcademy.academyName}
@@ -327,7 +326,6 @@ export default function Teams() {
                   <strong>Category:</strong>
                 </p>
                 <ul>
-                  {console.log(selectedAcademy)}
                   {selectedAcademy.under14 && <li>Under 14</li> }
                   {selectedAcademy.under16 && <li>Under 16</li>}
                   {selectedAcademy.under18 && <li>Under 18</li>}

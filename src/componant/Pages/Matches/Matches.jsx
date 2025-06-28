@@ -283,7 +283,6 @@ export default function Matches() {
     try {
       setLoading(true);
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/Get-Matches`);
-      console.log("API Response:", response.data);
       
       // تحويل البيانات من API إلى الشكل المطلوب
       const formattedMatches = response.data.map((match, index) => ({

@@ -16,7 +16,7 @@ const MangeShedulde = () => {
       );
       setMatches(response.data);
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
   useEffect(() => {

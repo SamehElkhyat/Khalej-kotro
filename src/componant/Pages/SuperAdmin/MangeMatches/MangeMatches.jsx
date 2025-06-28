@@ -175,16 +175,13 @@ const MangeMatches = () => {
           },
         }
       );
-      console.log(response.data);
       setPlayers(response.data);
     } catch (error) {
-      console.log(error);
       // Fallback to static data if API fails
     }
   };
 
   const addMatch = async () => {
-    console.log(addMatchFormik.values);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/Add-Match`,
@@ -195,11 +192,10 @@ const MangeMatches = () => {
           },
         }
       );
-      console.log(response);
       fetchPlayers();
       onCloseAdd();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -217,7 +213,7 @@ const MangeMatches = () => {
       fetchPlayers();
 
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -233,7 +229,7 @@ const MangeMatches = () => {
       );
       fetchPlayers();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 

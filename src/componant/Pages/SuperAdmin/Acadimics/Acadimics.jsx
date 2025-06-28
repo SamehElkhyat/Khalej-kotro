@@ -21,7 +21,6 @@ const Acadimics = () => {
           },
         }
       );
-      console.log(response);
       getAcademies();
       onClose();
     } catch (error) {}
@@ -39,7 +38,7 @@ const Acadimics = () => {
       );
       setAcademies(response.data);
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -58,7 +57,6 @@ const Acadimics = () => {
   };
 
   const EditAcademies = async (values) => {
-    console.log(values);
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/Update-Academy/${editingAcademy.id}`, values, {
         headers: {
@@ -68,7 +66,7 @@ const Acadimics = () => {
       getAcademies();
       onCloseEdit();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 

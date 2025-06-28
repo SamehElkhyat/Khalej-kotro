@@ -39,9 +39,8 @@ const Players = () => {
           }
         );
         setCategoriesPlayers(response.data);
-        console.log(response.data);
       } catch (error) {
-        console.log(error);
+        // Error handling
       }
     };
   
@@ -58,9 +57,8 @@ const Players = () => {
         }
       );
       setPlayers(response.data);
-      console.log(response.data);
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -83,7 +81,6 @@ const Players = () => {
           }
         }
       });
-      console.log(addPlayerFormik.values);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/Add-Players`,
         addPlayerFormik.values,
@@ -94,11 +91,10 @@ const Players = () => {
           },
         }
       );
-      console.log(response);
       allPlayers();
       onCloseAdd();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -133,11 +129,10 @@ const Players = () => {
           },
         }
       );
-      console.log(response);
       allPlayers();
       onCloseEdit();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 
@@ -153,7 +148,7 @@ const Players = () => {
       );
       allPlayers();
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
 

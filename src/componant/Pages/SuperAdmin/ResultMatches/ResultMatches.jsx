@@ -16,7 +16,7 @@ export default function ResultMatches() {
       );
       setMatches(response.data);
     } catch (error) {
-      console.log(error);
+      // Error handling
     }
   };
   useEffect(() => {
