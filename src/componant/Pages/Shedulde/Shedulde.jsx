@@ -91,7 +91,7 @@ export default function Shedulde() {
   const fetchPlayersData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://sports.runasp.net/api/Get-All-Players');
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/Get-All-Players`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }

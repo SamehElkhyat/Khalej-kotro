@@ -6,7 +6,7 @@ export default function TeamsRanking() {
   const [teams, setTeams] = useState([]);
   const getTeams = async () => {
     try {
-      const response = await axios.get('https://sports.runasp.net/api/Matches-Table');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/Matches-Table`);
       setTeams(response.data);
       console.log(response.data);
     } catch (error) {

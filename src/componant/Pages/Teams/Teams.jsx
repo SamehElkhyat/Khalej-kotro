@@ -204,8 +204,7 @@ export default function Teams() {
     const fetchAcademies = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://sports.runasp.net/api/Get-All-Academies"
-,
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Get-All-Academies`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

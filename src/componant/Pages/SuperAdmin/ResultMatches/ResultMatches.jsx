@@ -7,7 +7,7 @@ export default function ResultMatches() {
   const getMatches = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Matches",
+        `${process.env.REACT_APP_API_URL}/Get-Matches`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -54,7 +54,7 @@ export default function Camp() {
   const addSchedule = async (values) => {
     try {
       const response = await axios.post(
-        "https://sports.runasp.net/api/Add-Camps",
+        `${process.env.REACT_APP_API_URL}/Add-Camps`,
         values,
         {
           headers: {
@@ -74,7 +74,7 @@ export default function Camp() {
   const deleteSchedule = async (id) => {
     try {
       const response = await axios.delete(
-        `https://sports.runasp.net/api/deleteCamp/${id}`,
+        `${process.env.REACT_APP_API_URL}/deleteCamp/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -90,7 +90,7 @@ export default function Camp() {
   const updateSchedule = async (values) => {
     try {
       const response = await axios.post(
-        `https://sports.runasp.net/api/updateCamp/${DenimicID}`,
+        `${process.env.REACT_APP_API_URL}/updateCamp/${DenimicID}`,
         values,
         {
           headers: {
@@ -122,7 +122,7 @@ export default function Camp() {
   const fetchSchedule = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-All-Camps",
+        `${process.env.REACT_APP_API_URL}/Get-All-Camps`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

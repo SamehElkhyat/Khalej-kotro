@@ -168,7 +168,7 @@ const MangeMatches = () => {
   const fetchPlayers = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Matches-By-Academy ",
+        `${process.env.REACT_APP_API_URL}/Get-Matches-By-Academy `,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -187,7 +187,7 @@ const MangeMatches = () => {
     console.log(addMatchFormik.values);
     try {
       const response = await axios.post(
-        "https://sports.runasp.net/api/Add-Match",
+        `${process.env.REACT_APP_API_URL}/Add-Match`,
         addMatchFormik.values,
         {
           headers: {
@@ -206,7 +206,7 @@ const MangeMatches = () => {
   const editPlayer = async () => {
     try {
       const response = await axios.post(
-        `https://sports.runasp.net/api/Update-Match/${id}`,
+        `${process.env.REACT_APP_API_URL}/Update-Match/${id}`,
         editPlayerFormik.values,
         {
           headers: {
@@ -224,7 +224,7 @@ const MangeMatches = () => {
   const deletePlayer = async (id) => {
     try {
       const response = await axios.delete(
-        `https://sports.runasp.net/api/Delete-Match/${id}`,
+        `${process.env.REACT_APP_API_URL}/Delete-Match/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -34,7 +34,7 @@ export default function Rules() {
   const saveRuleToAPI = async (values) => {
     try {
       const response = await axios.post(
-        "https://sports.runasp.net/api/Add-Role",
+        `${process.env.REACT_APP_API_URL}/Add-Role`,
         {
           roleName: values.roleName,
           roleDescription: values.roleDescription,
@@ -56,7 +56,7 @@ export default function Rules() {
   const loadRulesFromAPI = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Roles",
+        `${process.env.REACT_APP_API_URL}/Get-Roles`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -103,7 +103,7 @@ export default function Rules() {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        `https://sports.runasp.net/api/Update-Role/${editingRule.id}`,
+        `${process.env.REACT_APP_API_URL}/Update-Role/${editingRule.id}`,
         {
           roleName: values.roleName,
           roleDescription: values.roleDescription,
@@ -135,7 +135,7 @@ export default function Rules() {
   const deleteRuleFromAPI = async (ruleId) => {
     try {
       const response = await axios.delete(
-        `https://sports.runasp.net/api/Delete-Role/${ruleId}`,
+        `${process.env.REACT_APP_API_URL}/Delete-Role/${ruleId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

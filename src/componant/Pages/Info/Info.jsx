@@ -12,6 +12,7 @@ function Info() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [tokenData, setTokenData] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
+  console.log(process.env.REACT_APP_API_URL);
 
   const ageCategories = [12, 14, 16];
 
@@ -57,11 +58,9 @@ function Info() {
 
       // استخراج معرف الأكاديمية من التوكن - محاولة عدة احتمالات
       let academyId = tokenData.Id;
-
-      console.log(updateData, academyId);
       // إرسال طلب التحديث إلى API
       const response = await axios.post(
-        `https://sports.runasp.net/api/Update-Academy/${academyId}`,
+        `${process.env.REACT_APP_API_URL}/Update-Academy/${academyId}`,
         updateData,
         {
           headers: {
@@ -175,7 +174,7 @@ function Info() {
     try {
       setIsLoadingData(true);
       const response = await axios.get(
-        `https://sports.runasp.net/api/Get-Academy/${academyId}`,
+        `${process.env.REACT_APP_API_URL}/Get-Academy/${academyId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

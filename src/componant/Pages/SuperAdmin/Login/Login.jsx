@@ -165,7 +165,7 @@ const Login = () => {
       }
    
 
-      axios.post("https://sports.runasp.net/api/Register-Academy", values, {
+      axios.post(`${process.env.REACT_APP_API_URL}/Register-Academy`, values, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -199,7 +199,7 @@ const Login = () => {
     },
     validationSchema: loginValidationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      axios.post("https://sports.runasp.net/api/Login-Academy", values)
+      axios.post(`${process.env.REACT_APP_API_URL}/Login-Academy`, values)
         .then((response) => {
           if (response.status === 200) {
             localStorage.setItem("token", response.data);

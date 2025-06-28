@@ -13,7 +13,7 @@ const Acadimics = () => {
   const addAcademY = async () => {
     try {
       const response = await axios.post(
-        "https://sports.runasp.net/api/Register-Academy-Admin",
+        `${process.env.REACT_APP_API_URL}/Register-Academy-Admin`,
         registerFormik.values,
         {
           headers: {
@@ -30,7 +30,7 @@ const Acadimics = () => {
   const getAcademies = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-All-Academies",
+        `${process.env.REACT_APP_API_URL}/Get-All-Academies`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -46,7 +46,7 @@ const Acadimics = () => {
   const DeleteAcademies = async (id) => {
     try {
       const response = await axios.delete(
-        `https://sports.runasp.net/api/Delete-Academy/${id}`,
+        `${process.env.REACT_APP_API_URL}/Delete-Academy/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -60,7 +60,7 @@ const Acadimics = () => {
   const EditAcademies = async (values) => {
     console.log(values);
     try {
-      const response = await axios.post(`https://sports.runasp.net/api/Update-Academy/${editingAcademy.id}`, values, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/Update-Academy/${editingAcademy.id}`, values, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

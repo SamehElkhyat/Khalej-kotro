@@ -31,7 +31,7 @@ const Players = () => {
   
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://sports.runasp.net/api/Get-Categories",
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Get-Categories`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -50,7 +50,7 @@ const Players = () => {
   const allPlayers = async () => {
     try {
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Player-By-Id",
+        `${process.env.REACT_APP_API_URL}/Get-Player-By-Id`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -85,7 +85,7 @@ const Players = () => {
       });
       console.log(addPlayerFormik.values);
       const response = await axios.post(
-        "https://sports.runasp.net/api/Add-Players",
+        `${process.env.REACT_APP_API_URL}/Add-Players`,
         addPlayerFormik.values,
         {
           headers: {
@@ -124,7 +124,7 @@ const Players = () => {
       });
 
       const response = await axios.post(
-        `https://sports.runasp.net/api/Update-Player/${editingPlayer.playerID}`,
+        `${process.env.REACT_APP_API_URL}/Update-Player/${editingPlayer.playerID}`,
         formData,
         {
           headers: {
@@ -144,7 +144,7 @@ const Players = () => {
   const deletePlayer = async (id) => {
     try {
       const response = await axios.delete(
-        `https://sports.runasp.net/api/Delete-Player/${id}`,
+        `${process.env.REACT_APP_API_URL}/Delete-Player/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
