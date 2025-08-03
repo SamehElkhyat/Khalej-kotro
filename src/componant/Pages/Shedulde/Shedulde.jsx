@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./Shedulde.css";
-import logo from "../../Images/Logo.png";
 
 export default function Shedulde() {
   const [selectedPlayer, setSelectedPlayer] = useState(null);

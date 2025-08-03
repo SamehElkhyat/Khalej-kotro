@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -10,99 +10,99 @@ import { toast } from "react-toastify";
 const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
-    code: '+966',
-    name: 'Saudi Arabia',
-    flag: '🇸🇦'
+    code: "+966",
+    name: "Saudi Arabia",
+    flag: "🇸🇦",
   });
 
   // Country data for phone codes
   const countries = [
-    { code: '+966', name: 'Saudi Arabia', flag: '🇸🇦' },
-    { code: '+971', name: 'UAE', flag: '🇦🇪' },
-    { code: '+973', name: 'Bahrain', flag: '🇧🇭' },
-    { code: '+974', name: 'Qatar', flag: '🇶🇦' },
-    { code: '+965', name: 'Kuwait', flag: '🇰🇼' },
-    { code: '+968', name: 'Oman', flag: '🇴🇲' },
-    { code: '+962', name: 'Jordan', flag: '🇯🇴' },
-    { code: '+961', name: 'Lebanon', flag: '🇱🇧' },
-    { code: '+20', name: 'Egypt', flag: '🇪🇬' },
-    { code: '+212', name: 'Morocco', flag: '🇲🇦' },
-    { code: '+216', name: 'Tunisia', flag: '🇹🇳' },
-    { code: '+213', name: 'Algeria', flag: '🇩🇿' },
-    { code: '+1', name: 'USA/Canada', flag: '🇺🇸' },
-    { code: '+44', name: 'UK', flag: '🇬🇧' },
-    { code: '+33', name: 'France', flag: '🇫🇷' },
-    { code: '+49', name: 'Germany', flag: '🇩🇪' },
-    { code: '+39', name: 'Italy', flag: '🇮🇹' },
-    { code: '+34', name: 'Spain', flag: '🇪🇸' },
-    { code: '+31', name: 'Netherlands', flag: '🇳🇱' },
-    { code: '+32', name: 'Belgium', flag: '🇧🇪' },
-    { code: '+41', name: 'Switzerland', flag: '🇨🇭' },
-    { code: '+43', name: 'Austria', flag: '🇦🇹' },
-    { code: '+46', name: 'Sweden', flag: '🇸🇪' },
-    { code: '+47', name: 'Norway', flag: '🇳🇴' },
-    { code: '+45', name: 'Denmark', flag: '🇩🇰' },
-    { code: '+358', name: 'Finland', flag: '🇫🇮' },
-    { code: '+48', name: 'Poland', flag: '🇵🇱' },
-    { code: '+420', name: 'Czech Republic', flag: '🇨🇿' },
-    { code: '+36', name: 'Hungary', flag: '🇭🇺' },
-    { code: '+30', name: 'Greece', flag: '🇬🇷' },
-    { code: '+351', name: 'Portugal', flag: '🇵🇹' },
-    { code: '+353', name: 'Ireland', flag: '🇮🇪' },
-    { code: '+61', name: 'Australia', flag: '🇦🇺' },
-    { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
-    { code: '+81', name: 'Japan', flag: '🇯🇵' },
-    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
-    { code: '+86', name: 'China', flag: '🇨🇳' },
-    { code: '+91', name: 'India', flag: '🇮🇳' },
-    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
-    { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
-    { code: '+66', name: 'Thailand', flag: '🇹🇭' },
-    { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
-    { code: '+63', name: 'Philippines', flag: '🇵🇭' },
-    { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
-    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
-    { code: '+94', name: 'Sri Lanka', flag: '🇱🇰' },
-    { code: '+95', name: 'Myanmar', flag: '🇲🇲' },
-    { code: '+977', name: 'Nepal', flag: '🇳🇵' },
-    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
-    { code: '+93', name: 'Afghanistan', flag: '🇦🇫' },
-    { code: '+98', name: 'Iran', flag: '🇮🇷' },
-    { code: '+964', name: 'Iraq', flag: '🇮🇶' },
-    { code: '+963', name: 'Syria', flag: '🇸🇾' },
-    { code: '+90', name: 'Turkey', flag: '🇹🇷' },
-    { code: '+7', name: 'Russia', flag: '🇷🇺' },
-    { code: '+380', name: 'Ukraine', flag: '🇺🇦' },
-    { code: '+48', name: 'Poland', flag: '🇵🇱' },
-    { code: '+420', name: 'Czech Republic', flag: '🇨🇿' },
-    { code: '+36', name: 'Hungary', flag: '🇭🇺' },
-    { code: '+30', name: 'Greece', flag: '🇬🇷' },
-    { code: '+351', name: 'Portugal', flag: '🇵🇹' },
-    { code: '+353', name: 'Ireland', flag: '🇮🇪' },
-    { code: '+61', name: 'Australia', flag: '🇦🇺' },
-    { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
-    { code: '+81', name: 'Japan', flag: '🇯🇵' },
-    { code: '+82', name: 'South Korea', flag: '🇰🇷' },
-    { code: '+86', name: 'China', flag: '🇨🇳' },
-    { code: '+91', name: 'India', flag: '🇮🇳' },
-    { code: '+65', name: 'Singapore', flag: '🇸🇬' },
-    { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
-    { code: '+66', name: 'Thailand', flag: '🇹🇭' },
-    { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
-    { code: '+63', name: 'Philippines', flag: '🇵🇭' },
-    { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
-    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
-    { code: '+94', name: 'Sri Lanka', flag: '🇱🇰' },
-    { code: '+95', name: 'Myanmar', flag: '🇲🇲' },
-    { code: '+977', name: 'Nepal', flag: '🇳🇵' },
-    { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
-    { code: '+93', name: 'Afghanistan', flag: '🇦🇫' },
-    { code: '+98', name: 'Iran', flag: '🇮🇷' },
-    { code: '+964', name: 'Iraq', flag: '🇮🇶' },
-    { code: '+963', name: 'Syria', flag: '🇸🇾' },
-    { code: '+90', name: 'Turkey', flag: '🇹🇷' },
-    { code: '+7', name: 'Russia', flag: '🇷🇺' },
-    { code: '+380', name: 'Ukraine', flag: '🇺🇦' },
+    { code: "+966", name: "Saudi Arabia", flag: "🇸🇦" },
+    { code: "+971", name: "UAE", flag: "🇦🇪" },
+    { code: "+973", name: "Bahrain", flag: "🇧🇭" },
+    { code: "+974", name: "Qatar", flag: "🇶🇦" },
+    { code: "+965", name: "Kuwait", flag: "🇰🇼" },
+    { code: "+968", name: "Oman", flag: "🇴🇲" },
+    { code: "+962", name: "Jordan", flag: "🇯🇴" },
+    { code: "+961", name: "Lebanon", flag: "🇱🇧" },
+    { code: "+20", name: "Egypt", flag: "🇪🇬" },
+    { code: "+212", name: "Morocco", flag: "🇲🇦" },
+    { code: "+216", name: "Tunisia", flag: "🇹🇳" },
+    { code: "+213", name: "Algeria", flag: "🇩🇿" },
+    { code: "+1", name: "USA/Canada", flag: "🇺🇸" },
+    { code: "+44", name: "UK", flag: "🇬🇧" },
+    { code: "+33", name: "France", flag: "🇫🇷" },
+    { code: "+49", name: "Germany", flag: "🇩🇪" },
+    { code: "+39", name: "Italy", flag: "🇮🇹" },
+    { code: "+34", name: "Spain", flag: "🇪🇸" },
+    { code: "+31", name: "Netherlands", flag: "🇳🇱" },
+    { code: "+32", name: "Belgium", flag: "🇧🇪" },
+    { code: "+41", name: "Switzerland", flag: "🇨🇭" },
+    { code: "+43", name: "Austria", flag: "🇦🇹" },
+    { code: "+46", name: "Sweden", flag: "🇸🇪" },
+    { code: "+47", name: "Norway", flag: "🇳🇴" },
+    { code: "+45", name: "Denmark", flag: "🇩🇰" },
+    { code: "+358", name: "Finland", flag: "🇫🇮" },
+    { code: "+48", name: "Poland", flag: "🇵🇱" },
+    { code: "+420", name: "Czech Republic", flag: "🇨🇿" },
+    { code: "+36", name: "Hungary", flag: "🇭🇺" },
+    { code: "+30", name: "Greece", flag: "🇬🇷" },
+    { code: "+351", name: "Portugal", flag: "🇵🇹" },
+    { code: "+353", name: "Ireland", flag: "🇮🇪" },
+    { code: "+61", name: "Australia", flag: "🇦🇺" },
+    { code: "+64", name: "New Zealand", flag: "🇳🇿" },
+    { code: "+81", name: "Japan", flag: "🇯🇵" },
+    { code: "+82", name: "South Korea", flag: "🇰🇷" },
+    { code: "+86", name: "China", flag: "🇨🇳" },
+    { code: "+91", name: "India", flag: "🇮🇳" },
+    { code: "+65", name: "Singapore", flag: "🇸🇬" },
+    { code: "+60", name: "Malaysia", flag: "🇲🇾" },
+    { code: "+66", name: "Thailand", flag: "🇹🇭" },
+    { code: "+84", name: "Vietnam", flag: "🇻🇳" },
+    { code: "+63", name: "Philippines", flag: "🇵🇭" },
+    { code: "+62", name: "Indonesia", flag: "🇮🇩" },
+    { code: "+880", name: "Bangladesh", flag: "🇧🇩" },
+    { code: "+94", name: "Sri Lanka", flag: "🇱🇰" },
+    { code: "+95", name: "Myanmar", flag: "🇲🇲" },
+    { code: "+977", name: "Nepal", flag: "🇳🇵" },
+    { code: "+880", name: "Bangladesh", flag: "🇧🇩" },
+    { code: "+93", name: "Afghanistan", flag: "🇦🇫" },
+    { code: "+98", name: "Iran", flag: "🇮🇷" },
+    { code: "+964", name: "Iraq", flag: "🇮🇶" },
+    { code: "+963", name: "Syria", flag: "🇸🇾" },
+    { code: "+90", name: "Turkey", flag: "🇹🇷" },
+    { code: "+7", name: "Russia", flag: "🇷🇺" },
+    { code: "+380", name: "Ukraine", flag: "🇺🇦" },
+    { code: "+48", name: "Poland", flag: "🇵🇱" },
+    { code: "+420", name: "Czech Republic", flag: "🇨🇿" },
+    { code: "+36", name: "Hungary", flag: "🇭🇺" },
+    { code: "+30", name: "Greece", flag: "🇬🇷" },
+    { code: "+351", name: "Portugal", flag: "🇵🇹" },
+    { code: "+353", name: "Ireland", flag: "🇮🇪" },
+    { code: "+61", name: "Australia", flag: "🇦🇺" },
+    { code: "+64", name: "New Zealand", flag: "🇳🇿" },
+    { code: "+81", name: "Japan", flag: "🇯🇵" },
+    { code: "+82", name: "South Korea", flag: "🇰🇷" },
+    { code: "+86", name: "China", flag: "🇨🇳" },
+    { code: "+91", name: "India", flag: "🇮🇳" },
+    { code: "+65", name: "Singapore", flag: "🇸🇬" },
+    { code: "+60", name: "Malaysia", flag: "🇲🇾" },
+    { code: "+66", name: "Thailand", flag: "🇹🇭" },
+    { code: "+84", name: "Vietnam", flag: "🇻🇳" },
+    { code: "+63", name: "Philippines", flag: "🇵🇭" },
+    { code: "+62", name: "Indonesia", flag: "🇮🇩" },
+    { code: "+880", name: "Bangladesh", flag: "🇧🇩" },
+    { code: "+94", name: "Sri Lanka", flag: "🇱🇰" },
+    { code: "+95", name: "Myanmar", flag: "🇲🇲" },
+    { code: "+977", name: "Nepal", flag: "🇳🇵" },
+    { code: "+880", name: "Bangladesh", flag: "🇧🇩" },
+    { code: "+93", name: "Afghanistan", flag: "🇦🇫" },
+    { code: "+98", name: "Iran", flag: "🇮🇷" },
+    { code: "+964", name: "Iraq", flag: "🇮🇶" },
+    { code: "+963", name: "Syria", flag: "🇸🇾" },
+    { code: "+90", name: "Turkey", flag: "🇹🇷" },
+    { code: "+7", name: "Russia", flag: "🇷🇺" },
+    { code: "+380", name: "Ukraine", flag: "🇺🇦" },
   ];
 
   // Validation schema for registration form
@@ -117,10 +117,7 @@ const Login = () => {
       .email("البريد الإلكتروني غير صحيح")
       .required("البريد الإلكتروني مطلوب"),
     academyPhone: Yup.string()
-      .matches(
-        /^[0-9\s\-\(\)]+$/,
-        "رقم الهاتف غير صحيح"
-      )
+      .matches(/^[0-9\s\-\(\)]+$/, "رقم الهاتف غير صحيح")
       .min(7, "رقم الهاتف يجب أن يكون على الأقل 7 أرقام")
       .required("رقم الهاتف مطلوب"),
     academyCountry: Yup.string()
@@ -130,11 +127,9 @@ const Login = () => {
       .min(6, "كلمة المرور يجب أن تكون على الأقل 6 أحرف")
       .required("كلمة المرور مطلوبة"),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'كلمة المرور غير متطابقة')
+      .oneOf([Yup.ref("password"), null], "كلمة المرور غير متطابقة")
       .required("تأكيد كلمة المرور مطلوب"),
-    logoURL: Yup.mixed()
-      .required("الشعار مطلوب"),
-
+    logoURL: Yup.mixed().required("الشعار مطلوب"),
   });
 
   // Formik hook for registration form
@@ -152,24 +147,26 @@ const Login = () => {
     validationSchema: registerValidationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
       const formData = new FormData();
-      formData.append('academyName', values.academyName);
-      formData.append('academyManagerName', values.academyManagerName);
-      formData.append('academyEmail', values.academyEmail);
-      formData.append('academyPhone', selectedCountry.code + ' ' + values.academyPhone);
-      formData.append('academyCountry', values.academyCountry);
-      formData.append('password', values.password);
-      formData.append('confirmPassword', values.confirmPassword);
-        if (values.logoURL) {
-        formData.append('logoURL', values.logoURL);
-
+      formData.append("academyName", values.academyName);
+      formData.append("academyManagerName", values.academyManagerName);
+      formData.append("academyEmail", values.academyEmail);
+      formData.append(
+        "academyPhone",
+        selectedCountry.code + " " + values.academyPhone
+      );
+      formData.append("academyCountry", values.academyCountry);
+      formData.append("password", values.password);
+      formData.append("confirmPassword", values.confirmPassword);
+      if (values.logoURL) {
+        formData.append("logoURL", values.logoURL);
       }
-   
 
-      axios.post(`${process.env.REACT_APP_API_URL}/Register-Academy`, values, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/Register-Academy`, values, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           resetForm();
           setShowRegister(false);
@@ -199,7 +196,8 @@ const Login = () => {
     },
     validationSchema: loginValidationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
-      axios.post(`${process.env.REACT_APP_API_URL}/Login-Academy`, values)
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/Login-Academy`, values)
         .then((response) => {
           if (response.status === 200) {
             localStorage.setItem("token", response.data);
@@ -258,9 +256,20 @@ const Login = () => {
             onBlur={FormikLogin.handleBlur}
             required
           />
-          <button className="login-btn" type="submit">
-            <i className="fas fa-sign-in-alt login-btn-icon"></i> تسجيل الدخول
-          </button>
+          {FormikLogin.isSubmitting ? (
+            <div className="login-btn flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+              <span className="mr-2 text-white">جاري تسجيل الدخول...</span>
+            </div>
+          ) : (
+            <button
+              className="login-btn"
+              type="submit"
+              disabled={FormikLogin.isSubmitting}
+            >
+              <i className="fas fa-sign-in-alt login-btn-icon"></i> تسجيل الدخول
+            </button>
+          )}
         </form>
         <button
           className="register-btn"
@@ -296,7 +305,9 @@ const Login = () => {
               onSubmit={registerFormik.handleSubmit}
             >
               <div className="register-form-section">
-                <h3><i className="fas fa-building"></i> معلومات الأكاديمية</h3>
+                <h3>
+                  <i className="fas fa-building"></i> معلومات الأكاديمية
+                </h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>اسم الأكاديمية *</label>
@@ -374,7 +385,9 @@ const Login = () => {
               </div>
 
               <div className="register-form-section">
-                <h3><i className="fas fa-phone-alt"></i> معلومات الاتصال</h3>
+                <h3>
+                  <i className="fas fa-phone-alt"></i> معلومات الاتصال
+                </h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>البريد الإلكتروني *</label>
@@ -407,12 +420,20 @@ const Login = () => {
                           type="button"
                           className="country-code-btn"
                           onClick={() => {
-                            const dropdown = document.getElementById('country-dropdown');
-                            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                            const dropdown =
+                              document.getElementById("country-dropdown");
+                            dropdown.style.display =
+                              dropdown.style.display === "block"
+                                ? "none"
+                                : "block";
                           }}
                         >
-                          <span className="country-flag">{selectedCountry.flag}</span>
-                          <span className="country-code">{selectedCountry.code}</span>
+                          <span className="country-flag">
+                            {selectedCountry.flag}
+                          </span>
+                          <span className="country-code">
+                            {selectedCountry.code}
+                          </span>
                           <i className="fas fa-chevron-down"></i>
                         </button>
                         <div id="country-dropdown" className="country-dropdown">
@@ -422,10 +443,16 @@ const Login = () => {
                               placeholder="البحث عن دولة..."
                               onChange={(e) => {
                                 const searchTerm = e.target.value.toLowerCase();
-                                const options = document.querySelectorAll('.country-option');
-                                options.forEach(option => {
-                                  const countryName = option.textContent.toLowerCase();
-                                  option.style.display = countryName.includes(searchTerm) ? 'block' : 'none';
+                                const options =
+                                  document.querySelectorAll(".country-option");
+                                options.forEach((option) => {
+                                  const countryName =
+                                    option.textContent.toLowerCase();
+                                  option.style.display = countryName.includes(
+                                    searchTerm
+                                  )
+                                    ? "block"
+                                    : "none";
                                 });
                               }}
                             />
@@ -437,12 +464,20 @@ const Login = () => {
                                 className="country-option"
                                 onClick={() => {
                                   setSelectedCountry(country);
-                                  document.getElementById('country-dropdown').style.display = 'none';
+                                  document.getElementById(
+                                    "country-dropdown"
+                                  ).style.display = "none";
                                 }}
                               >
-                                <span className="country-flag">{country.flag}</span>
-                                <span className="country-name">{country.name}</span>
-                                <span className="country-code">{country.code}</span>
+                                <span className="country-flag">
+                                  {country.flag}
+                                </span>
+                                <span className="country-name">
+                                  {country.name}
+                                </span>
+                                <span className="country-code">
+                                  {country.code}
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -474,7 +509,9 @@ const Login = () => {
               </div>
 
               <div className="register-form-section">
-                <h3><i className="fas fa-lock"></i> كلمة المرور</h3>
+                <h3>
+                  <i className="fas fa-lock"></i> كلمة المرور
+                </h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>كلمة المرور *</label>
@@ -515,7 +552,7 @@ const Login = () => {
                           : ""
                       }
                     />
-                        {registerFormik.touched.confirmPassword &&
+                    {registerFormik.touched.confirmPassword &&
                       registerFormik.errors.confirmPassword && (
                         <div className="error-message">
                           {registerFormik.errors.confirmPassword}
@@ -526,7 +563,9 @@ const Login = () => {
               </div>
 
               <div className="register-form-section">
-                <h3><i className="fas fa-image"></i> شعار الأكاديمية</h3>
+                <h3>
+                  <i className="fas fa-image"></i> شعار الأكاديمية
+                </h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>رفع شعار الأكاديمية</label>
@@ -535,7 +574,10 @@ const Login = () => {
                       name="logoURL"
                       accept="image/*"
                       onChange={(event) => {
-                        registerFormik.setFieldValue("logoURL", event.currentTarget.files[0]);
+                        registerFormik.setFieldValue(
+                          "logoURL",
+                          event.currentTarget.files[0]
+                        );
                       }}
                       className={
                         registerFormik.touched.logoURL &&
@@ -566,7 +608,6 @@ const Login = () => {
                       />
                       أوافق على الشروط والأحكام *
                     </label>
-            
                   </div>
                 </div>
               </div>

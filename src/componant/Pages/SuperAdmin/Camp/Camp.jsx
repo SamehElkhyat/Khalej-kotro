@@ -25,6 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { useFormik } from "formik";
+import { jwtDecode } from "jwt-decode";
 
 const theme = createTheme({
   direction: "rtl",
@@ -50,10 +51,13 @@ export default function Camp() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [DenimicID, setDenimicID] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isPopulating, setIsPopulating] = useState(false);
 
   const addSchedule = async (values) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/Add-Camps`,
         values,
         {
@@ -72,7 +76,7 @@ export default function Camp() {
 
   const deleteSchedule = async (id) => {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `${process.env.REACT_APP_API_URL}/deleteCamp/${id}`,
         {
           headers: {
@@ -88,7 +92,7 @@ export default function Camp() {
 
   const updateSchedule = async (values) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/updateCamp/${DenimicID}`,
         values,
         {
@@ -104,13 +108,141 @@ export default function Camp() {
     }
   };
 
+  // Function to populate all days with sample schedule data
+  const populateAllDaysWithData = async () => {
+    if (!isAdmin) {
+      alert("هذه الميزة متاحة للمدراء فقط. يمكنك عرض الجدول ولكن لا يمكنك إضافة أو تعديل البيانات.");
+      return;
+    }
+
+    setIsPopulating(true);
+    
+    // Define schedules for different days based on the camp schedule
+    const getScheduleForDay = (date) => {
+      const commonSchedule = [
+        { time: "صلاة الفجر 4:10 ص", task: "صلاة الفجر" },
+        { time: "وجبة الإفطار", task: "وجبة الإفطار" },
+        { time: "راحة", task: "راحة" }
+      ];
+
+      const endSchedule = [
+        { time: "صلاة الظهر 12:30 م", task: "صلاة الظهر" },
+        { time: "وجبة الغداء", task: "وجبة الغداء" },
+        { time: "راحة", task: "راحة" },
+        { time: "صلاة العصر 3:50 م", task: "صلاة العصر" },
+        { time: "وجبة الغداء", task: "وجبة الغداء" }
+      ];
+
+      // Specific activities for different days
+      let middleActivities = [];
+      
+      switch(date) {
+        case "2024-07-08": // الثلاثاء 8 يوليو
+          middleActivities = [
+            { time: "تدريب في الصالة الرياضية (9:00 إلى 9:45 ص) فئة 14", task: "تدريب في الصالة الرياضية فئة 14" },
+            { time: "تدريب في الصالة الرياضية (9:45 إلى 10:30 ص) فئة 12", task: "تدريب في الصالة الرياضية فئة 12" },
+            { time: "بطولة الألعاب الإلكترونية الأكاديمية الرياضية الساعة 11:00 صباحاً", task: "بطولة الألعاب الإلكترونية" }
+          ];
+          break;
+        case "2024-07-09": // الأربعاء 9 يوليو  
+          middleActivities = [
+            { time: "دورة تدريبية للمدربين 9:00 صباحاً حتى 1:00 ظهراً", task: "دورة تدريبية للمدربين" }
+          ];
+          break;
+        case "2024-07-10": // الخميس 10 يوليو
+          middleActivities = [
+            { time: "بطولة الألعاب الإلكترونية الأدوار النهائية", task: "بطولة الألعاب الإلكترونية - الأدوار النهائية" }
+          ];
+          break;
+        case "2024-07-11": // الجمعة 11 يوليو
+          middleActivities = [
+            { time: "نشاط جماعي بطولة الشاطئ والحديقة", task: "نشاط جماعي - بطولة الشاطئ" },
+            { time: "ويل تال دوري مباشر الأكاديميات المحلية", task: "دوري الأكاديميات المحلية" }
+          ];
+          break;
+        case "2024-07-12": // السبت 12 يوليو
+          middleActivities = [
+            { time: "مباريات تحديد المركز", task: "مباريات تحديد المركز" },
+            { time: "إجلال لبرقة المتألقة الجولة النهائية", task: "الجولة النهائية" }
+          ];
+          break;
+        case "2024-07-13": // الأحد 13 يوليو
+          middleActivities = [
+            { time: "مباراة (فئة 12 سنة) أكاديمية أولف & أكاديمية سعود الساعة 5:50", task: "مباراة فئة 12 سنة" },
+            { time: "مباراة (فئة 14 سنة) أكاديمية المين & أكاديمية سعود الساعة 7:30", task: "مباراة فئة 14 سنة" }
+          ];
+          break;
+        case "2024-07-14": // الاثنين 14 يوليو
+          middleActivities = [
+            { time: "بطولة الألعاب الإلكترونية الأكاديمية الرياضية الساعة 11:00 صباحاً", task: "بطولة الألعاب الإلكترونية" },
+            { time: "مباراة (فئة 12 سنة) أكاديمية أولف & أكاديمية ساود الساعة 5:50", task: "مباراة فئة 12 سنة" },
+            { time: "مباراة (فئة 14 سنة) أكاديمية المين & أكاديمية ساود الساعة 7:30", task: "مباراة فئة 14 سنة" }
+          ];
+          break;
+        case "2024-07-15": // الثلاثاء 15 يوليو
+          middleActivities = [
+            { time: "التوجه إلى مطار الشارقة الساعة 11:10 صباحاً", task: "التوجه إلى المطار" },
+            { time: "رحلة للكويت رقم G9-102", task: "رحلة العودة للكويت" }
+          ];
+          break;
+        default:
+          middleActivities = [
+            { time: "نشاط حر", task: "نشاط حر" }
+          ];
+      }
+
+      return [...commonSchedule, ...middleActivities, ...endSchedule];
+    };
+
+    try {
+      console.log("Starting to populate all days with data...");
+      
+      for (const day of days) {
+        console.log(`Adding schedule for ${day.label} (${day.date})`);
+        
+        const daySchedule = getScheduleForDay(day.date);
+        
+        for (const scheduleItem of daySchedule) {
+          const payload = {
+            date: day.date,
+            time: scheduleItem.time,
+            task: scheduleItem.task,
+          };
+          
+          console.log("Sending payload:", payload);
+          
+          const response = await axios.post(
+            `${process.env.REACT_APP_API_URL}/Add-Camps`,
+            payload,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+          
+          console.log("Response:", response.data);
+        }
+      }
+      
+      console.log("All data populated successfully");
+      alert("تم إدراج البيانات لجميع الأيام بنجاح!");
+      fetchSchedule();
+    } catch (error) {
+      console.error("Error populating schedule:", error);
+      alert(`حدث خطأ أثناء إدراج البيانات: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setIsPopulating(false);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       date: days[selectedDay]?.date || "",
       task: "",
       time: "",
     },
-    onSubmit: updateSchedule,
+    onSubmit: editingItem ? updateSchedule : addSchedule,
   });
 
   // Filter schedule for selected day
@@ -134,6 +266,20 @@ export default function Camp() {
     }
   };
 
+  // Check user role on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserRole(decoded.Role);
+        setIsAdmin(decoded.Role === "admin");
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     console.clear();
     fetchSchedule();
@@ -142,7 +288,7 @@ export default function Camp() {
   // Update formik date when selected day changes
   useEffect(() => {
     formik.setFieldValue("date", days[selectedDay]?.date || "");
-  }, [selectedDay]);
+  }, [selectedDay]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEditClick = (item, index) => {
     setDenimicID(item.id);
@@ -166,6 +312,10 @@ export default function Camp() {
   };
 
   const handleAddNew = () => {
+    if (!isAdmin) {
+      alert("هذه الميزة متاحة للمدراء فقط. يمكنك عرض الجدول ولكن لا يمكنك إضافة أو تعديل البيانات.");
+      return;
+    }
     setEditingItem(null);
     formik.setValues({
       date: days[selectedDay]?.date || "",
@@ -232,25 +382,72 @@ export default function Camp() {
             variant="h6"
             align="center"
             fontWeight={700}
-            mb={3}
+            mb={1}
             fontFamily="Cairo"
           >
             {days[selectedDay].label} 2024
           </Typography>
 
-          {/* زر إضافة نشاط جديد (لجميع الأيام) */}
-          <Box sx={{ mb: 2, textAlign: "center" }}>
+          {/* مؤشر دور المستخدم */}
+          {userRole && (
+            <Typography
+              variant="body2"
+              align="center"
+              mb={2}
+              sx={{
+                color: isAdmin ? "#4caf50" : "#ff9800",
+                fontFamily: "Cairo",
+                fontWeight: 600,
+                bgcolor: isAdmin ? "#e8f5e8" : "#fff3e0",
+                py: 0.5,
+                px: 2,
+                borderRadius: 1,
+                display: "inline-block",
+                width: "fit-content",
+                margin: "0 auto 16px auto"
+              }}
+            >
+              {isAdmin ? "مشرف - يمكن التعديل والحذف والإضافة" : `${userRole} - يمكن عرض الجدول فقط`}
+            </Typography>
+          )}
+
+          {/* أزرار الإجراءات */}
+          <Box sx={{ mb: 2, textAlign: "center", display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button
               variant="contained"
               onClick={handleAddNew}
+              disabled={!isAdmin}
               sx={{
                 fontFamily: "Cairo",
                 fontWeight: 600,
-                backgroundColor: "#1976d2",
-                "&:hover": { backgroundColor: "#1565c0" },
+                backgroundColor: isAdmin ? "#1976d2" : "#ccc",
+                color: isAdmin ? "white" : "#666",
+                cursor: isAdmin ? "pointer" : "not-allowed",
+                "&:hover": { 
+                  backgroundColor: isAdmin ? "#1565c0" : "#ccc"
+                },
               }}
             >
-              إضافة نشاط جديد
+              {isAdmin ? "إضافة نشاط جديد" : "إضافة نشاط (مدراء فقط)"}
+            </Button>
+            
+            <Button
+              variant="outlined"
+              onClick={populateAllDaysWithData}
+              disabled={isPopulating || !isAdmin}
+              sx={{
+                fontFamily: "Cairo",
+                fontWeight: 600,
+                borderColor: isPopulating ? "#ccc" : !isAdmin ? "#ff9800" : "#4caf50",
+                color: isPopulating ? "#ccc" : !isAdmin ? "#ff9800" : "#4caf50",
+                "&:hover": { 
+                  backgroundColor: isPopulating ? "transparent" : !isAdmin ? "#fff3e0" : "#4caf50",
+                  color: isPopulating ? "#ccc" : !isAdmin ? "#ff9800" : "white",
+                  borderColor: isPopulating ? "#ccc" : !isAdmin ? "#ff9800" : "#4caf50"
+                },
+              }}
+            >
+              {isPopulating ? "جاري الإدراج..." : !isAdmin ? "ملء البيانات (مدراء فقط)" : "ملء جميع الأيام بالبيانات"}
             </Button>
           </Box>
 
@@ -303,7 +500,11 @@ export default function Camp() {
                     <TableCell align="center">
                       <IconButton
                         onClick={() => handleEditClick(row, idx)}
-                        sx={{ color: "#1976d2" }}
+                        sx={{ 
+                          color: isAdmin ? "#1976d2" : "#ccc",
+                          cursor: isAdmin ? "pointer" : "not-allowed"
+                        }}
+                        disabled={!isAdmin}
                       >
                         <EditIcon />
                       </IconButton>
@@ -311,7 +512,11 @@ export default function Camp() {
                     <TableCell align="center">
                       <IconButton
                         onClick={() => deleteSchedule(row.id)}
-                        sx={{ color: "#1976d2" }}
+                        sx={{ 
+                          color: isAdmin ? "#d32f2f" : "#ccc",
+                          cursor: isAdmin ? "pointer" : "not-allowed"
+                        }}
+                        disabled={!isAdmin}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -339,9 +544,7 @@ export default function Camp() {
             id="edit-dialog-title"
             sx={{ fontFamily: "Cairo", fontWeight: 700, textAlign: "center" }}
           >
-            {editingItem?.index === filteredSchedule.length
-              ? "إضافة نشاط جديد"
-              : "تعديل النشاط"}
+            {editingItem ? "تعديل النشاط" : "إضافة نشاط جديد"}
           </DialogTitle>
           <DialogContent id="edit-dialog-description">
             <Box sx={{ mt: 2 }}>

@@ -71,11 +71,22 @@ function Info() {
       // تحديث البيانات المحلية بالبيانات من API
       const academyData = response.data;
       if (academyData) {
-        // تحديث formik values
+        // تحديث formik values مع التعامل مع القيم كـ boolean أو string أو number
+        const parseBoolean = (value) => {
+          if (typeof value === 'boolean') return value;
+          if (typeof value === 'string') return value.toLowerCase() === 'true';
+          if (typeof value === 'number') return value === 1;
+          return false;
+        };
+        
+        const isUnder12 = parseBoolean(academyData.under12) || parseBoolean(academyData.u12) || parseBoolean(academyData.U12);
+        const isUnder14 = parseBoolean(academyData.under14) || parseBoolean(academyData.u14) || parseBoolean(academyData.U14);
+        const isUnder16 = parseBoolean(academyData.under16) || parseBoolean(academyData.u16) || parseBoolean(academyData.U16);
+        
         const categories = [];
-        if (academyData.under12) categories.push(12);
-        if (academyData.under14) categories.push(14);
-        if (academyData.under16) categories.push(16);
+        if (isUnder12) categories.push(12);
+        if (isUnder14) categories.push(14);
+        if (isUnder16) categories.push(16);
 
         formik.setValues({
           AdditionalPhoneNumber: academyData.additionalPhoneNumber || "",
@@ -83,9 +94,9 @@ function Info() {
           TShirtColor: academyData.tShirtColor || "#ffffff",
           ShortColor: academyData.shortColor || "#ffffff",
           ShoesColor: academyData.shoesColor || "#ffffff",
-          under12: categories.includes(12),
-          under14: categories.includes(14),
-          under16: categories.includes(16),
+          under12: isUnder12,
+          under14: isUnder14,
+          under16: isUnder16,
           AdditionalTShirtColor: academyData.additionalTShirtColor || "#ffffff",
           AdditionalShortColor: academyData.additionalShortColor || "#ffffff",
           AdditionalShoesColor: academyData.additionalShoesColor || "#ffffff",
@@ -152,15 +163,15 @@ function Info() {
     initialValues: {
       AdditionalPhoneNumber: "",
       AdditionalEmail: "",
-      TShirtColor: "#ffffff",
-      ShortColor: "#ffffff",
-      ShoesColor: "#ffffff",
-      under12: false,
-      under14: false,
-      under16: false,
-      AdditionalTShirtColor: "#ffffff",
-      AdditionalShortColor: "#ffffff",
-      AdditionalShoesColor: "#ffffff",
+      TShirtColor: "#ffffff", // سيتم تحديثها من التوكن
+      ShortColor: "#ffffff",  // سيتم تحديثها من التوكن
+      ShoesColor: "#ffffff",  // سيتم تحديثها من التوكن
+      under12: false,         // سيتم تحديثها من التوكن
+      under14: false,         // سيتم تحديثها من التوكن
+      under16: false,         // سيتم تحديثها من التوكن
+      AdditionalTShirtColor: "#ffffff",  // سيتم تحديثها من التوكن
+      AdditionalShortColor: "#ffffff",   // سيتم تحديثها من التوكن
+      AdditionalShoesColor: "#ffffff",   // سيتم تحديثها من التوكن
     },
     validationSchema,
     onSubmit: handleSave,
@@ -175,10 +186,46 @@ function Info() {
         setTokenData(decoded);
         // طباعة بنية التوكن لفهم الحقول المتاحة
 
-        // تعيين الفئات العمرية من التوكن إذا كانت موجودة
-        formik.setFieldValue("under12", decoded.under12 || false);
-        formik.setFieldValue("under14", decoded.under14 || false);
-        formik.setFieldValue("under16", decoded.under16 || false);
+        // طباعة بيانات التوكن لأغراض التصحيح
+        console.log("Token Data:", decoded);
+        
+        // تحميل ألوان الأطقم من التوكن (مع معالجة أسماء مختلفة)
+        const tShirtColor = decoded.TShirtColor || decoded.tShirtColor || decoded.tshirtColor;
+        const shortColor = decoded.ShortColor || decoded.shortColor;
+        const shoesColor = decoded.ShoesColor || decoded.shoesColor;
+        const additionalTShirtColor = decoded.AdditionalTShirtColor || decoded.additionalTShirtColor;
+        const additionalShortColor = decoded.AdditionalShortColor || decoded.additionalShortColor;
+        const additionalShoesColor = decoded.AdditionalShoesColor || decoded.additionalShoesColor;
+        
+        if (tShirtColor) {
+          formik.setFieldValue("TShirtColor", tShirtColor);
+        }
+        if (shortColor) {
+          formik.setFieldValue("ShortColor", shortColor);
+        }
+        if (shoesColor) {
+          formik.setFieldValue("ShoesColor", shoesColor);
+        }
+        if (additionalTShirtColor) {
+          formik.setFieldValue("AdditionalTShirtColor", additionalTShirtColor);
+        }
+        if (additionalShortColor) {
+          formik.setFieldValue("AdditionalShortColor", additionalShortColor);
+        }
+        if (additionalShoesColor) {
+          formik.setFieldValue("AdditionalShoesColor", additionalShoesColor);
+        }
+        
+        // تحميل معلومات الاتصال الإضافية من التوكن (مع معالجة أسماء مختلفة)
+        const additionalPhone = decoded.AdditionalPhoneNumber || decoded.additionalPhoneNumber || decoded.additionalPhone;
+        const additionalEmail = decoded.AdditionalEmail || decoded.additionalEmail;
+        
+        if (additionalPhone) {
+          formik.setFieldValue("AdditionalPhoneNumber", additionalPhone);
+        }
+        if (additionalEmail) {
+          formik.setFieldValue("AdditionalEmail", additionalEmail);
+        }
 
         // استخراج معرف الأكاديمية لتحميل البيانات الحالية
         const academyId = decoded.Id || ""; // المعرف الثابت كحل بديل
@@ -187,6 +234,9 @@ function Info() {
         if (academyId) {
           loadCurrentData(academyId);
         }
+        
+        // تحميل فئات العمر من API
+        loadCategories();
       } catch (error) {
         console.error("Error decoding token:", error);
       }
@@ -209,11 +259,22 @@ function Info() {
       // تحديث البيانات المحلية بالبيانات من API
       const academyData = response.data;
       if (academyData) {
-        // تحديث formik values
+        // تحديث formik values مع التعامل مع القيم كـ boolean أو string أو number
+        const parseBoolean = (value) => {
+          if (typeof value === 'boolean') return value;
+          if (typeof value === 'string') return value.toLowerCase() === 'true';
+          if (typeof value === 'number') return value === 1;
+          return false;
+        };
+        
+        const isUnder12 = parseBoolean(academyData.under12) || parseBoolean(academyData.u12) || parseBoolean(academyData.U12);
+        const isUnder14 = parseBoolean(academyData.under14) || parseBoolean(academyData.u14) || parseBoolean(academyData.U14);
+        const isUnder16 = parseBoolean(academyData.under16) || parseBoolean(academyData.u16) || parseBoolean(academyData.U16);
+        
         const categories = [];
-        if (academyData.under12) categories.push(12);
-        if (academyData.under14) categories.push(14);
-        if (academyData.under16) categories.push(16);
+        if (isUnder12) categories.push(12);
+        if (isUnder14) categories.push(14);
+        if (isUnder16) categories.push(16);
 
         formik.setValues({
           AdditionalPhoneNumber: academyData.additionalPhoneNumber || "",
@@ -221,9 +282,9 @@ function Info() {
           TShirtColor: academyData.tShirtColor || "#ffffff",
           ShortColor: academyData.shortColor || "#ffffff",
           ShoesColor: academyData.shoesColor || "#ffffff",
-          under12: categories.includes(12),
-          under14: categories.includes(14),
-          under16: categories.includes(16),
+          under12: isUnder12,
+          under14: isUnder14,
+          under16: isUnder16,
           AdditionalTShirtColor: academyData.additionalTShirtColor || "#ffffff",
           AdditionalShortColor: academyData.additionalShortColor || "#ffffff",
           AdditionalShoesColor: academyData.additionalShoesColor || "#ffffff",
@@ -244,6 +305,65 @@ function Info() {
     } finally {
       setIsLoadingData(false);
     }
+  };
+
+  // دالة لتحميل فئات العمر من API
+  const loadCategories = async () => {
+    try {
+      setIsLoadingData(true);
+      const response = await axios.get(
+        "https://sports.runasp.net/api/Get-Categories",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log("Categories API Response:", response.data);
+      
+      // معالجة البيانات المُستلمة
+      const categoriesData = response.data;
+      if (categoriesData) {
+        // التحقق المباشر من قيم u12, u14, u16
+        const isUnder12 = parseBoolean(categoriesData.u12);
+        const isUnder14 = parseBoolean(categoriesData.u14);
+        const isUnder16 = parseBoolean(categoriesData.u16);
+
+        // تحديث الـ checkboxes
+        formik.setFieldValue("under12", response.data[0].under12);
+        formik.setFieldValue("under14", response.data[0].under14);
+        formik.setFieldValue("under16", response.data[0].under16);
+
+        console.log("Categories loaded:", {
+          under12: isUnder12,
+          under14: isUnder14,
+          under16: isUnder16
+        });
+
+        const selectedCategories = [];
+        if (isUnder12) selectedCategories.push(12);
+        if (isUnder14) selectedCategories.push(14);
+        if (isUnder16) selectedCategories.push(16);
+
+        if (selectedCategories.length > 0) {
+          toast.info(`تم تحميل الفئات العمرية: ${selectedCategories.join("، ")} سنة`);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      toast.warn("لم يتم تحميل الفئات العمرية، سيتم استخدام القيم الافتراضية");
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  // دالة parseBoolean (نقلها هنا ليتم استخدامها في loadCategories)
+  const parseBoolean = (value) => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') return value.toLowerCase() === 'true';
+    if (typeof value === 'number') return value === 1;
+    return false;
   };
 
   const handleCategoryChange = (category) => {
@@ -426,6 +546,23 @@ function Info() {
                 <p className="section-description">
                   اختر الفئات العمرية التي تريد المشاركة فيها (12، 14، 16 سنة)
                 </p>
+                <button
+                  type="button"
+                  onClick={loadCategories}
+                  disabled={isLoadingData}
+                  style={{
+                    background: "#3b82f6",
+                    color: "white",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    marginTop: "0.5rem"
+                  }}
+                >
+                  {isLoadingData ? "⏳ جاري التحميل..." : "🔄 تحديث الفئات من API"}
+                </button>
               </div>
 
               <div className="age-categories">
@@ -434,7 +571,7 @@ function Info() {
                     <input
                       type="checkbox"
                       id={`category-${category}`}
-                      checked={formik.values[`under${category}`]}
+                      checked={formik.values[`under${category}`] }
                       onChange={() => handleCategoryChange(category)}
                       className="category-checkbox"
                     />

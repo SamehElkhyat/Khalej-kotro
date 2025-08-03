@@ -25,14 +25,7 @@ export default function App() {
   const الفرق_المصفاة = بياناتالفرق.filter((فريق) =>
     فريق.اسم.toLowerCase().includes(بحث.toLowerCase())
   );
-
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    settoken(token);
-
-    const decoded = jwtDecode(token);
-    setdecoded(decoded);
-    // محاكاة وقت التحميل
     const timer = setTimeout(() => {
       setloading(false);
       // جعل صفحة المعلومات هي الصفحة الافتراضية
@@ -40,9 +33,27 @@ export default function App() {
         التنقل("/info");
       }
     }, 5000); // تحميل لمدة ثانيتين
-
     return () => clearTimeout(timer);
-  }, [التنقل]);
+  }, []);
+
+  // useEffect(() => {
+
+  //   const token = localStorage.getItem("token");
+  //   settoken(token);
+
+  //   const decoded = jwtDecode(token);
+  //   setdecoded(decoded);
+  //   // محاكاة وقت التحميل
+  //   const timer = setTimeout(() => {
+  //     setloading(false);
+  //     // جعل صفحة المعلومات هي الصفحة الافتراضية
+  //     if (window.location.pathname === "/") {
+  //       التنقل("/info");
+  //     }
+  //   }, 5000); // تحميل لمدة ثانيتين
+
+  //   return () => clearTimeout(timer);
+  // }, [التنقل]);
 
   // شاشة التحميل
 
@@ -116,7 +127,59 @@ export default function App() {
                       <span className="sm:hidden">مباريات</span>
                     </button>
 
-               
+                    <button
+                      onClick={() => التنقل("/sign-for-technical")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-clipboard-list w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">تسجيل الجهاز الفني والاداري</span>
+                      <span className="sm:hidden">الجهاز الفني</span>
+                    </button>
+
+                    <button
+                      onClick={() => التنقل("/table-match")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-table w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">جدول ونتائج المباريات</span>
+                      <span className="sm:hidden">جدول النتائج</span>
+                    </button>
+
+                    <button
+                      onClick={() => التنقل("/table-mangments")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-trophy w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">جدول الترتيب</span>
+                      <span className="sm:hidden">الترتيب</span>
+                    </button>
+
+                    <button
+                      onClick={() => التنقل("/goals-report")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-futbol w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">كشف الأهداف</span>
+                      <span className="sm:hidden">الأهداف</span>
+                    </button>
+
+                    <button
+                      onClick={() => التنقل("/warning-report")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-exclamation-triangle w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">كشف الإنذارات</span>
+                      <span className="sm:hidden">الإنذارات</span>
+                    </button>
+
+                    <button
+                      onClick={() => التنقل("/report-all-matches")}
+                      className="font-medium flex items-center gap-1 sm:gap-2 hover:bg-[white] hover:text-[#ef4343] rounded-md px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm lg:text-base transition-colors duration-200"
+                    >
+                      <i className="fas fa-file-alt w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"></i>
+                      <span className="hidden sm:inline">تقرير المباريات</span>
+                      <span className="sm:hidden">تقرير المباريات</span>
+                    </button>
 
                     <button
                       onClick={() => التنقل("/logout")}
