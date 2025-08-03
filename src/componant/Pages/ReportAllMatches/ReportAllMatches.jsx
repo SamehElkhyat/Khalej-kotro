@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ReportAllMatches.css";
 import axios from "axios";
 
-export default function ReportAllMatches() {
+export default function ReportAllMatches({ matchId, matchData: initialMatchData, onClose }) {
   const [matchData, setMatchData] = useState({
     matchInfo: {
       homeTeam: "",
@@ -10,7 +10,7 @@ export default function ReportAllMatches() {
       date: "",
       time: "",
       venue: "",
-      matchId: 0,
+      matchId: matchId || 0,
     },
     players: [],
     goals: [],
@@ -23,20 +23,33 @@ export default function ReportAllMatches() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-    // Initialize match report data
+  // Initialize match report data
   const initializeMatchReport = () => {
+    // استخدام بيانات المباراة المرسلة أو البيانات الافتراضية
+    const matchInfo = initialMatchData ? {
+      homeTeam: initialMatchData.homeTeam || initialMatchData.team1Name || "فريق الأكاديمية",
+      awayTeam: initialMatchData.awayTeam || initialMatchData.team2Name || "الفريق المنافس", 
+      date: initialMatchData.date ? new Date(initialMatchData.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+      time: initialMatchData.time || new Date().toLocaleTimeString("ar-SA", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      venue: initialMatchData.venue || initialMatchData.location || "ملعب الأكاديمية",
+      matchId: matchId || initialMatchData.id || 0,
+    } : {
+      homeTeam: "فريق الأكاديمية",
+      awayTeam: "الفريق المنافس",
+      date: new Date().toISOString().split("T")[0],
+      time: new Date().toLocaleTimeString("ar-SA", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      venue: "ملعب الأكاديمية",
+      matchId: matchId || 0,
+    };
+
     setMatchData({
-      matchInfo: {
-        homeTeam: "فريق الأكاديمية",
-        awayTeam: "الفريق المنافس",
-        date: new Date().toISOString().split("T")[0],
-        time: new Date().toLocaleTimeString("ar-SA", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        venue: "ملعب الأكاديمية",
-        matchId: 0,
-      },
+      matchInfo,
       players: [],
       goals: [],
       cards: [],
@@ -73,23 +86,23 @@ export default function ReportAllMatches() {
         );
       }
 
-      // Prepare data according to API structure
-      const reportData = {
-        matchId: matchData.matchInfo.matchId || 0,
-        players: matchData.players.map(player => ({
+             // Prepare data according to API structure
+       const reportData = {
+         matchId: matchId || matchData.matchInfo.matchId || 0,
+        players: matchData.players.map((player) => ({
           playerName: player.name || player.pLayerName || "",
           position: player.position || "",
           essential: player.basic || "",
           reserve: player.reserve || "",
-          notes: player.matchNotes || ""
+          notes: player.matchNotes || "",
         })),
         goals: matchData.goals || [],
         cards: matchData.cards || [],
-        staff: matchData.staff.map(staffMember => ({
+        staff: matchData.staff.map((staffMember) => ({
           techName: staffMember.techName || staffMember.name || "",
           role: staffMember.role || staffMember.position || "",
-          notes: staffMember.notes || ""
-        }))
+          notes: staffMember.notes || "",
+        })),
       };
       const response = await axios.post(
         "https://sports.runasp.net/api/Add-Matches-Report",
@@ -174,7 +187,13 @@ export default function ReportAllMatches() {
 
   // Add new player
   const addNewPlayer = () => {
-    const newId = Math.max(...(matchData.players.length > 0 ? matchData.players.map((p) => p.id) : [0]), 0) + 1;
+    const newId =
+      Math.max(
+        ...(matchData.players.length > 0
+          ? matchData.players.map((p) => p.id)
+          : [0]),
+        0
+      ) + 1;
     const newPlayer = {
       id: newId,
       name: "",
@@ -222,7 +241,13 @@ export default function ReportAllMatches() {
 
   // Add new goal
   const addNewGoal = () => {
-    const newId = Math.max(...(matchData.goals.length > 0 ? matchData.goals.map((g) => g.id) : [0]), 0) + 1;
+    const newId =
+      Math.max(
+        ...(matchData.goals.length > 0
+          ? matchData.goals.map((g) => g.id)
+          : [0]),
+        0
+      ) + 1;
     const newGoal = {
       id: newId,
       playerName: "",
@@ -246,7 +271,13 @@ export default function ReportAllMatches() {
 
   // Add new card
   const addNewCard = () => {
-    const newId = Math.max(...(matchData.cards.length > 0 ? matchData.cards.map((c) => c.id) : [0]), 0) + 1;
+    const newId =
+      Math.max(
+        ...(matchData.cards.length > 0
+          ? matchData.cards.map((c) => c.id)
+          : [0]),
+        0
+      ) + 1;
     const newCard = {
       id: newId,
       playerName: "",
@@ -268,11 +299,9 @@ export default function ReportAllMatches() {
     }));
   };
 
-
-
   useEffect(() => {
     initializeMatchReport();
-  }, []);
+  }, [matchId, initialMatchData]); // إضافة التبعيات
 
   if (isLoading) {
     return (
@@ -289,12 +318,22 @@ export default function ReportAllMatches() {
     <div className="report-matches-page">
       {/* Header */}
       <div className="page-header">
-        <h1 className="page-title">تقرير المباريات</h1>
+        {onClose && (
+          <button className="back-btn" onClick={onClose}>
+            <i className="back-icon">←</i>
+            العودة إلى قائمة المباريات
+          </button>
+        )}
+        <h1 className="page-title">تقرير المباراة</h1>
+        {initialMatchData && (
+          <div className="match-info-header">
+            <span className="teams">{matchData.matchInfo.homeTeam} vs {matchData.matchInfo.awayTeam}</span>
+            <span className="match-date">{matchData.matchInfo.date}</span>
+          </div>
+        )}
         <p className="page-subtitle">
           تعديل جميع بيانات اللاعبين والجهاز الفني/الإداري - إضافة وحذف وتعديل
         </p>
-
-
 
         {/* Status Messages */}
         {error && (
@@ -320,7 +359,10 @@ export default function ReportAllMatches() {
             <i className="section-icon">👥</i>
             قائمة اللاعبين (Players)
           </h3>
-          <button className="add-section-button players-add" onClick={addNewPlayer}>
+          <button
+            className="add-section-button players-add"
+            onClick={addNewPlayer}
+          >
             <i className="add-icon">➕</i>
             إضافة لاعب
           </button>
@@ -347,7 +389,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={player.name}
-                      onChange={(e) => updatePlayerData(player.id, "name", e.target.value)}
+                      onChange={(e) =>
+                        updatePlayerData(player.id, "name", e.target.value)
+                      }
                       placeholder="اسم اللاعب"
                     />
                   </td>
@@ -356,7 +400,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={player.position}
-                      onChange={(e) => updatePlayerData(player.id, "position", e.target.value)}
+                      onChange={(e) =>
+                        updatePlayerData(player.id, "position", e.target.value)
+                      }
                       placeholder="المركز"
                     />
                   </td>
@@ -365,7 +411,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={player.basic}
-                      onChange={(e) => updatePlayerData(player.id, "basic", e.target.value)}
+                      onChange={(e) =>
+                        updatePlayerData(player.id, "basic", e.target.value)
+                      }
                       placeholder="أساسي"
                     />
                   </td>
@@ -374,7 +422,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={player.reserve}
-                      onChange={(e) => updatePlayerData(player.id, "reserve", e.target.value)}
+                      onChange={(e) =>
+                        updatePlayerData(player.id, "reserve", e.target.value)
+                      }
                       placeholder="احتياطي"
                     />
                   </td>
@@ -383,7 +433,13 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={player.matchNotes}
-                      onChange={(e) => updatePlayerData(player.id, "matchNotes", e.target.value)}
+                      onChange={(e) =>
+                        updatePlayerData(
+                          player.id,
+                          "matchNotes",
+                          e.target.value
+                        )
+                      }
                       placeholder="ملاحظات"
                     />
                   </td>
@@ -442,7 +498,9 @@ export default function ReportAllMatches() {
                     <select
                       className="table-select"
                       value={goal.playerName}
-                      onChange={(e) => updateGoalData(goal.id, "playerName", e.target.value)}
+                      onChange={(e) =>
+                        updateGoalData(goal.id, "playerName", e.target.value)
+                      }
                     >
                       <option value="">اختر اللاعب</option>
                       {matchData.players.map((player) => (
@@ -457,7 +515,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={goal.acadamyName}
-                      onChange={(e) => updateGoalData(goal.id, "acadamyName", e.target.value)}
+                      onChange={(e) =>
+                        updateGoalData(goal.id, "acadamyName", e.target.value)
+                      }
                       placeholder="اسم الأكاديمية"
                     />
                   </td>
@@ -466,7 +526,9 @@ export default function ReportAllMatches() {
                       type="number"
                       className="table-input minute-input"
                       value={goal.minute}
-                      onChange={(e) => updateGoalData(goal.id, "minute", e.target.value)}
+                      onChange={(e) =>
+                        updateGoalData(goal.id, "minute", e.target.value)
+                      }
                       placeholder="الدقيقة"
                       min="1"
                       max="120"
@@ -477,7 +539,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={goal.notes}
-                      onChange={(e) => updateGoalData(goal.id, "notes", e.target.value)}
+                      onChange={(e) =>
+                        updateGoalData(goal.id, "notes", e.target.value)
+                      }
                       placeholder="ملاحظات"
                     />
                   </td>
@@ -536,7 +600,9 @@ export default function ReportAllMatches() {
                     <select
                       className="table-select"
                       value={card.playerName}
-                      onChange={(e) => updateCardData(card.id, "playerName", e.target.value)}
+                      onChange={(e) =>
+                        updateCardData(card.id, "playerName", e.target.value)
+                      }
                     >
                       <option value="">اختر اللاعب</option>
                       {matchData.players.map((player) => (
@@ -551,7 +617,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={card.acadamyName}
-                      onChange={(e) => updateCardData(card.id, "acadamyName", e.target.value)}
+                      onChange={(e) =>
+                        updateCardData(card.id, "acadamyName", e.target.value)
+                      }
                       placeholder="اسم الأكاديمية"
                     />
                   </td>
@@ -559,7 +627,9 @@ export default function ReportAllMatches() {
                     <select
                       className="table-select"
                       value={card.cardType}
-                      onChange={(e) => updateCardData(card.id, "cardType", e.target.value)}
+                      onChange={(e) =>
+                        updateCardData(card.id, "cardType", e.target.value)
+                      }
                     >
                       <option value="">نوع البطاقة</option>
                       <option value="yellow">صفراء</option>
@@ -572,7 +642,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={card.notes}
-                      onChange={(e) => updateCardData(card.id, "notes", e.target.value)}
+                      onChange={(e) =>
+                        updateCardData(card.id, "notes", e.target.value)
+                      }
                       placeholder="ملاحظات"
                     />
                   </td>
@@ -606,7 +678,10 @@ export default function ReportAllMatches() {
             <i className="section-icon">👨‍⚕️</i>
             الطاقم الفني (Staff)
           </h3>
-          <button className="add-section-button staff-add" onClick={addNewStaff}>
+          <button
+            className="add-section-button staff-add"
+            onClick={addNewStaff}
+          >
             <i className="add-icon">➕</i>
             إضافة عضو
           </button>
@@ -631,7 +706,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={staff.techName}
-                      onChange={(e) => updateStaffData(staff.id, "techName", e.target.value)}
+                      onChange={(e) =>
+                        updateStaffData(staff.id, "techName", e.target.value)
+                      }
                       placeholder="اسم العضو"
                     />
                   </td>
@@ -639,7 +716,9 @@ export default function ReportAllMatches() {
                     <select
                       className="table-select"
                       value={staff.role}
-                      onChange={(e) => updateStaffData(staff.id, "role", e.target.value)}
+                      onChange={(e) =>
+                        updateStaffData(staff.id, "role", e.target.value)
+                      }
                     >
                       <option value="">اختر الدور</option>
                       <option value="main_coach">مدرب رئيسي</option>
@@ -655,7 +734,9 @@ export default function ReportAllMatches() {
                       type="text"
                       className="table-input"
                       value={staff.notes}
-                      onChange={(e) => updateStaffData(staff.id, "notes", e.target.value)}
+                      onChange={(e) =>
+                        updateStaffData(staff.id, "notes", e.target.value)
+                      }
                       placeholder="ملاحظات"
                     />
                   </td>
@@ -682,7 +763,7 @@ export default function ReportAllMatches() {
             <h4>إرسال تقرير المباراة</h4>
             <p>تأكد من إدخال جميع البيانات المطلوبة قبل الإرسال</p>
           </div>
-          <button 
+          <button
             className="submit-report-btn"
             onClick={saveMatchReport}
             disabled={isSaving}
@@ -701,10 +782,6 @@ export default function ReportAllMatches() {
           </button>
         </div>
       </div>
-
-
-
-
 
       {/* Report Footer */}
       <div className="report-footer">
@@ -726,5 +803,3 @@ export default function ReportAllMatches() {
     </div>
   );
 }
-
-

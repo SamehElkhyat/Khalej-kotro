@@ -30,22 +30,21 @@ import WarningReport from "./componant/Pages/WarningReport/WarningReport.jsx";
 import Goals from "./componant/Pages/Goals/Goals.jsx";
 import ReportAllMatches from "./componant/Pages/ReportAllMatches/ReportAllMatches.jsx";
 import ActiveNoActive from "./componant/Pages/ActiveNoActive/ActiveNoActive.jsx";
+import MatchesList from "./componant/Pages/ReportAllMatches/MatchesList.jsx";
 // تكوين مسارات التطبيق
 const مسارات_التطبيق = createBrowserRouter([
   {
-    
     path: "",
-    element: <App/>,
+    element: <App />,
     children: [
-
       // الصفحات الرئيسية
-      { path: "info", element: <Info /> }, 
-      { path: "public-info", element: <PublicNavBar /> }, 
+      { path: "info", element: <Info /> },
+      { path: "public-info", element: <PublicNavBar /> },
       // صفحة المعلومات
-      { path: "teams", element: <Teams /> },         // صفحة الفرق
+      { path: "teams", element: <Teams /> }, // صفحة الفرق
       { path: "public-teams", element: <PublicTeams /> }, // صفحة جدول ترتيب الفرق العامة
-      { path: "matches", element: <Matches /> },     // صفحة المباريات
-      { path: "shedulde", element: <Shedulde /> },   // صفحة الجدول الزمني
+      { path: "matches", element: <Matches /> }, // صفحة المباريات
+      { path: "shedulde", element: <Shedulde /> }, // صفحة الجدول الزمني
       { path: "NavBar", element: <NavBar /> },
       { path: "public-results-matches", element: <PublicResultsMatches /> }, // صفحة نتائج المباريات العامة
       { path: "sign-for-technical", element: <SignForTechnical /> }, // صفحة تسجيل التقنيين
@@ -53,22 +52,23 @@ const مسارات_التطبيق = createBrowserRouter([
       { path: "table-mangments", element: <TableMangments /> }, // صفحة جدول المباريات
       { path: "warning-report", element: <WarningReport /> }, // صفحة جدول المباريات
       { path: "goals-report", element: <Goals /> }, // صفحة جدول المباريات
-              { path: "report-all-matches", element: <ReportAllMatches /> }, // صفحة جدول المباريات
-              { path: "active-no-active", element: <ActiveNoActive /> }, // صفحة جدول المباريات
+      { path: "report-all-matches", element: <ReportAllMatches /> }, // صفحة جدول المباريات
+      { path: "active-no-active", element: <ActiveNoActive /> }, // صفحة جدول المباريات
+      { path: "matches-list", element: <MatchesList /> }, // صفحة جدول المباريات
       // صفحة اللاندينغ
       // صفحات الإدارة
-      { path: "admin", element: <Admin /> },                    // لوحة الإدارة
-      { path: "landing-admin", element: <LandingAdmin /> },     // صفحة دخول الإدارة
-      { path: "academies", element: <Acadimics /> },            // إدارة الأكاديميات
-      { path: "players", element: <Players /> },                // إدارة اللاعبين
-      { path: "mange-matches", element: <MangeMatches /> },     // إدارة المباريات
-      { path: "mange-shedulde", element: <MangeShedulde /> },   // إدارة الجدول الزمني
-      { path: "camp", element: <Camp /> },                      // إدارة المعسكرات
-      { path: "result-matches", element: <ResultMatches /> },   // نتائج المباريات
-      { path: "teams-ranking", element: <TeamsRanking /> },     // ترتيب الفرق
-      { path: "login", element: <Login /> },                    // تسجيل الدخول
-      { path: "rules", element: <Rules /> },                    // القواعد
-      { path: "logout", element: <LogOut /> },                  // تسجيل الخروج
+      { path: "admin", element: <Admin /> }, // لوحة الإدارة
+      { path: "landing-admin", element: <LandingAdmin /> }, // صفحة دخول الإدارة
+      { path: "academies", element: <Acadimics /> }, // إدارة الأكاديميات
+      { path: "players", element: <Players /> }, // إدارة اللاعبين
+      { path: "mange-matches", element: <MangeMatches /> }, // إدارة المباريات
+      { path: "mange-shedulde", element: <MangeShedulde /> }, // إدارة الجدول الزمني
+      { path: "camp", element: <Camp /> }, // إدارة المعسكرات
+      { path: "result-matches", element: <ResultMatches /> }, // نتائج المباريات
+      { path: "teams-ranking", element: <TeamsRanking /> }, // ترتيب الفرق
+      { path: "login", element: <Login /> }, // تسجيل الدخول
+      { path: "rules", element: <Rules /> }, // القواعد
+      { path: "logout", element: <LogOut /> }, // تسجيل الخروج
     ],
   },
 ]);
@@ -77,6 +77,4 @@ const مسارات_التطبيق = createBrowserRouter([
 const عنصر_الجذر = ReactDOM.createRoot(document.getElementById("root"));
 
 // عرض التطبيق
-عنصر_الجذر.render(
-  <RouterProvider router={مسارات_التطبيق} />
-);
+عنصر_الجذر.render(<RouterProvider router={مسارات_التطبيق} />);

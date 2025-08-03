@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { jwtDecode } from "jwt-decode";
 import "./ActiveNoActive.css";
 
 const ActiveNoActive = () => {
@@ -10,6 +11,10 @@ const ActiveNoActive = () => {
   const [hasDataLoaded, setHasDataLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // User role state
+  const [userRole, setUserRole] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Edit modal states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -30,6 +35,10 @@ const ActiveNoActive = () => {
   // Image preview states
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [passportImagePreview, setPassportImagePreview] = useState(null);
+
+  // Admin action states
+  const [processingPlayers, setProcessingPlayers] = useState(new Set());
+  const [actionError, setActionError] = useState(null);
 
   // Categories for filtering
   const categories = [
@@ -71,24 +80,22 @@ const ActiveNoActive = () => {
 
       const data = await response.json();
       console.log("All Players API Response:", data);
-      
+
       // Filter players into active and inactive based on their status
       const allPlayers = data || [];
-      const activePlayers = allPlayers.filter(player => 
-        player.isActive === true || player.status === 'active' || player.active === true
+      const activePlayers = allPlayers.filter(
+        (player) => player.statu === true
       );
-      const inactivePlayers = allPlayers.filter(player => 
-        player.isActive === false || player.status === 'inactive' || player.active === false || 
-        (!player.isActive && !player.status && !player.active)
+      const inactivePlayers = allPlayers.filter(
+        (player) => player.statu === false
       );
-      
+
       console.log("Active Players:", activePlayers);
       console.log("Inactive Players:", inactivePlayers);
-      
+
       setActivePlayersData(activePlayers);
       setInactivePlayersData(inactivePlayers);
       setHasDataLoaded(true);
-      
     } catch (error) {
       console.error("Error fetching all players data:", error);
       setError(`خطأ في تحميل بيانات اللاعبين: ${error.message}`);
@@ -101,6 +108,29 @@ const ActiveNoActive = () => {
   const fetchAllData = useCallback(async () => {
     await fetchAllPlayersData();
   }, [fetchAllPlayersData]);
+
+  // Check user role on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const role = decoded.Role || decoded.role || "";
+        setUserRole(role);
+        setIsAdmin(role === "Admin" || role === "admin" || role === "ADMIN");
+        console.log(
+          "User role detected:",
+          role,
+          "Is Admin:",
+          role === "Admin" || role === "admin" || role === "ADMIN"
+        );
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setUserRole(null);
+        setIsAdmin(false);
+      }
+    }
+  }, []);
 
   // Load data on component mount
   useEffect(() => {
@@ -300,6 +330,128 @@ const ActiveNoActive = () => {
       setProfileImagePreview(null);
     } else if (imageType === "URLPassport") {
       setPassportImagePreview(null);
+    }
+  };
+
+  // Helper function to remove player from processing set
+  const removeFromProcessing = (playerId) => {
+    setProcessingPlayers((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(playerId);
+      return newSet;
+    });
+  };
+
+  const handleAcceptPlayer = async (player, notes, statu) => {
+    if (!isAdmin) return;
+
+    // Add player ID to processing set
+    setProcessingPlayers((prev) => new Set(prev).add(player.id));
+    setActionError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setActionError(
+          "لم يتم العثور على رمز التحقق. يرجى تسجيل الدخول مرة أخرى."
+        );
+        removeFromProcessing(player.id);
+        return;
+      }
+
+      const response = await fetch(
+        `https://sports.runasp.net/api/AcceptOrReject-Players`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            playerID: player.id,
+            statu: statu,
+            notes: notes,
+          }),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Player activated successfully:", result);
+
+      // Move player from inactive to active if accepted
+      if (statu === true) {
+        const activatedPlayer = { ...player, statu: true };
+        setInactivePlayersData((prev) =>
+          prev.filter((p) => p.id !== player.id)
+        );
+        setActivePlayersData((prev) => [...prev, activatedPlayer]);
+        console.log("تم قبول اللاعب بنجاح");
+      }
+    } catch (error) {
+      console.error("Error processing player:", error);
+      setActionError(`خطأ في معالجة اللاعب: ${error.message}`);
+    } finally {
+      // Remove player ID from processing set
+      removeFromProcessing(player.id);
+    }
+  };
+
+  // Reject player (Admin only)
+  const handleRejectPlayer = async (player, notes, statu) => {
+    if (!isAdmin) return;
+
+    // Add player ID to processing set
+    setProcessingPlayers((prev) => new Set(prev).add(player.id));
+    setActionError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setActionError(
+          "لم يتم العثور على رمز التحقق. يرجى تسجيل الدخول مرة أخرى."
+        );
+        removeFromProcessing(player.id);
+        return;
+      }
+
+      // API call to reject player
+      const response = await fetch(
+        `https://sports.runasp.net/api/AcceptOrReject-Players`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            playerID: player.id,
+            statu: statu,
+            notes: notes,
+          }),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Player rejected successfully:", result);
+
+      // Remove player from inactive list when rejected
+      setInactivePlayersData((prev) => prev.filter((p) => p.id !== player.id));
+
+      console.log("تم رفض اللاعب بنجاح");
+    } catch (error) {
+      console.error("Error rejecting player:", error);
+      setActionError(`خطأ في رفض اللاعب: ${error.message}`);
+    } finally {
+      // Remove player ID from processing set
+      removeFromProcessing(player.id);
     }
   };
 
@@ -537,6 +689,20 @@ const ActiveNoActive = () => {
         </div>
       )}
 
+      {/* Admin Action Error Display */}
+      {actionError && (
+        <div className="error-container">
+          <div className="error-message">
+            <i className="fas fa-exclamation-triangle"></i>
+            {actionError}
+          </div>
+          <button className="retry-btn" onClick={() => setActionError(null)}>
+            <i className="fas fa-times"></i>
+            إغلاق
+          </button>
+        </div>
+      )}
+
       {/* Players Data Display */}
       {hasDataLoaded && !error && (
         <div className="players-container">
@@ -660,20 +826,69 @@ const ActiveNoActive = () => {
                     )}
                   </div>
 
-                  {/* Edit Button for Inactive Players Only */}
+                  {/* Action Buttons for Inactive Players Only */}
                   {(player.status === "inactive" ||
                     selectedView === "inactive" ||
                     (selectedView === "both" &&
                       player.status === "inactive")) && (
                     <div className="player-actions">
-                      <button
-                        className="edit-player-btn"
-                        onClick={() => handleEditPlayer(player)}
-                        title="تعديل بيانات اللاعب"
-                      >
-                        <i className="fas fa-edit"></i>
-                        تعديل
-                      </button>
+                      {isAdmin ? (
+                        // Admin sees Accept/Reject buttons
+                        <>
+                          <button
+                            className="accept-player-btn"
+                            onClick={() =>
+                              handleAcceptPlayer(
+                                player,
+                                "تم قبول اللاعب من قبل الإدارة",
+                                true
+                              )
+                            }
+                            disabled={processingPlayers.has(player.id)}
+                            title="قبول اللاعب"
+                          >
+                            <i
+                              className={`fas ${
+                                processingPlayers.has(player.id)
+                                  ? "fa-spinner fa-spin"
+                                  : "fa-check"
+                              }`}
+                            ></i>
+                            قبول
+                          </button>
+                          <button
+                            className="reject-player-btn"
+                            onClick={() =>
+                              handleRejectPlayer(
+                                player,
+                                "تم رفض اللاعب من قبل الإدارة",
+                                false
+                              )
+                            }
+                            disabled={processingPlayers.has(player.id)}
+                            title="رفض اللاعب"
+                          >
+                            <i
+                              className={`fas ${
+                                processingPlayers.has(player.id)
+                                  ? "fa-spinner fa-spin"
+                                  : "fa-times"
+                              }`}
+                            ></i>
+                            رفض
+                          </button>
+                        </>
+                      ) : (
+                        // Non-admin sees Edit button
+                        <button
+                          className="edit-player-btn"
+                          onClick={() => handleEditPlayer(player)}
+                          title="تعديل بيانات اللاعب"
+                        >
+                          <i className="fas fa-edit"></i>
+                          تعديل
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

@@ -107,7 +107,7 @@ const menuItems = [
   {
     text: "إدارة اللاعبين",
     icon: <PeopleIcon />,
-    path: "players",
+    path: "active-no-active",
   },
   {
     text: "إدارة المباريات",
@@ -181,7 +181,7 @@ export default function MiniDrawer() {
 
   // Filter menu items based on role
   const getFilteredMenuItems = () => {
-    if (decodedToken?.Role === "admin") {
+    if (decodedToken?.Role === "Admin") {
       return menuItems;
     }
     return []; // Return empty array for non-admin roles
