@@ -11,11 +11,9 @@ const ActiveNoActive = () => {
   const [hasDataLoaded, setHasDataLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
   // User role state
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false);
-
   // Edit modal states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
@@ -64,7 +62,7 @@ const ActiveNoActive = () => {
       }
 
       const response = await fetch(
-        "https://sports.runasp.net/api/Get-All-Players-By-Academy",
+        `${process.env.REACT_APP_API_URL}/Get-All-Players-By-Academy`,
         {
           method: "GET",
           headers: {
@@ -358,9 +356,8 @@ const ActiveNoActive = () => {
         removeFromProcessing(player.id);
         return;
       }
-
       const response = await fetch(
-        `https://sports.runasp.net/api/AcceptOrReject-Players`,
+        `${process.env.REACT_APP_API_URL}/AcceptOrReject-Players`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -420,7 +417,7 @@ const ActiveNoActive = () => {
 
       // API call to reject player
       const response = await fetch(
-        `https://sports.runasp.net/api/AcceptOrReject-Players`,
+        `${process.env.REACT_APP_API_URL}/AcceptOrReject-Players`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -497,14 +494,8 @@ const ActiveNoActive = () => {
       if (formData.URLPassport) {
         formDataToSend.append("URLPassport", formData.URLPassport);
       }
-
-      console.log(
-        "Updating player with FormData for player ID:",
-        editingPlayer.id
-      );
-
       const response = await fetch(
-        `https://sports.runasp.net/api/Update-Player/${editingPlayer.id}`,
+        `${process.env.REACT_APP_API_URL}/Update-Player/${editingPlayer.id}`,
         {
           method: "POST",
           body: formDataToSend,

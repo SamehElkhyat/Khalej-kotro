@@ -34,10 +34,8 @@ const Goals = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
       // Get token from localStorage
       const token = localStorage.getItem('token');
-      
       if (!token) {
         console.error('No token found');
         setError('لم يتم العثور على رمز التحقق. يرجى تسجيل الدخول مرة أخرى.');
@@ -46,7 +44,7 @@ const Goals = () => {
       }
 
       // Build URL with age parameter if provided
-      let apiUrl = 'https://sports.runasp.net/api/Private-Goals-Report';
+      let apiUrl = `${process.env.REACT_APP_API_URL}/Private-Goals-Report`;
       if (ageCategory) {
         apiUrl += `/${ageCategory}`;
       }
@@ -401,9 +399,6 @@ const Goals = () => {
                       </td>
                       <td>{player.numberShirt}</td>
                       <td>{player.position}</td>
-                     
-                     
-                   
                     </tr>
                   ))}
                 </tbody>

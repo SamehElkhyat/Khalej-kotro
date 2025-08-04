@@ -232,7 +232,7 @@ export default function TableMatch() {
       setError(null);
       
       console.log('Fetching matches data from API...', { ageCategory });
-      const response = await fetch('https://sports.runasp.net/api/Get-Score-Matches');
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/Get-Score-Matches`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

@@ -120,7 +120,6 @@ const AgeCategoriesSelector = ({ onCategorySelect, selectedCategory }) => {
     { id: "U14", name: "فئة 14 سنة", icon: "⚽", color: "#10b981" },
     { id: "U16", name: "فئة 16 سنة", icon: "🏆", color: "#f59e0b" }
   ];
-
   return (
     <div className="age-categories-container">
       <h2 className="categories-title">اختر الفئة العمرية</h2>
@@ -229,7 +228,6 @@ const MatchesGrid = ({ matches, onMatchClick }) => {
     const dateB = new Date(b.date + " " + b.time);
     return dateA - dateB;
   });
-
   return (
     <div className="matches-container">
       <SearchAndFilter

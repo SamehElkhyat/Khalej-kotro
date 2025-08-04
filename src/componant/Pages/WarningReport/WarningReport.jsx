@@ -53,7 +53,7 @@ const WarningReport = () => {
       }
 
       // Build URL with age parameter if provided
-      let apiUrl = 'https://sports.runasp.net/api/Private-Cards-Report';
+      let apiUrl = `${process.env.REACT_APP_API_URL}/Private-Cards-Report`;
       if (ageCategory) {
         apiUrl += `/${ageCategory}`;
       }

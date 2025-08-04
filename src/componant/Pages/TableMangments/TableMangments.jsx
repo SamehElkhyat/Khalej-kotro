@@ -210,7 +210,7 @@ export default function TableMangments() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`https://sports.runasp.net/api/Matches-Table/${selectedCategory}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/Matches-Table/${selectedCategory}`);
       
       
       if (!response.ok) {

@@ -41,7 +41,7 @@ const WarningReportPublic = () => {
       setIsLoading(true);
       setError(null);
       // Build URL with age parameter if provided
-      let apiUrl = "https://sports.runasp.net/api/Public-Cards-Report";
+      let apiUrl = `${process.env.REACT_APP_API_URL}/Public-Cards-Report`;
       if (ageCategory) {
         apiUrl += `/${ageCategory}`;
       }
@@ -185,7 +185,6 @@ const WarningReportPublic = () => {
         } else if (warning.category) {
           ageCategory = warning.category;
         }
-
         // Add to appropriate category
         if (organizedData[ageCategory]) {
           organizedData[ageCategory].push(mappedWarning);
@@ -197,7 +196,7 @@ const WarningReportPublic = () => {
 
     return organizedData;
   };
-
+  
   const getWarningTypeColor = (type) => {
     switch (type) {
       case "سلوك غير رياضي":

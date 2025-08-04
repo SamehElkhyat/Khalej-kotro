@@ -22,7 +22,7 @@ export default function SimpleMatchesView({ onBack }) {
       }
 
       const response = await axios.get(
-        `https://sports.runasp.net/api/Get-Details-Reports/${id}`,
+        `${process.env.REACT_APP_API_URL}/Get-Details-Reports/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,7 +58,7 @@ export default function SimpleMatchesView({ onBack }) {
       }
 
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Show-Reports",
+        `${process.env.REACT_APP_API_URL}/Get-Show-Reports`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

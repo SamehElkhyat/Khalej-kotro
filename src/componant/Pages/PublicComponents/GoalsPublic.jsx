@@ -35,7 +35,7 @@ const GoalsPublic = () => {
       setError(null);
 
       // Build URL with age parameter if provided
-      let apiUrl = 'https://sports.runasp.net/api/Public-Goals-Report';
+      let apiUrl = `${process.env.REACT_APP_API_URL}/Public-Goals-Report`;
       if (ageCategory) {
         apiUrl += `/${ageCategory}`;
       }
@@ -100,7 +100,6 @@ const GoalsPublic = () => {
       fetchGoalsData(ageParam);
     }
   };
-
   // Function to organize API data by age categories
   const organizeGoalsByAge = (apiData, targetCategory = null) => {
     const organizedData = {};

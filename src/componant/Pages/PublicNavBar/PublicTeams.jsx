@@ -21,7 +21,7 @@ export default function PublicTeams() {
       try {
         setLoading(true);
         const response = await axios.get(
-          `https://sports.runasp.net/api/Matches-Table/${selectedCategory}`
+          `${process.env.REACT_APP_API_URL}/Matches-Table/${selectedCategory}`
         );
         // Sort teams by points (highest first)
         const sortedData = response.data.sort((a, b) => b.points - a.points);
@@ -64,7 +64,7 @@ export default function PublicTeams() {
       const fetchTeamsData = async () => {
         try {
           const response = await axios.get(
-            `https://sports.runasp.net/api/Matches-Table/${selectedCategory}`
+            `${process.env.REACT_APP_API_URL}/Matches-Table/${selectedCategory}`
           );
           const sortedData = response.data.sort((a, b) => b.points - a.points);
           setTeamsData(sortedData);

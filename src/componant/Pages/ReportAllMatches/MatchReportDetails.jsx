@@ -19,7 +19,7 @@ export default function MatchReportDetails({ matchId, matchData, onClose }) {
       }
 
       const response = await axios.get(
-        `https://sports.runasp.net/api/Get-Match-Report/${matchId}`,
+        `${process.env.REACT_APP_API_URL}/Get-Match-Report/${matchId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

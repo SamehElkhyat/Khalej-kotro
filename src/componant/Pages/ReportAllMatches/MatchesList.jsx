@@ -31,7 +31,7 @@ export default function MatchesList() {
       }
 
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Score-Matches-By-Academy",
+        `${process.env.REACT_APP_API_URL}/Get-Score-Matches-By-Academy`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -102,7 +102,7 @@ function SignForTechnical() {
 
       try {
         const response = await axios.post(
-          "https://sports.runasp.net/api/Add-Players",
+          `${process.env.REACT_APP_API_URL}/Add-Players`,
           values,
           {
             headers: {
@@ -146,7 +146,7 @@ function SignForTechnical() {
           formData.append(key, values[key]);
         });
         const response = await axios.post(
-          "https://sports.runasp.net/api/Add-Technical-administrative",
+          `${process.env.REACT_APP_API_URL}/Add-Technical-administrative`,
           formData,
           {
             headers: {
@@ -240,7 +240,7 @@ function SignForTechnical() {
 
       // Send all players as an array in a single request
       const response = await axios.post(
-        "https://sports.runasp.net/api/Add-Players",
+        `${process.env.REACT_APP_API_URL}/Add-Players`,
         playersData, // Send as array
         {
           headers: {

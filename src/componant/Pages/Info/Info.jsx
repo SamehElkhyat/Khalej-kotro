@@ -312,7 +312,7 @@ function Info() {
     try {
       setIsLoadingData(true);
       const response = await axios.get(
-        "https://sports.runasp.net/api/Get-Categories",
+        `${process.env.REACT_APP_API_URL}/Get-Categories`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
