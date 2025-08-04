@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./ReportAllMatches.css";
 import axios from "axios";
 
-export default function ReportAllMatches({ matchId, matchData: initialMatchData, onClose }) {
+export default function ReportAllMatches({
+  matchId,
+  matchData: initialMatchData,
+  onClose,
+}) {
   const [matchData, setMatchData] = useState({
     matchInfo: {
       homeTeam: "",
@@ -26,27 +30,42 @@ export default function ReportAllMatches({ matchId, matchData: initialMatchData,
   // Initialize match report data
   const initializeMatchReport = () => {
     // استخدام بيانات المباراة المرسلة أو البيانات الافتراضية
-    const matchInfo = initialMatchData ? {
-      homeTeam: initialMatchData.homeTeam || initialMatchData.team1Name || "فريق الأكاديمية",
-      awayTeam: initialMatchData.awayTeam || initialMatchData.team2Name || "الفريق المنافس", 
-      date: initialMatchData.date ? new Date(initialMatchData.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
-      time: initialMatchData.time || new Date().toLocaleTimeString("ar-SA", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      venue: initialMatchData.venue || initialMatchData.location || "ملعب الأكاديمية",
-      matchId: matchId || initialMatchData.id || 0,
-    } : {
-      homeTeam: "فريق الأكاديمية",
-      awayTeam: "الفريق المنافس",
-      date: new Date().toISOString().split("T")[0],
-      time: new Date().toLocaleTimeString("ar-SA", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      venue: "ملعب الأكاديمية",
-      matchId: matchId || 0,
-    };
+    const matchInfo = initialMatchData
+      ? {
+          homeTeam:
+            initialMatchData.homeTeam ||
+            initialMatchData.team1Name ||
+            "فريق الأكاديمية",
+          awayTeam:
+            initialMatchData.awayTeam ||
+            initialMatchData.team2Name ||
+            "الفريق المنافس",
+          date: initialMatchData.date
+            ? new Date(initialMatchData.date).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+          time:
+            initialMatchData.time ||
+            new Date().toLocaleTimeString("ar-SA", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          venue:
+            initialMatchData.venue ||
+            initialMatchData.location ||
+            "ملعب الأكاديمية",
+          matchId: matchId || initialMatchData.id || 0,
+        }
+      : {
+          homeTeam: "فريق الأكاديمية",
+          awayTeam: "الفريق المنافس",
+          date: new Date().toISOString().split("T")[0],
+          time: new Date().toLocaleTimeString("ar-SA", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          venue: "ملعب الأكاديمية",
+          matchId: matchId || 0,
+        };
 
     setMatchData({
       matchInfo,
@@ -86,9 +105,9 @@ export default function ReportAllMatches({ matchId, matchData: initialMatchData,
         );
       }
 
-             // Prepare data according to API structure
-       const reportData = {
-         matchId: matchId || matchData.matchInfo.matchId || 0,
+      // Prepare data according to API structure
+      const reportData = {
+        matchId: matchId || matchData.matchInfo.matchId || 0,
         players: matchData.players.map((player) => ({
           playerName: player.name || player.pLayerName || "",
           position: player.position || "",
@@ -327,7 +346,9 @@ export default function ReportAllMatches({ matchId, matchData: initialMatchData,
         <h1 className="page-title">تقرير المباراة</h1>
         {initialMatchData && (
           <div className="match-info-header">
-            <span className="teams">{matchData.matchInfo.homeTeam} vs {matchData.matchInfo.awayTeam}</span>
+            <span className="teams">
+              {matchData.matchInfo.homeTeam} vs {matchData.matchInfo.awayTeam}
+            </span>
             <span className="match-date">{matchData.matchInfo.date}</span>
           </div>
         )}
