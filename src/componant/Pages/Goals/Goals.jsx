@@ -165,11 +165,15 @@ const Goals = () => {
       const playerData = {
         id: item.id || item.playerId || index + 1,
         playerName: item.playerName || item.name || item.player || `لاعب ${index + 1}`,
-        team: item.team || item.teamName || item.club || 'فريق غير محدد',
-        goals: parseInt(item.goals || item.numberOfGoals || 0),
+        team: item.academyName || item.team || item.teamName || item.club || 'فريق غير محدد',
+        academyName: item.academyName || item.team || item.teamName || 'أكاديمية غير محددة',
+        goals: parseInt(item.goalsCount || item.goals || item.numberOfGoals || 0),
+        goalsCount: parseInt(item.goalsCount || item.goals || item.numberOfGoals || 0),
         assists: parseInt(item.assists || item.numberOfAssists || 0),
         matches: parseInt(item.matches || item.matchesPlayed || item.gamesPlayed || 0),
-        goalType: item.goalType || item.playerType || item.type || 'لاعب'
+        goalType: item.goalType || item.playerType || item.type || 'لاعب',
+        position: item.position || item.pos || 'مركز غير محدد',
+        numberShirt: item.numberShirt || item.shirtNumber || 'غير محدد'
       };
 
       // If targetCategory is specified, add all data to that category
@@ -300,10 +304,10 @@ const Goals = () => {
           {Object.entries(goalsData).map(([category, players], index) => {
             const colors = ['#3b82f6', '#10b981', '#f59e0b'];
             const icons = ['🏃‍♂️', '⚽', '🏆'];
-            const totalGoals = hasDataLoaded ? players.reduce((sum, player) => sum + player.goals, 0) : 0;
+            const totalGoals = hasDataLoaded ? players.reduce((sum, player) => sum + player.goalsCount, 0) : 0;
             const totalAssists = hasDataLoaded ? players.reduce((sum, player) => sum + player.assists, 0) : 0;
             const topScorer = hasDataLoaded && players.length > 0 ? players.reduce((prev, current) => 
-              prev.goals > current.goals ? prev : current) : null;
+              prev.goalsCount > current.goalsCount ? prev : current) : null;
             
             return (
               <div 
@@ -328,7 +332,7 @@ const Goals = () => {
                 </div>
                 {hasDataLoaded && topScorer && (
                   <div className="top-scorer">
-                    الهداف: {topScorer.playerName} ({topScorer.goals} هدف)
+                    الهداف: {topScorer.playerName} ({topScorer.goalsCount} هدف)
                   </div>
                 )}
                 {!hasDataLoaded && (
@@ -366,17 +370,16 @@ const Goals = () => {
                 <thead>
                   <tr>
                     <th>اسم اللاعب</th>
-                    <th>الفريق</th>
                     <th>الأهداف</th>
-                    <th>المساعدات</th>
-                    <th>المباريات</th>
-                    <th>معدل الأهداف</th>
-                    <th>النوع</th>
+                    <th>التيشيرت</th>
+                    <th>المركز</th>
+
+
                   </tr>
                 </thead>
                 <tbody>
                   {goalsData[selectedCategory]
-                    .sort((a, b) => b.goals - a.goals)
+                    .sort((a, b) => b.goalsCount - a.goalsCount)
                     .map((player, index) => (
                     <tr key={player.id}>
                       <td>
@@ -390,30 +393,17 @@ const Goals = () => {
                           <span>{player.playerName}</span>
                         </div>
                       </td>
-                      <td>{player.team}</td>
                       <td>
                         <div className="goals-cell">
-                          <span className="goals-number">{player.goals}</span>
+                          <span className="goals-number">{player.goalsCount}</span>
                           <span className="goals-icon">⚽</span>
                         </div>
                       </td>
-                      <td>
-                        <div className="assists-cell">
-                          <span className="assists-number">{player.assists}</span>
-                          <span className="assists-icon">🎯</span>
-                        </div>
-                      </td>
-                      <td>{player.matches}</td>
-                      <td>
-                        <span className="average-goals">
-                          {calculateAverage(player.goals, player.matches)}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`player-badge ${getPlayerTypeColor(player.goalType)}`}>
-                          {player.goalType}
-                        </span>
-                      </td>
+                      <td>{player.numberShirt}</td>
+                      <td>{player.position}</td>
+                     
+                     
+                   
                     </tr>
                   ))}
                 </tbody>

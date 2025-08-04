@@ -141,7 +141,11 @@ const WarningReportPublic = () => {
       const mappedWarning = {
         id: warning.id || warning.cardId || index + 1,
         playerName: warning.playerName || warning.name || `لاعب ${index + 1}`,
-        team: warning.teamName || warning.team || "فريق غير محدد",
+        academyName: warning.academyName || warning.teamName || warning.team || "أكاديمية غير محددة",
+        team: warning.academyName || warning.teamName || warning.team || "فريق غير محدد",
+        yellowCards: parseInt(warning.yellowCards || 0),
+        redCards: parseInt(warning.redCards || 0),
+        totalCards: parseInt(warning.totalCards || warning.yellowCards + warning.redCards || 0),
         warningType:
           warning.cardType ||
           warning.warningType ||
@@ -304,7 +308,9 @@ const WarningReportPublic = () => {
           {Object.entries(warningsData).map(([category, warnings], index) => {
             const colors = ["#3b82f6", "#10b981", "#f59e0b"];
             const icons = ["🏃‍♂️", "⚽", "🏆"];
-            const totalWarnings = hasDataLoaded ? warnings.length : 0;
+            const totalWarnings = hasDataLoaded ? warnings.reduce((sum, warning) => sum + warning.totalCards, 0) : 0;
+            const totalYellowCards = hasDataLoaded ? warnings.reduce((sum, warning) => sum + warning.yellowCards, 0) : 0;
+            const totalRedCards = hasDataLoaded ? warnings.reduce((sum, warning) => sum + warning.redCards, 0) : 0;
             return (
               <div
                 key={category}
@@ -319,12 +325,25 @@ const WarningReportPublic = () => {
                 </div>
                 <h3 className="category-name">{category}</h3>
                 <div className="warnings-count">
-                  <span className="count-number">{totalWarnings}</span>
-                  <span className="count-text">إنذار</span>
+                  <div className="card-stats">
+                    <div className="stat-item">
+                      <span className="stat-number">{totalYellowCards}</span>
+                      <span className="stat-text">🟨 صفراء</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-number">{totalRedCards}</span>
+                      <span className="stat-text">🟥 حمراء</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-number">{totalWarnings}</span>
+                      <span className="stat-text">المجموع</span>
+                    </div>
+                  </div>
                 </div>
                 {hasDataLoaded && warnings.length > 0 && (
                   <div className="last-warning">
-                    آخر إنذار: {warnings[warnings.length - 1].playerName}
+                    أعلى مخالف: {warnings.reduce((prev, current) => 
+                      prev.totalCards > current.totalCards ? prev : current).playerName}
                   </div>
                 )}
                 {!hasDataLoaded && (
@@ -365,13 +384,16 @@ const WarningReportPublic = () => {
                 <thead>
                   <tr>
                     <th>اسم اللاعب</th>
-                    <th>الفريق</th>
-                    <th>نوع الإنذار</th>
-                    <th>التاريخ</th>
+                    <th>الأكاديمية</th>
+                    <th>البطاقات الصفراء</th>
+                    <th>البطاقات الحمراء</th>
+                    <th>المجموع</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {warningsData[selectedCategory].map((warning) => (
+                  {warningsData[selectedCategory]
+                    .sort((a, b) => b.totalCards - a.totalCards)
+                    .map((warning) => (
                     <tr key={warning.id}>
                       <td>
                         <div className="player-info">
@@ -381,17 +403,24 @@ const WarningReportPublic = () => {
                           <span>{warning.playerName}</span>
                         </div>
                       </td>
-                      <td>{warning.team}</td>
+                      <td>{warning.academyName}</td>
                       <td>
-                        <span
-                          className={`warning-badge ${getWarningTypeColor(
-                            warning.warningType
-                          )}`}
-                        >
-                          {warning.warningType}
-                        </span>
+                        <div className="cards-cell">
+                          <span className="cards-number">{warning.yellowCards}</span>
+                          <span className="cards-icon">🟨</span>
+                        </div>
                       </td>
-                      <td>{warning.date}</td>
+                      <td>
+                        <div className="cards-cell">
+                          <span className="cards-number">{warning.redCards}</span>
+                          <span className="cards-icon">🟥</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="total-cards-cell">
+                          <span className="total-number">{warning.totalCards}</span>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

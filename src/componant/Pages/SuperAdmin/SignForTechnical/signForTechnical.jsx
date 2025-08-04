@@ -12,23 +12,47 @@ function SignForTechnical() {
   const [showPlayerForm, setShowPlayerForm] = useState(false);
   const [showTechnicalForm, setShowTechnicalForm] = useState(false);
   const [showMultiPlayerForm, setShowMultiPlayerForm] = useState(false);
+  const [showCategorySelection, setShowCategorySelection] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [players, setPlayers] = useState([
     {
       id: 1,
-      pLayerName: "",
+      playerName: "",
       nationality: "",
       birthDate: "",
-      possition: "",
+      position: "",
       numberShirt: "",
-      playerPhoto: null,
-      passportPhoto: null,
+      urlImage: null,
+      urlPassport: null,
       category: "",
+      academyName: "",
     },
   ]);
 
+  // Function to handle category selection and initialize players with selected category
+  const handleCategorySelection = (category) => {
+    setSelectedCategory(category);
+    setPlayers([
+      {
+        id: 1,
+        playerName: "",
+        nationality: "",
+        birthDate: "",
+        position: "",
+        numberShirt: "",
+        urlImage: null,
+        urlPassport: null,
+        category: category,
+        academyName: "",
+      },
+    ]);
+    setShowCategorySelection(false);
+    setShowMultiPlayerForm(true);
+  };
+
   // Validation schema for player registration
   const playerValidationSchema = Yup.object({
-    pLayerName: Yup.string()
+    playerName: Yup.string()
       .min(2, "اسم اللاعب يجب أن يكون على الأقل حرفين")
       .required("اسم اللاعب مطلوب"),
     nationality: Yup.string()
@@ -37,11 +61,12 @@ function SignForTechnical() {
     birthDate: Yup.date()
       .max(new Date(), "تاريخ الميلاد لا يمكن أن يكون في المستقبل")
       .required("تاريخ الميلاد مطلوب"),
-    possition: Yup.string().required("المركز مطلوب"),
+    position: Yup.string().required("المركز مطلوب"),
     numberShirt: Yup.string().required("رقم القميص مطلوب"),
     category: Yup.string().required("الفئة العمرية مطلوبة"),
-    playerPhoto: Yup.mixed().required("الصورة الشخصية مطلوبة"),
-    passportPhoto: Yup.mixed().required("صورة جواز السفر مطلوبة"),
+    academyName: Yup.string().required("اسم الأكاديمية مطلوب"),
+    urlImage: Yup.mixed().required("الصورة الشخصية مطلوبة"),
+    urlPassport: Yup.mixed().required("صورة جواز السفر مطلوبة"),
   });
 
   // Validation schema for technical staff registration
@@ -60,18 +85,21 @@ function SignForTechnical() {
   // Player form formik
   const playerFormik = useFormik({
     initialValues: {
-      pLayerName: "",
+      playerName: "",
       nationality: "",
       birthDate: "",
-      possition: "",
+      position: "",
       numberShirt: "",
-      playerPhoto: null,
-      passportPhoto: null,
+      urlImage: null,
+      urlPassport: null,
       category: "",
+      academyName: "",
     },
     validationSchema: playerValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setIsLoading(true);
+      console.log(values);
+
       try {
         const response = await axios.post(
           "https://sports.runasp.net/api/Add-Players",
@@ -109,7 +137,8 @@ function SignForTechnical() {
       URLPassport: null,
     },
     validationSchema: technicalValidationSchema,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {      console.log(values);
+
       setIsLoading(true);
       try {
         const formData = new FormData();
@@ -147,14 +176,15 @@ function SignForTechnical() {
   const addPlayer = () => {
     const newPlayer = {
       id: players.length + 1,
-      pLayerName: "",
+      playerName: "",
       nationality: "",
       birthDate: "",
-      possition: "",
+      position: "",
       numberShirt: "",
-      playerPhoto: null,
-      passportPhoto: null,
-      category: "",
+      urlImage: null,
+      urlPassport: null,
+      category: selectedCategory, // Use the selected category
+      academyName: "",
     };
     setPlayers([...players, newPlayer]);
   };
@@ -176,14 +206,15 @@ function SignForTechnical() {
   const validateMultiPlayers = () => {
     for (let player of players) {
       if (
-        !player.pLayerName ||
+        !player.playerName ||
         !player.nationality ||
         !player.birthDate ||
-        !player.possition ||
+        !player.position ||
         !player.numberShirt ||
         !player.category ||
-        !player.playerPhoto ||
-        !player.passportPhoto
+        !player.academyName ||
+        !player.urlImage ||
+        !player.urlPassport
       ) {
         return false;
       }
@@ -197,42 +228,50 @@ function SignForTechnical() {
       return;
     }
 
+
     setIsLoading(true);
     try {
-      const promises = players.map(async (player) => {
+      // Prepare players array without the id field
+      const playersData = players.map((player) => {
         const { id, ...playerData } = player;
-
-        const request = await axios.post(
-          "https://sports.runasp.net/api/Add-Players",
-          playerData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        return request;
+        return playerData;
       });
+      console.log(playersData);
 
-      await Promise.all(promises);
-      setIsSuccess(true);
-      toast.success(`تم تسجيل ${players.length} لاعب بنجاح!`);
-      setShowMultiPlayerForm(false);
-      // Reset players array
-      setPlayers([
+      // Send all players as an array in a single request
+      const response = await axios.post(
+        "https://sports.runasp.net/api/Add-Players",
+        playersData, // Send as array
         {
-          id: 1,
-          pLayerName: "",
-          nationality: "",
-          birthDate: "",
-          possition: "",
-          numberShirt: "",
-          playerPhoto: null,
-          passportPhoto: null,
-          category: "",
-        },
-      ]);
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setIsSuccess(true);
+        toast.success(`تم تسجيل ${players.length} لاعب بنجاح!`);
+        setShowMultiPlayerForm(false);
+        // Reset players array
+        setPlayers([
+          {
+            id: 1,
+            playerName: "",
+            nationality: "",
+            birthDate: "",
+            position: "",
+            numberShirt: "",
+            urlImage: null,
+            urlPassport: null,
+            category: "",
+            academyName: "",
+          },
+        ]);
+        setSelectedCategory("");
+        setShowCategorySelection(false);
+      }
     } catch (error) {
       console.error("Multi-player registration error:", error);
       toast.error("حدث خطأ أثناء تسجيل اللاعبين");
@@ -267,11 +306,11 @@ function SignForTechnical() {
           </p>
           <button
             className="option-btn primary"
-            onClick={() => {
-              setShowMultiPlayerForm(true);
-              setShowPlayerForm(false);
-              setShowTechnicalForm(false);
-            }}
+                      onClick={() => {
+            setShowCategorySelection(true);
+            setShowPlayerForm(false);
+            setShowTechnicalForm(false);
+          }}
           >
             <span className="btn-icon">👥</span>
             تسجيل متعدد
@@ -300,6 +339,90 @@ function SignForTechnical() {
         </div>
       </div>
 
+      {/* Category Selection Modal */}
+      {showCategorySelection && (
+        <div className="form-modal">
+          <div className="form-container">
+            <div className="form-header">
+              <h2 className="form-title">
+                <span className="form-icon">🏆</span>
+                اختر الفئة العمرية
+              </h2>
+              <button
+                className="close-btn"
+                onClick={() => setShowCategorySelection(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="registration-form">
+              <div className="form-section">
+                <p className="section-description" style={{ textAlign: "center", marginBottom: "2rem", color: "#64748b" }}>
+                  اختر الفئة العمرية المطلوب تسجيل اللاعبين بها
+                </p>
+                
+                <div className="registration-options" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem" }}>
+                  <div className="option-card" style={{ textAlign: "center" }}>
+                    <div className="option-header">
+                      <span className="option-icon" style={{ fontSize: "2rem" }}>🏃‍♂️</span>
+                      <h3>تسجيل فئة 12</h3>
+                    </div>
+                    <p className="option-description">
+                      تحت 12 سنة
+                    </p>
+                    <button
+                      className="option-btn primary"
+                      onClick={() => handleCategorySelection("U12")}
+                      style={{ width: "100%" }}
+                    >
+                      <span className="btn-icon">🏆</span>
+                      تسجيل فئة 12
+                    </button>
+                  </div>
+
+                  <div className="option-card" style={{ textAlign: "center" }}>
+                    <div className="option-header">
+                      <span className="option-icon" style={{ fontSize: "2rem" }}>⚽</span>
+                      <h3>تسجيل فئة 14</h3>
+                    </div>
+                    <p className="option-description">
+                      تحت 14 سنة
+                    </p>
+                    <button
+                      className="option-btn primary"
+                      onClick={() => handleCategorySelection("U14")}
+                      style={{ width: "100%" }}
+                    >
+                      <span className="btn-icon">🏆</span>
+                      تسجيل فئة 14
+                    </button>
+                  </div>
+
+                  <div className="option-card" style={{ textAlign: "center" }}>
+                    <div className="option-header">
+                      <span className="option-icon" style={{ fontSize: "2rem" }}>🥅</span>
+                      <h3>تسجيل فئة 16</h3>
+                    </div>
+                    <p className="option-description">
+                      تحت 16 سنة
+                    </p>
+                    <button
+                      className="option-btn primary"
+                      onClick={() => handleCategorySelection("U16")}
+                      style={{ width: "100%" }}
+                    >
+                      <span className="btn-icon">🏆</span>
+                      تسجيل فئة 16
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Player Registration Form */}
 
       {/* Multi-Player Registration Form */}
@@ -309,7 +432,7 @@ function SignForTechnical() {
             <div className="form-header">
               <h2 className="form-title">
                 <span className="form-icon">👥</span>
-                تسجيل متعدد اللاعبين
+                تسجيل متعدد اللاعبين - {selectedCategory === "U12" ? "تحت 12 سنة" : selectedCategory === "U14" ? "تحت 14 سنة" : "تحت 16 سنة"}
               </h2>
               <button
                 className="close-btn"
@@ -404,11 +527,11 @@ function SignForTechnical() {
                         <label className="form-label">اسم اللاعب *</label>
                         <input
                           type="text"
-                          value={player.pLayerName}
+                          value={player.playerName}
                           onChange={(e) =>
                             updatePlayer(
                               player.id,
-                              "pLayerName",
+                              "playerName",
                               e.target.value
                             )
                           }
@@ -435,6 +558,23 @@ function SignForTechnical() {
                       </div>
 
                       <div className="form-group">
+                        <label className="form-label">اسم الأكاديمية *</label>
+                        <input
+                          type="text"
+                          value={player.academyName}
+                          onChange={(e) =>
+                            updatePlayer(
+                              player.id,
+                              "academyName",
+                              e.target.value
+                            )
+                          }
+                          placeholder="أدخل اسم الأكاديمية"
+                          className="form-input"
+                        />
+                      </div>
+
+                      <div className="form-group">
                         <label className="form-label">تاريخ الميلاد *</label>
                         <input
                           type="date"
@@ -449,9 +589,9 @@ function SignForTechnical() {
                       <div className="form-group">
                         <label className="form-label">المركز *</label>
                         <select
-                          value={player.possition}
+                          value={player.position}
                           onChange={(e) =>
-                            updatePlayer(player.id, "possition", e.target.value)
+                            updatePlayer(player.id, "position", e.target.value)
                           }
                           className="form-input"
                         >
@@ -484,18 +624,13 @@ function SignForTechnical() {
 
                       <div className="form-group">
                         <label className="form-label">الفئة العمرية *</label>
-                        <select
-                          value={player.category}
-                          onChange={(e) =>
-                            updatePlayer(player.id, "category", e.target.value)
-                          }
+                        <input
+                          type="text"
+                          value={selectedCategory === "U12" ? "تحت 12 سنة" : selectedCategory === "U14" ? "تحت 14 سنة" : "تحت 16 سنة"}
                           className="form-input"
-                        >
-                          <option value="">اختر الفئة العمرية</option>
-                          <option value="U12">تحت 12 سنة</option>
-                          <option value="U14">تحت 14 سنة</option>
-                          <option value="U16">تحت 16 سنة</option>
-                        </select>
+                          readOnly
+                          style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}
+                        />
                       </div>
                     </div>
 
@@ -509,7 +644,7 @@ function SignForTechnical() {
                           onChange={(e) =>
                             updatePlayer(
                               player.id,
-                              "playerPhoto",
+                              "urlImage",
                               e.target.files[0]
                             )
                           }
@@ -525,7 +660,7 @@ function SignForTechnical() {
                           onChange={(e) =>
                             updatePlayer(
                               player.id,
-                              "passportPhoto",
+                              "urlPassport",
                               e.target.files[0]
                             )
                           }
