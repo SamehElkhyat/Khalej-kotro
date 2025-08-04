@@ -31,6 +31,8 @@ import Goals from "./componant/Pages/Goals/Goals.jsx";
 import ReportAllMatches from "./componant/Pages/ReportAllMatches/ReportAllMatches.jsx";
 import ActiveNoActive from "./componant/Pages/ActiveNoActive/ActiveNoActive.jsx";
 import MatchesList from "./componant/Pages/ReportAllMatches/MatchesList.jsx";
+import WarningReportPublic from "./componant/Pages/PublicComponents/WarningReportPublic.jsx";
+import GoalsPublic from "./componant/Pages/PublicComponents/GoalsPublic.jsx";
 // تكوين مسارات التطبيق
 const مسارات_التطبيق = createBrowserRouter([
   {
@@ -55,6 +57,8 @@ const مسارات_التطبيق = createBrowserRouter([
       { path: "report-all-matches", element: <ReportAllMatches /> }, // صفحة جدول المباريات
       { path: "active-no-active", element: <ActiveNoActive /> }, // صفحة جدول المباريات
       { path: "matches-list", element: <MatchesList /> }, // صفحة جدول المباريات
+      { path: "warning-report-public", element: <WarningReportPublic /> }, // صفحة جدول المباريات
+      { path: "goals-report-public", element: <GoalsPublic /> }, // صفحة جدول المباريات
       // صفحة اللاندينغ
       // صفحات الإدارة
       { path: "admin", element: <Admin /> }, // لوحة الإدارة

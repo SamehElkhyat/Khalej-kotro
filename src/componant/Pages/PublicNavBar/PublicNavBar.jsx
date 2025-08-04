@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import logo from "../../Images/Logo.png";
 import Admin from "../SuperAdmin/Admin/Admin";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { jwtDecode } from "jwt-decode";
 
 export default function PublicNavBar() {
   // بيانات الفرق الافتراضية
@@ -30,7 +29,7 @@ export default function PublicNavBar() {
       setloading(false);
       // جعل صفحة المعلومات هي الصفحة الافتراضية
       if (window.location.pathname === "/") {
-        التنقل("/info");
+        التنقل("/Login");
       }
     }, 5000); // تحميل لمدة ثانيتين
     return () => clearTimeout(timer);
@@ -89,7 +88,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-video w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">ألبوم الفيديوهات</span>
+                      <span className="text-center leading-tight">
+                        ألبوم الفيديوهات
+                      </span>
                     </button>
 
                     <button
@@ -97,23 +98,29 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-images w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">ألبوم الصور</span>
+                      <span className="text-center leading-tight">
+                        ألبوم الصور
+                      </span>
                     </button>
 
                     <button
-                      onClick={() => التنقل("/players")}
+                      onClick={() => التنقل("/warning-report-public")}
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-exclamation-triangle w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">كشف الإنذارات</span>
+                      <span className="text-center leading-tight">
+                        كشف الإنذارات
+                      </span>
                     </button>
 
                     <button
-                      onClick={() => التنقل("/players")}
+                      onClick={() => التنقل("/goals-report-public")}
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-futbol w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">كشف الهدافين</span>
+                      <span className="text-center leading-tight">
+                        كشف الهدافين
+                      </span>
                     </button>
 
                     <button
@@ -121,7 +128,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-broadcast-tower w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">النقل المباشر</span>
+                      <span className="text-center leading-tight">
+                        النقل المباشر
+                      </span>
                     </button>
 
                     <button
@@ -129,7 +138,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-trophy w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">ترتيب الفرق</span>
+                      <span className="text-center leading-tight">
+                        ترتيب الفرق
+                      </span>
                     </button>
 
                     <button
@@ -137,7 +148,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-chart-bar w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">نتائج المباريات</span>
+                      <span className="text-center leading-tight">
+                        نتائج المباريات
+                      </span>
                     </button>
 
                     <button
@@ -145,7 +158,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200"
                     >
                       <i className="fas fa-calendar-alt w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">جدول المباريات</span>
+                      <span className="text-center leading-tight">
+                        جدول المباريات
+                      </span>
                     </button>
 
                     <button
@@ -153,7 +168,9 @@ export default function PublicNavBar() {
                       className="font-medium flex flex-col sm:flex-row items-center gap-1 hover:bg-[white] hover:text-[#ef4343] rounded-md px-1 sm:px-2 lg:px-3 py-2 text-xs lg:text-sm transition-colors duration-200 col-span-2 sm:col-span-3 lg:col-span-1"
                     >
                       <i className="fas fa-sign-in-alt w-3 h-3 sm:w-4 sm:h-4"></i>
-                      <span className="text-center leading-tight">لوحة التحكم</span>
+                      <span className="text-center leading-tight">
+                        لوحة التحكم
+                      </span>
                     </button>
                   </div>
                 </div>
