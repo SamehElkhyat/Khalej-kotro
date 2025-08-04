@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
     code: "+966",
     name: "Saudi Arabia",
@@ -117,7 +118,7 @@ const Login = () => {
       .email("البريد الإلكتروني غير صحيح")
       .required("البريد الإلكتروني مطلوب"),
     academyPhone: Yup.string()
-      .matches(/^[0-9\s\-\(\)]+$/, "رقم الهاتف غير صحيح")
+      .matches(/^[0-9\s\-()]+$/, "رقم الهاتف غير صحيح")
       .min(7, "رقم الهاتف يجب أن يكون على الأقل 7 أرقام")
       .required("رقم الهاتف مطلوب"),
     academyCountry: Yup.string()
@@ -130,6 +131,9 @@ const Login = () => {
       .oneOf([Yup.ref("password"), null], "كلمة المرور غير متطابقة")
       .required("تأكيد كلمة المرور مطلوب"),
     logoURL: Yup.mixed().required("الشعار مطلوب"),
+    termsAccepted: Yup.boolean()
+      .oneOf([true], "يجب الموافقة على الشروط والأحكام")
+      .required("يجب الموافقة على الشروط والأحكام"),
   });
 
   // Formik hook for registration form
@@ -143,6 +147,7 @@ const Login = () => {
       password: "",
       confirmPassword: "",
       logoURL: null,
+      termsAccepted: false,
     },
     validationSchema: registerValidationSchema,
     onSubmit: (values, { setSubmitting, resetForm }) => {
@@ -216,6 +221,122 @@ const Login = () => {
         });
     },
   });
+
+  // Terms and Conditions Content Component
+  const TermsAndConditionsModal = () => (
+    <div className="terms-modal-overlay" onClick={() => setShowTerms(false)}>
+      <div className="terms-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="terms-modal-header">
+          <h2><i className="fas fa-file-contract"></i> الشروط والأحكام</h2>
+          <button
+            className="terms-close-btn"
+            onClick={() => setShowTerms(false)}
+          >
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div className="terms-content">
+          <div className="terms-section">
+            <h3><i className="fas fa-users-cog"></i> ١. الإشراف والتنسيق مع الفرق</h3>
+            <div className="terms-text">
+              <p>سيتم تعيين منسق اتصال مخصص لكل فريق (بحد أقصى فريقين لكل منسق اتصال) للتنسيق الكامل مع إدارة الفندق وتلبية احتياجات الفريق.</p>
+              
+              <p>سيُعقد اجتماع تنسيقي قبل بدء البطولة، يجمع مسؤولي الفرق، ومسؤولي الاتصال، ولجنة الاستقبال لتوضيح المسؤوليات، ولا سيما:</p>
+              
+              <ul>
+                <li>يجب عدم ترك اللاعبين دون إشراف؛ ويجب على مسؤول أو منسق اتصال مرافقة كل مجموعة في جميع الأوقات.</li>
+                <li>الالتزام الكامل بالأنشطة والمباريات والتدريبات والاجتماعات المقررة إلزامي.</li>
+                <li>يجب احترام خصوصية الضيوف؛ ويُمنع منعًا باتًا طرق الأبواب أو الانتظار في المصاعد.</li>
+                <li>يجب تجنب الضوضاء، خاصةً في الليل.</li>
+                <li>يجب استخدام مرافق الفندق بمسؤولية، ويجب الإبلاغ عن أي أعطال فورًا.</li>
+              </ul>
+              
+              <p><strong>مدير الفريق مسؤول مسؤولية مباشرة عن سلوك اللاعبين. ستؤدي المخالفات المتكررة إلى إلغاء الحجز دون استرداد المبلغ المدفوع.</strong></p>
+              
+              <p>يُشترط الالتزام الصارم بجدول الأنشطة المحدد (الوجبات، التدريب، الترفيه، إلخ).</p>
+              <p>يجب اتباع جميع التعليمات الصادرة عن إدارة الفندق أو اللجنة المنظمة.</p>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-exclamation-triangle"></i> ٢. التطبيق الصارم للقواعد التالية</h3>
+            <div className="terms-text">
+              <p><strong>يُمنع منعًا باتًا ما يلي:</strong></p>
+              <ul>
+                <li>تجمعات الفرق في ممرات الفندق.</li>
+                <li>الضوضاء الصاخبة داخل الغرف أو الممرات.</li>
+                <li>إيقاف المصاعد أو إساءة استخدامها أثناء انتظار زملائهم.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-building"></i> ٣. استخدام مرافق الفندق</h3>
+            <div className="terms-text">
+              <p>يُشترط التنسيق المسبق (قبل 24 ساعة على الأقل) مع لجنة الاتصال لاستخدام ما يلي:</p>
+              <ul>
+                <li>الملاعب الرياضية</li>
+                <li>الصالة الرياضية</li>
+                <li>حمام السباحة</li>
+                <li>المواصلات</li>
+              </ul>
+              <p>هذا لتجنب تضارب الحجوزات مع الحجوزات الأخرى. سيتم إرسال نموذج إلكتروني يومي إلى الفرق لتحديد احتياجاتهم لليوم التالي.</p>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-info-circle"></i> ٤. التوعية قبل السفر</h3>
+            <div className="terms-text">
+              <p>يُطلب من كل منسق فريق عقد اجتماع داخلي مع لاعبيه قبل السفر لشرح هذه السياسات وضمان الالتزام الكامل بها طوال فترة الإقامة.</p>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-file-signature"></i> ٥. نموذج الاتفاقية والالتزام</h3>
+            <div className="terms-text">
+              <p>سيتم توزيع نموذج رسمي للشروط والأحكام، معتمد من اللجنة المنظمة وبالتنسيق مع إدارة الفندق. ويجب على جميع أعضاء الفريق الالتزام به طوال فترة إقامتهم.</p>
+              <p><strong>لن يُسمح بمشاركة أي فريق في البطولة دون التوقيع على النموذج المذكور.</strong></p>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-money-bill-wave"></i> ٦. الإيداع المالي والتنفيذ</h3>
+            <div className="terms-text">
+              <p>سيتم تحصيل إيداع تأمين قدره <strong>٣٠٠٠ درهم إماراتي</strong> من كل فريق. سيتم خصم المبالغ في حال وجود أي مخالفات أو شكاوى، كما يلي:</p>
+              <ul>
+                <li><strong>المخالفة الأولى:</strong> خصم ١٠٠٠ درهم إماراتي</li>
+                <li><strong>المخالفة الثانية:</strong> خصم ٢٠٠٠ درهم إماراتي</li>
+                <li><strong>المخالفة الثالثة:</strong> إلغاء الحجز والاستبعاد من البطولة دون استرداد المبلغ.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="terms-section">
+            <h3><i className="fas fa-handshake"></i> الختام</h3>
+            <div className="terms-text">
+              <p>نأمل أن تحظى هذه الإجراءات بموافقتكم، ونتطلع إلى تعاونكم الكامل في تطبيقها، بما يضمن نجاح الفعالية وراحة جميع الضيوف وموظفي الفندق.</p>
+              <p>سترسل اللجنة المنظمة نموذجًا لهيكل التوظيف لفريق الفندق.</p>
+              <p>نرحب بأي تعليقات أو اقتراحات لديكم قبل اعتماد هذه السياسات.</p>
+              <p><strong>مع خالص التقدير والاحترام،</strong></p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="terms-modal-footer">
+          <button
+            className="accept-terms-btn"
+            onClick={() => {
+              registerFormik.setFieldValue('termsAccepted', true);
+              setShowTerms(false);
+            }}
+          >
+            <i className="fas fa-check"></i> أوافق على الشروط والأحكام
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="login-bg">
@@ -597,17 +718,52 @@ const Login = () => {
               </div>
 
               <div className="register-form-section">
+                <h3>
+                  <i className="fas fa-file-contract"></i> الشروط والأحكام
+                </h3>
                 <div className="form-row">
                   <div className="form-group checkbox-group">
-                    <label className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        name="termsAccepted"
-                        onChange={registerFormik.handleChange}
-                        required
-                      />
-                      أوافق على الشروط والأحكام *
-                    </label>
+                    <div className="terms-agreement">
+                      <label className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          name="termsAccepted"
+                          checked={registerFormik.values.termsAccepted}
+                          onChange={registerFormik.handleChange}
+                          onBlur={registerFormik.handleBlur}
+                          className={
+                            registerFormik.touched.termsAccepted &&
+                            registerFormik.errors.termsAccepted
+                              ? "error"
+                              : ""
+                          }
+                          required
+                        />
+                        <span className="checkmark"></span>
+                        أوافق على 
+                        <button
+                          type="button"
+                          className="terms-link-btn"
+                          onClick={() => setShowTerms(true)}
+                        >
+                          الشروط والأحكام
+                        </button>
+                        *
+                      </label>
+                      <button
+                        type="button"
+                        className="view-terms-btn"
+                        onClick={() => setShowTerms(true)}
+                      >
+                        <i className="fas fa-eye"></i> عرض الشروط والأحكام
+                      </button>
+                    </div>
+                    {registerFormik.touched.termsAccepted &&
+                      registerFormik.errors.termsAccepted && (
+                        <div className="error-message">
+                          {registerFormik.errors.termsAccepted}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
@@ -640,6 +796,9 @@ const Login = () => {
           </div>
         </div>
       )}
+
+      {/* Terms and Conditions Modal */}
+      {showTerms && <TermsAndConditionsModal />}
     </div>
   );
 };
