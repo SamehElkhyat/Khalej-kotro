@@ -25,7 +25,7 @@ const MangeShedulde = () => {
       );
       setMatches(response.data);
     } catch (error) {
-      // Error handling
+      console.log(error);
     }
   };
 
