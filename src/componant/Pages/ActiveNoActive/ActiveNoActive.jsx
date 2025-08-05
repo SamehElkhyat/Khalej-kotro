@@ -371,14 +371,7 @@ const ActiveNoActive = () => {
           },
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
-      console.log("Player activated successfully:", result);
-
       // Move player from inactive to active if accepted
       if (statu === true) {
         const activatedPlayer = { ...player, statu: true };
@@ -431,14 +424,7 @@ const ActiveNoActive = () => {
           },
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
-      console.log("Player rejected successfully:", result);
-
       // Remove player from inactive list when rejected
       setInactivePlayersData((prev) => prev.filter((p) => p.id !== player.id));
 
